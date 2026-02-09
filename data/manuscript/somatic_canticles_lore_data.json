@@ -1,0 +1,529 @@
+{
+  "meta": {
+    "title": "Somatic Canticles World Data",
+    "version": "1.2",
+    "last_updated": "2026-02-07",
+    "description": "Comprehensive structured data for the Somatic Canticles universe, covering lore, characters, technology, world-building, cosmology, sacred mathematics, protocols, and systems."
+  },
+  "core_foundation": {
+    "philosophical_core": {
+      "principle": "The Aletheos-Pichet Dyad",
+      "definition": "The dynamic tension between clarity (Aletheos) and vitality (Pichet).",
+      "pillars": [
+        {
+          "name": "Aletheos",
+          "concept": "The Clarity Pillar",
+          "function": "Structural principle of witness awareness; reveals what is hidden (Aletheia)."
+        },
+        {
+          "name": "Pichet",
+          "concept": "The Vitality Pillar",
+          "function": "Instinctual principle of witness awareness; ensures embodied presence and lived force."
+        }
+      ],
+      "conflict": {
+        "lethe": "The Concealment. The state of forgetting, ignorance, and the 'Vine of Determinism'.",
+        "aletheia": "The Unconcealment. The process of revealing the real through pattern-sensitive awareness."
+      }
+    },
+    "key_concepts": [
+      {
+        "term": "Noesis",
+        "definition": "Participatory Awareness. The universe as a field of awareness where observation influences outcomes."
+      },
+      {
+        "term": "The Entropy Plague",
+        "definition": "A self-replicating information virus feeding on fragmented awareness, creating the 'Vine of Determinism'."
+      },
+      {
+        "term": "The Severance Sequence",
+        "definition": "The 4-phase protocol to liberate a subject: Insertion, Mapping, Anamnesis, Egress."
+      },
+      {
+        "term": "Authorship Sovereignty",
+        "definition": "The state where an individual becomes the 'Architect' of their reality field, not just a character."
+      },
+      {
+        "term": "Tzimtzum",
+        "definition": "Metabolic Contraction. A defensive compression of awareness into a high-density 'Seed State'."
+      },
+      {
+        "term": "Amrita",
+        "definition": "Synthesized metabolic carrier fluid that increases informatic conductivity for the Severance Event."
+      }
+    ]
+  },
+  "protocols": {
+    "tryambakam_protocol": {
+      "description": "The Technical Veda; schematic for the Anamnesis Engine to liberate awareness.",
+      "phases": [
+        { "phase": "1. Tryambakaṃ", "technical_name": "The Three-Eyes", "goal": "Activating the Triangulation Engine (Psychē/Bios/Hylē)." },
+        { "phase": "2. Puṣṭivardhanam", "technical_name": "The Ripening", "goal": "Increasing Awareness Charge via metabolic support." },
+        { "phase": "3. Bandhanan", "technical_name": "The Vine", "goal": "Identifying the site of Deterministic Bonding (Trauma)." },
+        { "phase": "4. Mā'mṛtāt", "technical_name": "The Severance", "goal": "Executing the Leap of Authorship into the Source." }
+      ],
+      "vectors": {
+        "standard": [
+          { "name": "Soma Vector", "definition": "The uncorrupted 'God-Code' of the soul." },
+          { "name": "Manas Interface", "definition": "The present active witness capacity (Team)." },
+          { "name": "Muladhara Terminus", "definition": "The physical grounding point." }
+        ],
+        "severance_event": [
+          { "name": "Pure Joy (The Note)", "holder": "Dr. Sona Vireth", "definition": "Unconditional joy as substrate." },
+          { "name": "Catalyst Clarity (The Bell)", "holder": "Dr. Corvan Luminth", "definition": "Witnessing the trauma without interpretation." },
+          { "name": "Present Coherence", "holder": "Gideon Seter", "definition": "Complete team unity preventing fragmentation." }
+        ]
+      },
+      "amrita_protocol": {
+        "description": "Post-Severance reality architecture practice.",
+        "elements": ["Tone", "Boundary", "Map", "Story"]
+      }
+    }
+  },
+  "systems": {
+    "lenses_13": {
+      "description": "Diagnostic filters of the Somanaut HUD.",
+      "list": [
+        { "id": 1, "name": "Vimshottari Dasha", "focus": "Karmic Timing" },
+        { "id": 2, "name": "Nakshatra Engine", "focus": "Stellar Resonance" },
+        { "id": 3, "name": "Chakra-Kosha", "focus": "Bio-Energetic Flow" },
+        { "id": 4, "name": "TCM Organ Clock", "focus": "Biological Periodicity" },
+        { "id": 5, "name": "Human Design", "focus": "Decision Mechanics" },
+        { "id": 6, "name": "Gene Keys", "focus": "Frequency Mutation" },
+        { "id": 7, "name": "Enneagram", "focus": "Ego-Architecture" },
+        { "id": 8, "name": "Tarot", "focus": "Archetypal Process" },
+        { "id": 9, "name": "Numerology", "focus": "Geometric Resonance" },
+        { "id": 10, "name": "Biorhythm Engine", "focus": "Bio-Physical Cycles" },
+        { "id": 11, "name": "HRV Integration", "focus": "Heart Coherence" },
+        { "id": 12, "name": "Biofield Viewer", "focus": "Signal Stability" },
+        { "id": 13, "name": "The New Beginning", "focus": "Narrative Authorship" }
+      ],
+      "specialist_mastery": {
+        "jian_quoril": [1, 2, 5, 9],
+        "sona_vireth": [3, 4, 11, 12],
+        "corvan_luminth": [6, 7, 8],
+        "gideon_seter": [10, 13]
+      }
+    }
+  },
+  "cosmology": {
+    "cosmic_trinity": {
+      "description": "The macroscopic celestial order reflecting the three-brain system.",
+      "levels": [
+        {
+          "name": "Earth Consciousness",
+          "brain_system": "Reptilian Brain",
+          "celestial_body": "Planeta Gaia (Earth)",
+          "sacred_geometry": "Square / Cube",
+          "seasonal_timing": "Winter Solstice",
+          "function": "Material stewardship, survival wisdom, gravitational center of identity."
+        },
+        {
+          "name": "Lunar Consciousness",
+          "brain_system": "Limbic Brain",
+          "celestial_body": "The Moon",
+          "sacred_geometry": "Circle / Spiral",
+          "seasonal_timing": "Spring Equinox",
+          "function": "Empathic interface, emotional alchemy, collective field navigation."
+        },
+        {
+          "name": "Solar Consciousness",
+          "brain_system": "Neocortical Brain",
+          "celestial_body": "The Sun",
+          "sacred_geometry": "Triangle / Pyramid",
+          "seasonal_timing": "Summer Solstice",
+          "function": "Pattern recognition, innovation, strategic wisdom integration."
+        },
+        {
+          "name": "Stellar Consciousness",
+          "brain_system": "The Witness",
+          "celestial_body": "The Sky / Fixed Stars",
+          "sacred_geometry": "Dodecahedron / Infinity Symbol",
+          "seasonal_timing": "Autumn Equinox",
+          "function": "Meta-awareness, system coordination, species-wide evolution."
+        }
+      ]
+    },
+    "astrotheological_calendar": {
+      "cycles": [
+        { "phase": "New Moon", "focus": "Reptilian foundation / Earth grounding" },
+        { "phase": "Waxing Moon", "focus": "Limbic connection / Heart resonance" },
+        { "phase": "Full Moon", "focus": "Neocortical illumination / Mental strategy" },
+        { "phase": "Waning Moon", "focus": "Witness integration / Spirit release" }
+      ]
+    }
+  },
+  "sacred_mathematics": {
+    "principles": [
+      {
+        "concept": "The Golden Ratio (φ)",
+        "value": "1.618033...",
+        "application": "Universal consciousness proportion; 13 Lenses framework scaling."
+      },
+      {
+        "concept": "Fibonacci Sequence",
+        "application": "Consciousness development stages (Individual, Collective, Cosmic)."
+      }
+    ],
+    "fibonacci_stages": {
+      "individual_book_1": [
+        { "step": "F_1 = 1", "stage": "Initial Awareness", "description": "Awakening to consciousness" },
+        { "step": "F_2 = 1", "stage": "Recognition", "description": "Noticing three-brain system" },
+        { "step": "F_3 = 2", "stage": "Basic Integration", "description": "First witness practice attempts" },
+        { "step": "F_5 = 5", "stage": "Stable Individual", "description": "Consistent witness awareness" },
+        { "step": "F_8 = 8", "stage": "Advanced Mastery", "description": "Three-brain coordination refined" },
+        { "step": "F_13 = 13", "stage": "Perfect Individual", "description": "Complete personal sovereignty" }
+      ],
+      "collective_book_2": [
+        { "step": "F_21 = 21", "stage": "Collective Emergence", "description": "Team resonance begins" },
+        { "step": "F_34 = 34", "stage": "Stable Collective", "description": "Consistent team coherence" },
+        { "step": "F_55 = 55", "stage": "Advanced Collective", "description": "Collective intelligence unlocked" },
+        { "step": "F_89 = 89", "stage": "Perfect Collective", "description": "Resonant self-consciousness achieved" }
+      ],
+      "cosmic_book_3": [
+        { "step": "F_144 = 144", "stage": "Cosmic Emergence", "description": "Planetary consciousness contact" },
+        { "step": "F_233 = 233", "stage": "Stable Cosmic", "description": "Reliable cosmic interface" },
+        { "step": "F_377 = 377", "stage": "Advanced Cosmic", "description": "Reality authorship capability" },
+        { "step": "F_610 = 610", "stage": "Perfect Cosmic", "description": "Complete cosmic integration" }
+      ]
+    },
+    "platonic_solids_mapping": [
+      { "solid": "Tetrahedron", "element": "Fire", "brain_system": "Reptilian", "function": "Survival action, primal drive" },
+      { "solid": "Cube", "element": "Earth", "brain_system": "Limbic", "function": "Emotional stability, grounding" },
+      { "solid": "Octahedron", "element": "Air", "brain_system": "Neocortex", "function": "Mental clarity, communication" },
+      { "solid": "Dodecahedron", "element": "Ether", "brain_system": "Witness", "function": "Transcendent coordination" },
+      { "solid": "Icosahedron", "element": "Water", "brain_system": "Collective Field", "function": "Flow, unity, collective intelligence" }
+    ]
+  },
+  "ancient_wisdom_synthesis": {
+    "premise": "Ancient wisdom texts are internal consciousness cartography describing biological processes.",
+    "mappings": [
+      {
+        "tradition": "Plato's Atlantis",
+        "interpretation": "Internal Brain Geography",
+        "correspondences": [
+          { "element": "Central Island", "biological": "Pineal/Thalamus", "sc_galaxy": "Sahasrara" },
+          { "element": "Inner Ring", "biological": "Reptilian Complex", "sc_galaxy": "Muladhara" },
+          { "element": "Middle Ring", "biological": "Limbic System", "sc_galaxy": "Anahata" },
+          { "element": "Outer Ring", "biological": "Neocortex", "sc_galaxy": "Sahasrara Convergence" }
+        ]
+      },
+      {
+        "tradition": "Biblical Genesis",
+        "interpretation": "Embryological Development Manual",
+        "correspondences": [
+          { "day": "Day 1", "event": "Light/Dark", "biological": "Cell division begins" },
+          { "day": "Day 3", "event": "Land appears", "biological": "Primitive streak (Reptilian brain foundation)" },
+          { "day": "Day 4", "event": "Sun/moon/stars", "biological": "Sensory organs (Limbic perception)" },
+          { "day": "Day 7", "event": "Rest", "biological": "Witness consciousness readiness" }
+        ]
+      }
+    ],
+    "galaxy_mappings": [
+      { "galaxy": "Ajna", "tradition": "Greek/Platonic", "wisdom": "Internal vision, intellectual contemplation" },
+      { "galaxy": "Manipura", "tradition": "Alchemical", "wisdom": "Transformation, will cultivation" },
+      { "galaxy": "Anahata", "tradition": "Sufi/Bhakti", "wisdom": "Heart-centered consciousness" },
+      { "galaxy": "Vishuddha", "tradition": "Hermetic", "wisdom": "Authentic expression, Logos" },
+      { "galaxy": "Svadhisthana", "tradition": "Tantric", "wisdom": "Creative flow, life force" },
+      { "galaxy": "Muladhara", "tradition": "Indigenous/Earth", "wisdom": "Material stewardship, grounding" },
+      { "galaxy": "Sahasrara", "tradition": "Advaita/Zen", "wisdom": "Non-dual awareness" }
+    ]
+  },
+  "cosmology": {
+    "description": "The Star-Aware architecture encoding divine order.",
+    "trinity_architecture": {
+      "earth_consciousness": {
+        "brain_correspondence": "Reptilian Brain",
+        "celestial_body": "Planeta Gaia (Earth)",
+        "zodiac_resonance": ["Taurus", "Virgo", "Capricorn"],
+        "sacred_geometry": "The Square / The Cube",
+        "seasonal_timing": "Winter Solstice",
+        "function": "Material stewardship, survival wisdom, gravitational center of identity"
+      },
+      "lunar_consciousness": {
+        "brain_correspondence": "Limbic Brain",
+        "celestial_body": "The Moon",
+        "zodiac_resonance": ["Cancer", "Scorpio", "Pisces"],
+        "sacred_geometry": "The Circle / The Spiral",
+        "seasonal_timing": "Spring Equinox",
+        "function": "Empathic interface, emotional alchemy, collective field navigation"
+      },
+      "solar_consciousness": {
+        "brain_correspondence": "Neocortical Brain",
+        "celestial_body": "The Sun",
+        "zodiac_resonance": ["Leo", "Aries", "Sagittarius"],
+        "sacred_geometry": "The Triangle / The Pyramid",
+        "seasonal_timing": "Summer Solstice",
+        "function": "Pattern recognition, innovation, strategic wisdom integration"
+      },
+      "stellar_consciousness": {
+        "brain_correspondence": "The Witness",
+        "celestial_body": "The Sky / Fixed Stars",
+        "zodiac_resonance": ["Aquarius", "Gemini", "Libra"],
+        "sacred_geometry": "The Dodecahedron / Infinity Symbol",
+        "seasonal_timing": "Autumn Equinox",
+        "function": "Meta-awareness, system coordination, species-wide evolution"
+      }
+    },
+    "sacred_mathematics": {
+      "3": "Trinity (Reptilian/Limbic/Neocortical systems)",
+      "7": "Completion (Seven Galaxies / Seven Chakras / Seven Classical Planets)",
+      "12": "Cosmic Order (Twelve Zodiacal archetypes)",
+      "13": "The Witness (The 13th Lens unifying the previous twelve)"
+    },
+    "astrotheological_calendar": [
+      {
+        "phase": "New Moon",
+        "focus": "Reptilian foundation / Earth grounding"
+      },
+      {
+        "phase": "Waxing Moon",
+        "focus": "Limbic connection / Heart resonance"
+      },
+      {
+        "phase": "Full Moon",
+        "focus": "Neocortical illumination / Mental strategy"
+      },
+      {
+        "phase": "Waning Moon",
+        "focus": "Witness integration / Spirit release"
+      }
+    ]
+  },
+  "technology": {
+    "ripening_stages": [
+      { "stage": 1, "name": "Immanence", "archetype": "The Sleepwalker", "state": "High Entropy (Autopilot)" },
+      { "stage": 2, "name": "Lethe", "archetype": "The Forgotten", "state": "The Fog (Redaction)" },
+      { "stage": 3, "name": "Noesis", "archetype": "The Seeker", "state": "Awareness of the Field" },
+      { "stage": 4, "name": "Anamnesis", "archetype": "The Witness", "state": "Recovery of Truth" },
+      { "stage": 5, "name": "Aletheia", "archetype": "The Architect", "state": "Restored Logic" },
+      { "stage": 6, "name": "Severance", "archetype": "The Liberator", "state": "Breaking the Vine" },
+      { "stage": 7, "name": "Authorship", "archetype": "The Source", "state": "The New Beginning" }
+    ],
+    "witness_os": {
+      "kernel_layers": [
+        { "layer": "Vedic Source", "function": "ReadOnly universal principles (Dharma)" },
+        { "layer": "Aletheos Runtime", "function": "Active Engine compiling narrative metadata" },
+        { "layer": "Noetic Network", "function": "Communication Layer for team entanglement" }
+      ],
+      "features": {
+        "novelty_seeker": "Scans Latent Space for original signals (non-deterministic).",
+        "dissonance_alerts": "Flags drops in Heart-Brain Coherence.",
+        "source_compiler": "Creates reality-zones from a single Seed-Word."
+      }
+    }
+  },
+  "factions": {
+    "galactic_cultures": [
+      {
+        "name": "Sahasrara Galaxy",
+        "sectors": "The Crown Sectors",
+        "tradition": "Vedic Systematics",
+        "house": "House Quoril (The Architects)",
+        "principle": "Reality is structured and mappable.",
+        "focus": "Neuro-cartography, systematic mapping, higher-order logic.",
+        "vessel": "Manas Yantra"
+      },
+      {
+        "name": "Ajna Galaxy",
+        "sectors": "The Third Eye Sectors",
+        "tradition": "Daoist Flow Dynamics",
+        "house": "House Luminth (The Weavers)",
+        "principle": "The Way flows naturally.",
+        "focus": "Narrative vision, light-weaving, observation without interference.",
+        "vessel": "Yìshí Qìxiè"
+      },
+      {
+        "name": "Anahata Galaxy",
+        "sectors": "The Heart Sectors",
+        "tradition": "Sufi Resonance",
+        "house": "House Vireth (The Alchemists)",
+        "principle": "Reality is resonant and harmonious.",
+        "focus": "Emotional attunement, frequency alignment, bio-acoustic engineering.",
+        "vessel": "Adawat al-Wa'i"
+      },
+      {
+        "name": "Muladhara Galaxy",
+        "sectors": "The Root Sectors",
+        "tradition": "Kabbalistic Tzimtzum",
+        "house": "House Seter (The Guardians)",
+        "principle": "Reality is structured and must be defended.",
+        "focus": "Boundary maintenance, defensive shielding, atomic density.",
+        "vessel": "Klei Toda'ah"
+      },
+      {
+        "name": "Manipura Galaxy",
+        "sectors": "The Fire Networks",
+        "tradition": "Yogic Transformation",
+        "principle": "Reality is transformed by Will.",
+        "focus": "Power dynamics, transformation, rapid evolution.",
+        "vessel": "Agni Yantra"
+      },
+      {
+        "name": "Svadhishthana Galaxy",
+        "sectors": "The Water Collective",
+        "tradition": "Tantric Fluidity",
+        "principle": "Reality is fluid and adaptable.",
+        "focus": "Creativity, flow states, emotional processing.",
+        "vessel": "Jala Yantra"
+      },
+      {
+        "name": "Vishuddha Galaxy",
+        "sectors": "The Communication Grid",
+        "tradition": "Hermetic Expression",
+        "principle": "Reality is created through Speech.",
+        "focus": "Communication protocols, truth-telling, code.",
+        "vessel": "Vak Yantra"
+      }
+    ]
+  },
+  "characters": {
+    "somanaut_team": [
+      {
+        "name": "Dr. Jian Quoril",
+        "role": "The Neuro-Cartographer",
+        "house": "House Quoril",
+        "enneagram": "Type 5 - The Investigator",
+        "specialty": "Somatic Datascape Mapping & Resonance Topology",
+        "psychology": "Finds security in knowledge; views emotion as unreliable data.",
+        "arc_summary": "From Rigid Logic to Integrated Wisdom.",
+        "arcs": {
+          "book_1": "Grudgingly accepts limits of logic; integrates qualitative data.",
+          "book_2": "Evolves 'system' definition to include paradox; maps emotional topology.",
+          "book_3": "Refuses 'Certainty'; chooses 'Aliveness'. Holds Manas Interface as moving constellation."
+        }
+      },
+      {
+        "name": "Gideon Seter",
+        "role": "The Systems Immunologist",
+        "house": "House Seter",
+        "enneagram": "Type 8 - The Challenger",
+        "specialty": "Bio-Threat Assessment & Tzimtzum Compression Shielding",
+        "psychology": "Decisive, grounded, protective. Binary worldview: threat/non-threat.",
+        "arc_summary": "From Protector to Guardian.",
+        "arcs": {
+          "book_1": "Learns to use strength as container (space-holding) rather than shield.",
+          "book_2": "Learns discerning vulnerability for internal healing.",
+          "book_3": "Refuses 'Safety'; chooses 'Growth'. Holds Coherence Vector."
+        }
+      },
+      {
+        "name": "Dr. Sona Vireth",
+        "role": "The Bio-Acoustic Engineer",
+        "house": "House Vireth",
+        "enneagram": "Type 4 - The Individualist",
+        "specialty": "Metabolic Emergence & Emotional Frequency Analysis",
+        "psychology": "Deeply empathetic, intuitive, creative. Feels everything.",
+        "arc_summary": "From Emotional Container to Resonant Channel.",
+        "arcs": {
+          "book_1": "Differentiates empathy from identification. Validates intuitive data.",
+          "book_2": "Masters Coherence Cultivation; becomes active lighthouse.",
+          "book_3": "Refuses 'Peace' (Anesthesia); chooses 'Depth'. Holds Note Vector (Joy)."
+        }
+      },
+      {
+        "name": "Dr. Corvan Luminth",
+        "role": "The Psycho-Pathologist & Team Lead",
+        "house": "House Luminth",
+        "enneagram": "Type 9 - The Peacemaker",
+        "specialty": "Aletheia Mapping & Narrative Diagnostics",
+        "psychology": "Calm, patient, holistic thinker. Seeks harmony.",
+        "arc_summary": "From Passive Witness to Active Alchemist.",
+        "arcs": {
+          "book_1": "Accepts burden of authorship; edits rather than just interpreting.",
+          "book_2": "Masters holding space for conflict; reality as dialogue.",
+          "book_3": "Refuses 'Perfect Meaning'; chooses 'Reality'. Holds Bell Vector (Clarity)."
+        }
+      }
+    ]
+  },
+  "languages": {
+    "kotoliese": {
+      "type": "Institutional Scripture",
+      "usage": "Archival inscriptions, formal oaths, glyphic tablets",
+      "aesthetic": "Sharp, consonantal, rhythmic",
+      "function": "Structure, Law, Protocol, Defense"
+    },
+    "pauese": {
+      "type": "Ritual Canticle",
+      "usage": "Chants, rites, breath-led ceremonies"
+    },
+    "narei": {
+      "type": "Folk Tongue",
+      "usage": "Communal speech, greetings, home-rituals"
+    }
+  },
+  "history": {
+    "era": "The Great Awakening (2020 - 2050)",
+    "description": "Transition from competitive resource-scarcity to collaborative consciousness-evolution.",
+    "periods": [
+      {
+        "name": "The Fragmentation Period",
+        "years": "2020-2030",
+        "key_events": [
+          "The Crisis: Entropy Plague symptoms (mass cognitive dissonance).",
+          "The Discovery: Validation of Three-Brain System and 13 Lenses.",
+          "The Migration: Shift to Seven Galaxies structure."
+        ]
+      },
+      {
+        "name": "The Integration Movement",
+        "years": "2030-2040",
+        "key_events": [
+          "Institutional Birth: Founding of Academies and Guilds.",
+          "Anamnesis Engine: Prototypes for debugging collective trauma.",
+          "Validation System: Bitcoin-based proof of developmental milestones."
+        ]
+      }
+    ]
+  },
+  "institutions": {
+    "academies": [
+      { "name": "Terra Academy", "galaxy": "Muladhara", "focus": "Regenerative Ecology & Material Stewardship" },
+      { "name": "Luna Academy", "galaxy": "Anahata", "focus": "Emotional Alchemy & Relational Resonance" },
+      { "name": "Sol Academy", "galaxy": "Vishuddha/Ajna", "focus": "Systems Innovation & Consciousness Technology" },
+      { "name": "Stella Academy", "galaxy": "Sahasrara", "focus": "Universal Integration & Evolutionary Service" }
+    ],
+    "guilds": [
+      { "name": "Earth Stewards Guild", "base": "Muladhara", "role": "Architects/Engineers", "function": "Physical infrastructure coordination." },
+      { "name": "Heart Healers Guild", "base": "Anahata", "role": "Therapists/Mediators", "function": "Resonance field management." },
+      { "name": "Mind Illuminators Guild", "base": "Ajna", "role": "Educators/Developers", "function": "NOESIS frameworks and Anamnesis tools." },
+      { "name": "Spirit Coordinators Guild", "base": "Sahasrara", "role": "The Magus Class", "function": "Multi-galaxy coordination from Witness state." }
+    ],
+    "sacred_sites": [
+      { "name": "Mount Stability", "base": "Terra", "mastery": "Reptilian survival drive" },
+      { "name": "Lake Harmony", "base": "Luna", "mastery": "Limbic emotional tides" },
+      { "name": "Solar Peak", "base": "Sol", "mastery": "Neocortical illuminating flame" },
+      { "name": "Cosmic Observatory", "base": "Stella", "mastery": "Stellar Witness" }
+    ]
+  },
+  "theoretical_frameworks": {
+    "enantiodromia": {
+      "definition": "The Law of Opposites. Consciousness development as an Enantiodromic Dance where tension between opposites releases integration energy.",
+      "process": {
+        "thesis": "Legacy Pattern",
+        "antithesis": "Shadow Crisis",
+        "synthesis": "Integrated Mastery"
+      },
+      "collective_application": {
+        "event": "The Entropy Plague",
+        "thesis": "Hyper-individualism",
+        "antithesis": "Forced chaotic merging",
+        "synthesis": "Somanaut Sovereignty (Integrated Collective)"
+      }
+    },
+    "kha_lore_e": {
+      "definition": "The Physics of Belief. Inherited 'Belief Operating System' metabolized during gestation.",
+      "etymology": {
+        "kha": "Inherited Mother-Source",
+        "lore": "Content of reality-filter",
+        "e": "Processed perception"
+      },
+      "mechanics": {
+        "gestational_programming": "Months 1-9 coding of safety, resonance, and authority.",
+        "metabolism": "Reptilian brain categorizes experiences as Nutritious (Safety) or Toxic (Trauma).",
+        "economics": "Kha-lore-ē is the true currency; Somanauts debug inert belief modules."
+      }
+    }
+  }
+}

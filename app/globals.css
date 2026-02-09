@@ -1,26 +1,285 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base theme - Light mode default */
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  
+  /* Power-number color palette */
+  --octave-8: #FF6B6B;
+  --transform-13: #9B59B6;
+  --solar-19: #F1C40F;
+  --architect-44: #3498DB;
+  --world-21: #2ECC71;
+  --life-125: #E74C3C;
+  --unity-152: #1ABC9C;
+  
+  /* Semantic colors - Light mode */
+  --primary: var(--solar-19);
+  --primary-foreground: #0a0a0a;
+  --secondary: var(--transform-13);
+  --secondary-foreground: #ffffff;
+  --accent: var(--octave-8);
+  --accent-foreground: #ffffff;
+  --success: var(--world-21);
+  --destructive: var(--life-125);
+  --destructive-foreground: #ffffff;
+  --info: var(--architect-44);
+  --warning: var(--solar-19);
+  --muted: #737373;
+  --muted-foreground: #525252;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: var(--solar-19);
+  
+  /* Card and popover */
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  
+  /* Radius */
+  --radius: 0.625rem;
 }
 
 @theme inline {
+  /* Base */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Power-number colors */
+  --color-octave: var(--octave-8);
+  --color-transform: var(--transform-13);
+  --color-solar: var(--solar-19);
+  --color-architect: var(--architect-44);
+  --color-world: var(--world-21);
+  --color-life: var(--life-125);
+  --color-unity: var(--unity-152);
+  
+  /* Semantic */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-warning: var(--warning);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  /* Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Typography scale (power numbers) */
+  --font-size-architect: 44px;
+  --font-size-world: 21px;
+  --font-size-solar: 19px;
+  --font-size-transform: 13px;
+  --line-height-golden: 1.618;
+  
+  /* Spacing scale (8px base) */
+  --spacing-8: 8px;
+  --spacing-13: 13px;
+  --spacing-19: 19px;
+  --spacing-21: 21px;
+  --spacing-44: 44px;
 }
 
+/* Dark mode */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  
+  --primary: var(--solar-19);
+  --primary-foreground: #0a0a0a;
+  --secondary: var(--transform-13);
+  --secondary-foreground: #ffffff;
+  --accent: var(--octave-8);
+  --accent-foreground: #ffffff;
+  --muted: #a3a3a3;
+  --muted-foreground: #d4d4d4;
+  --border: #262626;
+  --input: #262626;
+  --ring: var(--solar-19);
+  
+  --card: #171717;
+  --card-foreground: #ededed;
+  --popover: #171717;
+  --popover-foreground: #ededed;
+}
+
+/* Dark mode as default (system preference) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --background: #0a0a0a;
     --foreground: #ededed;
+    
+    --primary: var(--solar-19);
+    --primary-foreground: #0a0a0a;
+    --secondary: var(--transform-13);
+    --secondary-foreground: #ffffff;
+    --accent: var(--octave-8);
+    --accent-foreground: #ffffff;
+    --muted: #a3a3a3;
+    --muted-foreground: #d4d4d4;
+    --border: #262626;
+    --input: #262626;
+    --ring: var(--solar-19);
+    
+    --card: #171717;
+    --card-foreground: #ededed;
+    --popover: #171717;
+    --popover-foreground: #ededed;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Light pillar animation keyframes */
+@keyframes pillar-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleY(1.05);
+  }
+}
+
+@keyframes pillar-pulse {
+  0%, 100% {
+    filter: blur(40px);
+    opacity: 0.3;
+  }
+  50% {
+    filter: blur(60px);
+    opacity: 0.6;
+  }
+}
+
+/* Unlock Animation Performance Optimizations */
+@keyframes unlock-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes color-shift {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* GPU Acceleration Utilities */
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.animate-gpu {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Performance: Contain layout for animation containers */
+.animation-container {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* Performance: Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animation-container {
+    content-visibility: visible;
+  }
+}
+
+/* Audio Player Visualizer Optimizations */
+.visualizer-bar {
+  will-change: height;
+  transform: translateZ(0);
+}
+
+/* Mandala animation optimization */
+.mandala-svg {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Light pillar optimization */
+.light-pillar {
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+}
+
+/* Particle effect optimization */
+.particle {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  pointer-events: none;
+}
+
+/* Confetti optimization */
+.confetti {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Progress bar optimization */
+.progress-bar {
+  will-change: width;
+  transform: translateZ(0);
 }

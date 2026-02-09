@@ -1,0 +1,38 @@
+name = "somatic-canticles"
+main = "workers/index.ts"
+compatibility_date = "2024-01-01"
+
+# R2 Buckets for storing audio files and images
+[[r2_buckets]]
+binding = "R2_AUDIO"
+bucket_name = "canticle-audio"
+
+[[r2_buckets]]
+binding = "R2_IMAGES"
+bucket_name = "canticle-images"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via wrangler secret put)
+# - DATABASE_URL
+# - JWT_SECRET
+# - AUTH_SECRET
+# - R2_ACCESS_KEY_ID
+# - R2_SECRET_ACCESS_KEY
+
+# Development environment
+[env.dev]
+name = "somatic-canticles-dev"
+
+[[env.dev.r2_buckets]]
+binding = "R2_AUDIO"
+bucket_name = "canticle-audio-dev"
+
+[[env.dev.r2_buckets]]
+binding = "R2_IMAGES"
+bucket_name = "canticle-images-dev"
+
+[env.dev.vars]
+ENVIRONMENT = "development"

@@ -1,0 +1,59 @@
+{
+  "series": {
+    "title": "Somatic Canticles",
+    "description": "A sci-fi trilogy exploring the intersection of biological science and mystical consciousness. The 'Somanaut' team navigates the 'Anamnesis Engine' to uncover hidden traumas ('Lethe') and reveal the truth ('Aletheia') of the human experience.",
+    "books": [
+      {
+        "id": "book_1",
+        "title": "Anamnesis Engine",
+        "sequence": 1,
+        "overview": "The Somanaut team is introduced as they navigate the biological and psychological landscapes of the 'Anamnesis Engine'. They confront the 'Vine of Determinism' and the initial layers of concealed trauma, establishing the 'Compass Calibration' for their journey.",
+        "chapters": [
+          { "chapter_number": 1, "title": "The Choroid Plexus" },
+          { "chapter_number": 2, "title": "Signal Transduction" },
+          { "chapter_number": 3, "title": "The Blood-Brain Barrier" },
+          { "chapter_number": 4, "title": "The Emperor's Genome" },
+          { "chapter_number": 5, "title": "The Endocrine Dogma" },
+          { "chapter_number": 6, "title": "The Synaptic Crossroads" },
+          { "chapter_number": 7, "title": "The Breathfield Weaver" },
+          { "chapter_number": 8, "title": "The Compass Calibration" }
+        ]
+      },
+      {
+        "id": "book_2",
+        "title": "The Myocardial Chorus",
+        "sequence": 2,
+        "overview": "The team delves deeper into the 'Myocardial Chorus', learning to function as a resonant unit ('Three-Body Coordination'). They face the challenge of 'Witness Integration' and the necessity of 'Resonant Self-Consciousness' to heal the fractures within the system.",
+        "chapters": [
+          { "chapter_number": 9, "title": "The Sigil Smith" },
+          { "chapter_number": 10, "title": "The Debug Protocol" },
+          { "chapter_number": 11, "title": "The Avatar Mutation" },
+          { "chapter_number": 12, "title": "The Anamnesis Engine" },
+          { "chapter_number": 13, "title": "The Myocardial Chorus" },
+          { "chapter_number": 14, "title": "The Three-Body Coordination" },
+          { "chapter_number": 15, "title": "The Witness Integration" }
+        ]
+      },
+      {
+        "id": "book_3",
+        "title": "The Ripening",
+        "sequence": 3,
+        "overview": "The climax of the trilogy. The team faces the 'Gardener' and the 'Severance Event', leading to the ultimate liberation from the Vine. They must solve 'The Three-Point Problem' and navigate 'The Void of Pure Potential' to architect a 'New Reality' of conscious co-creation.",
+        "chapters": [
+          { "chapter_number": 16, "title": "The Wilt" },
+          { "chapter_number": 17, "title": "The Gardener" },
+          { "chapter_number": 18, "title": "The Synthesis Protocol" },
+          { "chapter_number": 19, "title": "The Three-Point Problem" },
+          { "chapter_number": 20, "title": "The Convergence Point" },
+          { "chapter_number": 21, "title": "The Test Fire" },
+          { "chapter_number": 22, "title": "The Perfect World" },
+          { "chapter_number": 23, "title": "The Flaw in the Code" },
+          { "chapter_number": 24, "title": "The Final Procedure" },
+          { "chapter_number": 25, "title": "The Void of Pure Potential" },
+          { "chapter_number": 26, "title": "The Architecture of New Reality" },
+          { "chapter_number": 27, "title": "The New Beginning" }
+        ]
+      }
+    ]
+  }
+}

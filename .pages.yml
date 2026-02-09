@@ -1,0 +1,21 @@
+# Cloudflare Pages Configuration
+# https://developers.cloudflare.com/pages/configuration/build-configuration/
+
+build:
+  command: bun run build
+  output: out
+  root: /
+
+# Environment Variables
+env:
+  # Production Environment
+  production:
+    NEXT_PUBLIC_APP_URL: https://somatic-canticles.pages.dev
+    NEXT_PUBLIC_API_URL: https://somatic-canticles-api.your-subdomain.workers.dev
+    NEXT_PUBLIC_ENABLE_ANALYTICS: "true"
+  
+  # Preview Environment
+  preview:
+    NEXT_PUBLIC_APP_URL: https://preview.somatic-canticles.pages.dev
+    NEXT_PUBLIC_API_URL: https://somatic-canticles-api-dev.your-subdomain.workers.dev
+    NEXT_PUBLIC_ENABLE_ANALYTICS: "false"

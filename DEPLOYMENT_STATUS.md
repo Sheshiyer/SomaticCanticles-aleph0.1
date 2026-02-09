@@ -5,7 +5,7 @@
 ### 1. Cloudflare Pages (Frontend)
 - **Status:** ✅ Live
 - **Primary URL:** https://1319.tryambakam.space (custom domain - pending setup)
-- **Fallback URL:** https://d9945c61.somatic-canticles.pages.dev
+- **Current URL:** https://f94979b8.somatic-canticles.pages.dev
 - **Build:** Static export from Next.js 16
 - **Assets:** 248 files uploaded (2.23 sec)
 - **Custom Domain Setup:** See [CUSTOM_DOMAIN_SETUP.md](./CUSTOM_DOMAIN_SETUP.md)
@@ -79,7 +79,7 @@ Set only non-secret variables in Cloudflare Pages dashboard:
 | Service | URL |
 |---------|-----|
 | **Frontend (Primary)** | https://1319.tryambakam.space |
-| **Frontend (Fallback)** | https://d9945c61.somatic-canticles.pages.dev |
+| **Frontend (Current)** | https://f94979b8.somatic-canticles.pages.dev |
 | **API** | https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev |
 | **Health Check** | https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev/health |
 
@@ -93,7 +93,7 @@ curl https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev/health
 ```
 
 ### Test Frontend
-Open https://1319.tryambakam.space (or https://d9945c61.somatic-canticles.pages.dev) in your browser
+Open https://1319.tryambakam.space (or https://f94979b8.somatic-canticles.pages.dev) in your browser
 
 ## 📋 Next Steps Checklist
 

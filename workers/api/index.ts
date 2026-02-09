@@ -2,12 +2,15 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-import type { D1Database } from '@cloudflare/workers-types';
+import type { D1Database, KVNamespace } from '@cloudflare/workers-types';
+import { SecretsManager, type SecretsEnv } from '../lib/secrets';
 
 // Type definitions
 export type Env = {
   DB: D1Database;
-  JWT_SECRET: string;
+  SECRETS_KV?: KVNamespace;
+  JWT_SECRET?: string;
+  AUTH_SECRET?: string;
   SENTRY_DSN?: string;
   ENVIRONMENT: string;
   GOOGLE_CLIENT_ID?: string;
@@ -20,10 +23,21 @@ export type Variables = {
     email: string;
     role: string;
   };
+  secrets?: SecretsManager;
 };
+
+// Extend Env to include SecretsEnv for SecretsManager
+type ExtendedEnv = Env & SecretsEnv;
 
 // Create Hono app
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+
+// Initialize secrets manager middleware
+app.use('*', async (c, next) => {
+  const secrets = new SecretsManager(c.env as ExtendedEnv);
+  c.set('secrets', secrets);
+  await next();
+});
 
 // Middleware
 app.use('*', logger());

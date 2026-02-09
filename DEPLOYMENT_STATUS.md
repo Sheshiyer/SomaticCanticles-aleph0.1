@@ -46,15 +46,31 @@ wrangler d1 execute somatic-canticles-db --env production --remote --file=./migr
 # POST https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev/admin/seed
 ```
 
+### Secrets Management (NEW)
+
+We now use a centralized secrets management system. See [workers/SECRETS.md](../workers/SECRETS.md) for details.
+
+**Quick Setup:**
+```bash
+cd workers
+
+# Check status
+bun run secrets:status
+
+# Generate and store secrets
+bun run secrets:generate JWT_SECRET
+bun run secrets:put JWT_SECRET "<generated-value>"
+bun run secrets:put AUTH_SECRET "<generated-value>"
+```
+
 ### Environment Variables for Pages
-Set these in Cloudflare Pages dashboard:
+Set only non-secret variables in Cloudflare Pages dashboard:
 
 | Variable | Value |
 |----------|-------|
-| `NEXTAUTH_SECRET` | (generate with `openssl rand -base64 32`) |
-| `AUTH_SECRET` | (same as above) |
-| `NEXTAUTH_URL` | https://somatic-canticles.pages.dev |
 | `NEXT_PUBLIC_API_URL` | https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev |
+
+**Note:** `NEXTAUTH_SECRET` is no longer needed in Pages - it's managed by the Worker API.
 
 ## 🔗 Service URLs
 

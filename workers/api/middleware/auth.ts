@@ -1,6 +1,7 @@
 // JWT Authentication Middleware
 import type { MiddlewareHandler } from 'hono';
 import type { Env, Variables } from '../index';
+import { SecretsManager } from '../../lib/secrets';
 
 // JWT payload structure
 export interface JWTPayload {
@@ -12,7 +13,7 @@ export interface JWTPayload {
   type: 'access';
 }
 
-// Extended context variables with user
+// Extended context variables with user, secrets, and JWT payload
 export interface AuthVariables extends Variables {
   user: {
     id: string;
@@ -20,6 +21,7 @@ export interface AuthVariables extends Variables {
     role: 'user' | 'admin';
   };
   jwtPayload: JWTPayload;
+  secrets?: SecretsManager;
 }
 
 /**
@@ -54,8 +56,25 @@ export const jwtAuth: MiddlewareHandler<{ Bindings: Env; Variables: AuthVariable
   }
 
   try {
+    // Get JWT secret from secrets manager or env
+    const secrets = c.get('secrets');
+    const jwtSecret = secrets 
+      ? await secrets.getRequired('JWT_SECRET')
+      : c.env.JWT_SECRET;
+    
+    if (!jwtSecret) {
+      console.error('[jwtAuth] JWT_SECRET not configured');
+      return c.json({
+        success: false,
+        error: {
+          code: 'AUTH_CONFIG_ERROR',
+          message: 'Authentication service misconfigured'
+        }
+      }, 500);
+    }
+
     // Verify JWT using Web Crypto API (Cloudflare Workers compatible)
-    const payload = await verifyJWT(token, c.env.JWT_SECRET);
+    const payload = await verifyJWT(token, jwtSecret);
     
     // Verify token type is 'access'
     if (payload.type !== 'access') {
@@ -119,7 +138,18 @@ export const optionalAuth: MiddlewareHandler<{ Bindings: Env; Variables: AuthVar
   }
 
   try {
-    const payload = await verifyJWT(token, c.env.JWT_SECRET);
+    // Get JWT secret from secrets manager or env
+    const secrets = c.get('secrets');
+    const jwtSecret = secrets 
+      ? await secrets.get('JWT_SECRET')
+      : c.env.JWT_SECRET;
+    
+    if (!jwtSecret) {
+      await next();
+      return;
+    }
+
+    const payload = await verifyJWT(token, jwtSecret);
     
     if (payload.type === 'access') {
       c.set('user', {

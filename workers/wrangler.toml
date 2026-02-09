@@ -31,11 +31,23 @@ JWT_REFRESH_EXPIRY = "604800"    # 7 days
 RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX = "100"
 
+# KV Namespace for dynamic secrets (optional, enables secret rotation)
+# Create with: wrangler kv:namespace create "SECRETS_KV"
+# Then add the id below
+[[kv_namespaces]]
+binding = "SECRETS_KV"
+id = "local-dev-kv-placeholder"
+
 # Secrets (set via: wrangler secret put NAME)
 # JWT_SECRET - Required for JWT signing
 # SENTRY_DSN - Optional for error tracking
 # GOOGLE_CLIENT_ID - Google OAuth Client ID
 # GOOGLE_CLIENT_SECRET - Google OAuth Client Secret
+#
+# Use the secrets manager for easier management:
+#   bun run secrets:status     # Check which secrets are set
+#   bun run secrets:generate   # Generate a new secure secret
+#   bun run secrets:put NAME   # Store a secret
 
 # ============================================
 # PRODUCTION ENVIRONMENT
@@ -59,6 +71,12 @@ bucket_name = "canticle-audio"
 [[env.production.r2_buckets]]
 binding = "R2_IMAGES"
 bucket_name = "canticle-images"
+
+# Production KV namespace
+# Created: 2026-02-09
+[[env.production.kv_namespaces]]
+binding = "SECRETS_KV"
+id = "fdd6d9d72d584d7ebb2e768d6f1aea35"
 
 [env.production.vars]
 ENVIRONMENT = "production"

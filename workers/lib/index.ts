@@ -1,5 +1,14 @@
 // Library exports for Somatic-Canticles Workers
 
+// Secrets management
+export {
+  SecretsManager,
+  createSecretsManager,
+  validateSecrets,
+  generateSecureSecret,
+  type SecretsEnv,
+} from './secrets';
+
 // Database
 export { createDB, schema } from './db';
 

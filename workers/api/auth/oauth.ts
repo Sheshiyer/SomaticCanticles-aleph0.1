@@ -4,6 +4,12 @@
 import type { Context } from 'hono';
 import type { Env, Variables } from '../index';
 import { generateAccessToken, generateRefreshToken } from '../../lib/crypto';
+import { SecretsManager } from '../../lib/secrets';
+
+// Extended variables type with secrets
+interface OAuthVariables extends Variables {
+  secrets?: SecretsManager;
+}
 
 // Helper function to generate UUID
 function generateUUID(): string {
@@ -23,8 +29,11 @@ async function hashToken(token: string): Promise<string> {
  * GET /auth/oauth/google
  * Initiate Google OAuth flow
  */
-export async function googleAuth(c: Context<{ Bindings: Env; Variables: Variables }>) {
-  const clientId = c.env.GOOGLE_CLIENT_ID;
+export async function googleAuth(c: Context<{ Bindings: Env; Variables: OAuthVariables }>) {
+  const secrets = c.get('secrets');
+  const clientId = secrets 
+    ? await secrets.get('GOOGLE_CLIENT_ID')
+    : c.env.GOOGLE_CLIENT_ID;
   
   if (!clientId) {
     return c.json({
@@ -82,8 +91,22 @@ export async function googleCallback(c: Context<{ Bindings: Env; Variables: Vari
  * Handle Google OAuth authentication (token exchange)
  * Creates new user or links to existing user
  */
-export async function googleOAuthHandler(c: Context<{ Bindings: Env; Variables: Variables }>) {
+export async function googleOAuthHandler(c: Context<{ Bindings: Env; Variables: OAuthVariables }>) {
   const db = c.env.DB;
+  const secrets = c.get('secrets');
+  const jwtSecret = secrets 
+    ? await secrets.getRequired('JWT_SECRET')
+    : c.env.JWT_SECRET;
+  
+  if (!jwtSecret) {
+    return c.json({
+      success: false,
+      error: {
+        code: 'AUTH_CONFIG_ERROR',
+        message: 'Authentication service misconfigured'
+      }
+    }, 500);
+  }
   
   try {
     const { email, name, providerAccountId, accessToken, idToken } = await c.req.json();
@@ -176,11 +199,11 @@ export async function googleOAuthHandler(c: Context<{ Bindings: Env; Variables: 
       sub: userId,
       email: normalizedEmail,
       role: 'user',
-    }, c.env.JWT_SECRET);
+    }, jwtSecret);
 
     const refreshToken = await generateRefreshToken({
       sub: userId,
-    }, c.env.JWT_SECRET);
+    }, jwtSecret);
 
     // Store refresh token
     const tokenHash = await hashToken(refreshToken);

@@ -39,15 +39,32 @@ app.use('*', async (c, next) => {
   await next();
 });
 
+// CORS configuration
+const corsOrigins = [
+  'http://localhost:3000',
+  'https://somatic-canticles.pages.dev',
+  'https://1319.tryambakam.space',
+  // Allow all Pages preview deployments
+  'https://*.somatic-canticles.pages.dev',
+];
+
 // Middleware
 app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', cors({
-  origin: [
-    'http://localhost:3000',
-    'https://somatic-canticles.pages.dev',
-    'https://1319.tryambakam.space',
-  ],
+  origin: (origin) => {
+    // Allow no origin (mobile apps, curl, etc.)
+    if (!origin) return '*';
+    
+    // Check exact matches
+    if (corsOrigins.includes(origin)) return origin;
+    
+    // Check wildcard patterns
+    if (origin.endsWith('.somatic-canticles.pages.dev')) return origin;
+    
+    // Deny other origins
+    return null;
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,

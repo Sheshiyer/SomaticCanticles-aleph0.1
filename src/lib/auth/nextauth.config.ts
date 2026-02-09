@@ -7,7 +7,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import type { User, AuthTokens } from './types';
 
 // API Base URL - configured via environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
 
 // Extend the session types
 declare module 'next-auth' {

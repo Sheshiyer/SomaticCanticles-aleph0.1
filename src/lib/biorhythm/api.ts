@@ -15,7 +15,7 @@ import type {
 export * from './types';
 
 // API Base URL - configured via environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
 
 // Flag to enable mocking (for development)
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true';

@@ -43,7 +43,11 @@ app.use('*', async (c, next) => {
 app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'https://somatic-canticles.pages.dev'],
+  origin: [
+    'http://localhost:3000',
+    'https://somatic-canticles.pages.dev',
+    'https://1319.tryambakam.space',
+  ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,

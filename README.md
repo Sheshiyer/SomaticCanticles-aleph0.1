@@ -18,7 +18,7 @@
 
 Embark on a 12-chapter journey through your physical, emotional, intellectual, and spiritual cycles. Each chapter unlocks based on your personal biorhythm, guiding you through embodied practices inspired by the *Somatic Canticles* trilogy.
 
-🔗 **Live Demo:** [https://somatic-canticles.pages.dev](https://somatic-canticles.pages.dev)  
+🔗 **Live Demo:** [https://1319.tryambakam.space](https://1319.tryambakam.space) (custom domain) | [https://somatic-canticles.pages.dev](https://somatic-canticles.pages.dev) (fallback)  
 📖 **Documentation:** [`.docs/`](.docs/)  
 🎨 **Design System:** [warcraftcn-ui](https://github.com/TheOrcDev/warcraftcn-ui)
 
@@ -284,7 +284,7 @@ The *Somatic Canticles* trilogy content is © 2026 and used with permission.
 
 ## 🔗 Links
 
-- 🌐 [Live Demo](https://somatic-canticles.pages.dev)
+- 🌐 [Live Demo](https://1319.tryambakam.space)
 - 📖 [Documentation](.docs/)
 - 🐛 [Issue Tracker](https://github.com/yourusername/somatic-canticles/issues)
 - 💬 [Discussions](https://github.com/yourusername/somatic-canticles/discussions)

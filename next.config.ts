@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   },
   compress: true,
   turbopack: {},
+  // Custom domain configuration
+  // Primary: 1319.tryambakam.space
+  // Fallback: somatic-canticles.pages.dev
   // Exclude API routes from static export - they will be handled by Cloudflare Workers
   // The workers/ directory is deployed separately as Cloudflare Workers
 };

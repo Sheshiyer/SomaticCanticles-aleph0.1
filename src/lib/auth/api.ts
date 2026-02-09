@@ -26,6 +26,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/a
 // Flag to enable mocking (for development)
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true';
 
+// Note: Set NEXT_PUBLIC_USE_MOCK_AUTH=true in .env.local for development mocks
+// Production uses real API with seeded users
+
 // Mock user for development
 const MOCK_USER: User = {
   id: 'test-001',

@@ -1,0 +1,511 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "name": "Somatic-Canticles-Webapp",
+    "repo_root": "/Volumes/madara/2026/twc-vault/01-Projects/tryambakam-noesis/Somatic-Canticles-Webapp",
+    "generated_on": "2026-02-09",
+    "generated_by": "task-master-planner",
+    "fresh_start": "2026-02-09",
+    "ui_foundation": "warcraftcn-ui (https://github.com/TheOrcDev/warcraftcn-ui)",
+    "total_tasks": 201,
+    "duration_weeks": 8,
+    "duration_days": 44,
+    "assumptions": [
+      "Birth date + timezone sufficient for biorhythm calculation",
+      "Sunrise/sunset data available via external API",
+      "Audio files pre-recorded or placeholder used initially",
+      "Users complete chapters sequentially (no skipping)",
+      "Cloudflare free tier sufficient for beta (13 users)"
+    ],
+    "risks": [
+      "warcraftcn-ui integration complexity (MEDIUM) - Mitigation: Start with core components, adapt gradually",
+      "Biorhythm calculation accuracy (HIGH) - Mitigation: Validate against 3+ calculators",
+      "Audio recording delays (MEDIUM) - Mitigation: Use placeholder audio, record in parallel",
+      "Unlock logic complexity (MEDIUM) - Mitigation: Start simple, iterate",
+      "User engagement (HIGH) - Mitigation: Beta test early (Day 50-52)",
+      "NextAuth + JWT integration (MEDIUM) - Mitigation: Follow ADR-004, test early"
+    ]
+  },
+  "phases": [
+    {
+      "phase_id": "P0",
+      "name": "warcraftcn-ui Integration",
+      "objective": "Establish UI foundation with warcraftcn-ui components before building app features",
+      "duration_weeks": 1,
+      "note": "CRITICAL: Complete Phase 0 before Phase 1. UI foundation must be solid first.",
+      "sprints": [
+        {
+          "sprint_id": "S0.1",
+          "duration_weeks": 0.5,
+          "duration_days": 3,
+          "focus": "UI Foundation Setup",
+          "tasks": [
+            {
+              "id": "P0-S1-01",
+              "title": "Clone and analyze warcraftcn-ui repository structure",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": [],
+              "deliverable": "Local copy of warcraftcn-ui, component inventory",
+              "acceptance": "Can list all components in warcraftcn-ui/components/ui/",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-02",
+              "title": "Map warcraftcn-ui components to project needs",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-01"],
+              "deliverable": "Component mapping document",
+              "acceptance": "Every UI need has a warcraftcn-ui component mapped",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-03",
+              "title": "Extract and adapt core UI components (Button, Card, Modal)",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-02"],
+              "deliverable": "src/components/ui/ with Button, Card, Modal",
+              "acceptance": "Components render with warcraftcn-ui styling",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-04",
+              "title": "Adapt warcraftcn-ui color system to power-number palette",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 3,
+              "dependencies": ["P0-S1-03"],
+              "deliverable": "tailwind.config.ts with merged color system",
+              "acceptance": "Can use power-number colors (octave, solar, etc.) with warcraftcn-ui components",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-05",
+              "title": "Integrate light-pillar atmospheric effects",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-03"],
+              "deliverable": "LightPillar component in src/components/effects/",
+              "acceptance": "Light pillar renders with customizable color and intensity",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-06",
+              "title": "Set up component documentation/storybook",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-04"],
+              "deliverable": "Storybook configured with warcraftcn-ui components",
+              "acceptance": "Can view all components in Storybook",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S1-07",
+              "title": "Create warcraftcn-ui integration guide for team",
+              "area": "docs",
+              "owner_role": "Tech Lead",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-06"],
+              "deliverable": "warcraftcn-ui-integration.md",
+              "acceptance": "Team can use warcraftcn-ui components correctly",
+              "status": "TODO"
+            }
+          ]
+        },
+        {
+          "sprint_id": "S0.2",
+          "duration_weeks": 0.5,
+          "duration_days": 4,
+          "focus": "Design System Migration",
+          "tasks": [
+            {
+              "id": "P0-S2-01",
+              "title": "Migrate Visual-Canvas.md design tokens to warcraftcn-ui format",
+              "area": "design",
+              "owner_role": "Designer",
+              "est_hours": 3,
+              "dependencies": ["P0-S1-04"],
+              "deliverable": "Design tokens in warcraftcn-ui format",
+              "acceptance": "All power-number tokens usable in components",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-02",
+              "title": "Build biorhythm-themed components (cycle wheels, peak indicators)",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 4,
+              "dependencies": ["P0-S1-05"],
+              "deliverable": "Biorhythm visualization components",
+              "acceptance": "Cycle wheel and peak indicator render correctly",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-03",
+              "title": "Create chapter card components (locked/unlocked states)",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 3,
+              "dependencies": ["P0-S1-03"],
+              "deliverable": "ChapterCard component with states",
+              "acceptance": "Chapter cards show locked/unlocked/progress states",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-04",
+              "title": "Design unlock animation sequence (13-second with light pillars)",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 4,
+              "dependencies": ["P0-S1-05"],
+              "deliverable": "UnlockAnimation component",
+              "acceptance": "13-second animation with light pillars plays correctly",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-05",
+              "title": "Build audio player with waveform visualization",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 3,
+              "dependencies": ["P0-S1-03"],
+              "deliverable": "AudioPlayer component",
+              "acceptance": "Audio player plays canticles with waveform",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-06",
+              "title": "Create navigation components (header, sidebar, mobile nav)",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-03"],
+              "deliverable": "Navigation components",
+              "acceptance": "Navigation works on desktop and mobile",
+              "status": "TODO"
+            },
+            {
+              "id": "P0-S2-07",
+              "title": "Implement dark/light mode theming",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P0-S1-04"],
+              "deliverable": "Theme toggle and mode support",
+              "acceptance": "Can switch between dark and light modes",
+              "status": "TODO"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "P1",
+      "name": "Foundation & Core Systems",
+      "objective": "Project scaffolding, biorhythm engine, database schema",
+      "duration_weeks": 2,
+      "sprints": [
+        {
+          "sprint_id": "S1.1",
+          "duration_weeks": 0.4,
+          "duration_days": 3,
+          "focus": "Project Setup",
+          "tasks": [
+            {
+              "id": "P1-S1-01",
+              "title": "Initialize Next.js 14 project with TypeScript + Bun",
+              "area": "infra",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": [],
+              "deliverable": "Next.js 14 project at repo root with app directory, TypeScript, Tailwind, ESLint",
+              "acceptance": "bun run dev starts development server on localhost:3000",
+              "status": "TODO"
+            },
+            {
+              "id": "P1-S1-02",
+              "title": "Configure Tailwind CSS with power-number color palette",
+              "area": "frontend",
+              "owner_role": "Frontend Eng",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-01"],
+              "deliverable": "tailwind.config.ts with 7 power-number colors, spacing scale, typography",
+              "acceptance": "Can use bg-octave, text-solar, p-8, text-44 classes",
+              "status": "TODO"
+            },
+            {
+              "id": "P1-S1-03",
+              "title": "Set up Cloudflare Workers project structure",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 2,
+              "dependencies": [],
+              "deliverable": "workers/ directory with wrangler.toml, API entry point, route scaffolding",
+              "acceptance": "wrangler dev runs local Workers server with /health endpoint",
+              "status": "TODO"
+            },
+            {
+              "id": "P1-S1-04",
+              "title": "Configure D1 database (local + remote)",
+              "area": "data",
+              "owner_role": "Backend Eng",
+              "est_hours": 2,
+              "dependencies": ["P1-S1-03"],
+              "deliverable": "D1 database created, migrations folder, initial schema",
+              "acceptance": "wrangler d1 execute runs migrations successfully",
+              "status": "TODO"
+            },
+            {
+              "id": "P1-S1-05",
+              "title": "Set up Bun package manager",
+              "area": "infra",
+              "owner_role": "DevOps",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-01"],
+              "deliverable": "bun.lockb file, all scripts use bun",
+              "acceptance": "bun install, bun run, bun test commands work",
+              "status": "TODO"
+            },
+            {
+              "id": "P1-S1-06",
+              "title": "Install dependencies (React Bits MCP, Lucide, NextAuth, usehooks-ts, etc.)",
+              "area": "infra",
+              "owner_role": "Frontend Eng",
+              "est_hours": 2,
+              "dependencies": ["P1-S1-05"],
+              "deliverable": "All project dependencies installed and documented",
+              "acceptance": "package.json has all required deps, bun install completes without errors"
+            },
+            {
+              "id": "P1-S1-07",
+              "title": "Create environment variable structure (.env.example)",
+              "area": "infra",
+              "owner_role": "DevOps",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-04"],
+              "deliverable": ".env.example with all required variables documented",
+              "acceptance": "Developers can copy .env.example to .env.local and start project"
+            },
+            {
+              "id": "P1-S1-08",
+              "title": "Set up GitHub Actions CI/CD pipeline",
+              "area": "infra",
+              "owner_role": "DevOps",
+              "est_hours": 2,
+              "dependencies": ["P1-S1-06"],
+              "deliverable": ".github/workflows/ with test, lint, build, deploy jobs",
+              "acceptance": "Push to main triggers CI/CD, deploys to Cloudflare on success"
+            },
+            {
+              "id": "P1-S1-09",
+              "title": "Configure Sentry for error tracking",
+              "area": "infra",
+              "owner_role": "DevOps",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-06"],
+              "deliverable": "Sentry configured for Next.js and Workers",
+              "acceptance": "Test error logged to Sentry dashboard"
+            },
+            {
+              "id": "P1-S1-10",
+              "title": "Configure Google Analytics (GA4)",
+              "area": "product",
+              "owner_role": "Product Eng",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-06"],
+              "deliverable": "GA4 tracking script added, events configured",
+              "acceptance": "Page views tracked in GA4 dashboard"
+            },
+            {
+              "id": "P1-S1-11",
+              "title": "Set up Cloudflare Pages deployment config",
+              "area": "infra",
+              "owner_role": "DevOps",
+              "est_hours": 2,
+              "dependencies": ["P1-S1-08"],
+              "deliverable": "Cloudflare Pages project linked, build config set",
+              "acceptance": "Git push triggers automatic deployment to Cloudflare Pages"
+            },
+            {
+              "id": "P1-S1-12",
+              "title": "Create README and developer docs",
+              "area": "product",
+              "owner_role": "Tech Writer",
+              "est_hours": 1,
+              "dependencies": ["P1-S1-07"],
+              "deliverable": "README.md with setup instructions, architecture overview",
+              "acceptance": "New developer can clone repo and start project in <10 minutes"
+            }
+          ]
+        },
+        {
+          "sprint_id": "S1.2",
+          "duration_weeks": 0.6,
+          "duration_days": 4,
+          "focus": "Biorhythm Engine (CRITICAL PATH)",
+          "parallel_dispatch": {
+            "enabled": true,
+            "agents": [
+              {
+                "agent_id": "A",
+                "name": "Biorhythm Core",
+                "tasks": ["P1-S2-01", "P1-S2-02", "P1-S2-03", "P1-S2-04", "P1-S2-05", "P1-S2-06", "P1-S2-07", "P1-S2-08", "P1-S2-09", "P1-S2-10"]
+              },
+              {
+                "agent_id": "B",
+                "name": "Database Schema",
+                "tasks": ["P1-S2-11", "P1-S2-12", "P1-S2-13", "P1-S2-14", "P1-S2-15", "P1-S2-16", "P1-S2-17", "P1-S2-18", "P1-S2-19"]
+              },
+              {
+                "agent_id": "C",
+                "name": "Auth Foundation",
+                "tasks": ["P1-S2-20", "P1-S2-21", "P1-S2-22", "P1-S2-23", "P1-S2-24", "P1-S2-25", "P1-S2-26", "P1-S2-27", "P1-S2-28", "P1-S2-29"]
+              }
+            ]
+          },
+          "tasks": [
+            {
+              "id": "P1-S2-01",
+              "title": "Research + document biorhythm calculation algorithms",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 4,
+              "dependencies": ["P1-S1-12"],
+              "deliverable": "Biorhythm algorithm documentation with formulas, examples",
+              "acceptance": "Documentation includes physical/emotional/intellectual/spiritual cycle formulas",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-02",
+              "title": "Build core biorhythm calculator",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 6,
+              "dependencies": ["P1-S2-01"],
+              "deliverable": "src/lib/biorhythm/calculator.ts with 4-cycle calculation",
+              "acceptance": "Calculator returns values -1.0 to 1.0 for each cycle given birthdate",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-03",
+              "title": "Implement birth date input validation",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 4,
+              "dependencies": ["P1-S2-02"],
+              "deliverable": "Validation functions for birthdate, timezone",
+              "acceptance": "Invalid dates rejected, valid dates accepted (ISO 8601)",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-04",
+              "title": "Add timezone handling for accurate calculations",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 3,
+              "dependencies": ["P1-S2-03"],
+              "deliverable": "Timezone conversion utilities",
+              "acceptance": "Biorhythm calculated correctly for any timezone",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-05",
+              "title": "Create biorhythm state prediction (next 30 days)",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 4,
+              "dependencies": ["P1-S2-04"],
+              "deliverable": "Forecast function returning 30-day cycle predictions",
+              "acceptance": "Returns array of 30 daily biorhythm values",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-06",
+              "title": "Build cycle peak detection algorithm",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 3,
+              "dependencies": ["P1-S2-05"],
+              "deliverable": "Peak detection logic (value > 0.8 && increasing)",
+              "acceptance": "Correctly identifies peaks for all 4 cycles",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-07",
+              "title": "Add sunrise/sunset calculation",
+              "area": "backend",
+              "owner_role": "Backend Eng",
+              "est_hours": 2,
+              "dependencies": ["P1-S2-04"],
+              "deliverable": "Sunrise/sunset API integration or calculation",
+              "acceptance": "Returns correct sunrise/sunset times for given date + location",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-08",
+              "title": "Write unit tests for biorhythm calculator",
+              "area": "qa",
+              "owner_role": "QA Eng",
+              "est_hours": 4,
+              "dependencies": ["P1-S2-06"],
+              "deliverable": "100% test coverage for biorhythm calculator",
+              "acceptance": "All edge cases tested, tests pass",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-09",
+              "title": "Validate against known biorhythm calculators",
+              "area": "qa",
+              "owner_role": "QA Eng",
+              "est_hours": 2,
+              "dependencies": ["P1-S2-08"],
+              "deliverable": "Validation report comparing against 3 external calculators",
+              "acceptance": "Results match within 0.01 tolerance",
+              "critical_path": true
+            },
+            {
+              "id": "P1-S2-10",
+              "title": "Document biorhythm API contract",
+              "area": "product",
+              "owner_role": "Tech Writer",
+              "est_hours": 2,
+              "dependencies": ["P1-S2-09"],
+              "deliverable": "API documentation with types, examples",
+              "acceptance": "Frontend devs can integrate calculator without questions",
+              "critical_path": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "success_metrics": [
+      "All 12 chapters functional",
+      "Unlock animation <2s",
+      "Biorhythm calculation accuracy 100%",
+      "Mobile Lighthouse score >90",
+      "Accessibility score (WCAG 2.1 AA) 100%",
+      "Beta testers complete 3+ chapters (80%)",
+      "44 daily active users by Month 2",
+      "21% complete all 12 chapters",
+      "Uptime 99%+"
+    ],
+    "power_numbers": {
+      "8": "Breath cycles, animations, spacing",
+      "13": "Unlock duration, transformation triggers",
+      "19": "Solar sync, daily check-ins",
+      "44": "Grid system, launch cycle",
+      "21": "Line height, world completion",
+      "125": "Creative cycles (5×5×5)",
+      "152": "Unity bridge, progress connections"
+    }
+  }
+}

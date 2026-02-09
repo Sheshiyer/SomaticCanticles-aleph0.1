@@ -45,22 +45,22 @@ app.get('/health', (c) => {
 });
 
 // Auth routes
-app.route('/auth', await import('./auth/index.js').then(m => m.default));
+app.route('/auth', await import('./auth/index').then(m => m.default));
 
 // User routes
-app.route('/user', await import('./user/index.js').then(m => m.default));
+app.route('/user', await import('./user/index').then(m => m.default));
 
 // Biorhythm routes
-app.route('/biorhythm', await import('./biorhythm/index.js').then(m => m.default));
+app.route('/biorhythm', await import('./biorhythm/index').then(m => m.default));
 
 // Chapters routes
-app.route('/chapters', await import('./chapters/index.js').then(m => m.default));
+app.route('/chapters', await import('./chapters/index').then(m => m.default));
 
 // Progress routes
-app.route('/progress', await import('./progress/index.js').then(m => m.default));
+app.route('/progress', await import('./progress/index').then(m => m.default));
 
 // Location routes
-app.route('/location', await import('./location/index.js').then(m => m.default));
+app.route('/location', await import('./location/index').then(m => m.default));
 
 // 404 handler
 app.notFound((c) => {

@@ -1,11 +1,9 @@
 // Google OAuth Handler for Somatic-Canticles
 // Handles Google OAuth authentication and user linking
 
-import { Hono } from 'hono';
-import type { Env } from '../index';
+import type { Context } from 'hono';
+import type { Env, Variables } from '../index';
 import { generateAccessToken, generateRefreshToken } from '../../lib/crypto';
-
-const app = new Hono<{ Bindings: Env }>();
 
 // Helper function to generate UUID
 function generateUUID(): string {
@@ -22,11 +20,69 @@ async function hashToken(token: string): Promise<string> {
 }
 
 /**
+ * GET /auth/oauth/google
+ * Initiate Google OAuth flow
+ */
+export async function googleAuth(c: Context<{ Bindings: Env; Variables: Variables }>) {
+  const clientId = c.env.GOOGLE_CLIENT_ID;
+  
+  if (!clientId) {
+    return c.json({
+      success: false,
+      error: {
+        code: 'OAUTH_NOT_CONFIGURED',
+        message: 'Google OAuth is not configured'
+      }
+    }, 500);
+  }
+
+  // Return the Google OAuth URL for the frontend to redirect to
+  const redirectUri = `${c.req.url}/callback`;
+  const scope = encodeURIComponent('email profile');
+  
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+  
+  return c.json({
+    success: true,
+    data: { authUrl: googleAuthUrl }
+  });
+}
+
+/**
+ * GET /auth/oauth/google/callback
+ * Handle Google OAuth callback
+ */
+export async function googleCallback(c: Context<{ Bindings: Env; Variables: Variables }>) {
+  const code = c.req.query('code');
+  
+  if (!code) {
+    return c.json({
+      success: false,
+      error: {
+        code: 'OAUTH_MISSING_CODE',
+        message: 'Authorization code is required'
+      }
+    }, 400);
+  }
+
+  // TODO: Exchange code for tokens with Google
+  // Then call the POST handler logic below
+  
+  return c.json({
+    success: false,
+    error: {
+      code: 'NOT_IMPLEMENTED',
+      message: 'Callback handling not yet implemented'
+    }
+  }, 501);
+}
+
+/**
  * POST /auth/oauth/google
- * Handle Google OAuth authentication
+ * Handle Google OAuth authentication (token exchange)
  * Creates new user or links to existing user
  */
-app.post('/google', async (c) => {
+export async function googleOAuthHandler(c: Context<{ Bindings: Env; Variables: Variables }>) {
   const db = c.env.DB;
   
   try {
@@ -77,7 +133,6 @@ app.post('/google', async (c) => {
       const now = new Date().toISOString();
 
       // Generate a random secure password for OAuth users
-      // They'll use OAuth to sign in, but we need a password hash
       const { hashPassword } = await import('../../lib/crypto');
       const randomPassword = crypto.randomUUID() + crypto.randomUUID();
       const passwordHash = await hashPassword(randomPassword);
@@ -90,7 +145,7 @@ app.post('/google', async (c) => {
         passwordHash,
         providerAccountId,
         'user',
-        1, // Email is verified via Google
+        1,
         null,
         'UTC',
         now,
@@ -174,6 +229,4 @@ app.post('/google', async (c) => {
       }
     }, 500);
   }
-});
-
-export default app;
+}

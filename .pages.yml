@@ -1,21 +1,31 @@
 # Cloudflare Pages Configuration
-# https://developers.cloudflare.com/pages/configuration/build-configuration/
+# This file configures the build settings for Cloudflare Pages
 
+name: somatic-canticles
+
+# Build settings
 build:
-  command: bun run build
-  output: out
-  root: /
-
-# Environment Variables
-env:
-  # Production Environment
-  production:
-    NEXT_PUBLIC_APP_URL: https://somatic-canticles.pages.dev
-    NEXT_PUBLIC_API_URL: https://somatic-canticles-api.your-subdomain.workers.dev
-    NEXT_PUBLIC_ENABLE_ANALYTICS: "true"
+  command: npm run build
+  output_directory: out
   
-  # Preview Environment
-  preview:
-    NEXT_PUBLIC_APP_URL: https://preview.somatic-canticles.pages.dev
-    NEXT_PUBLIC_API_URL: https://somatic-canticles-api-dev.your-subdomain.workers.dev
-    NEXT_PUBLIC_ENABLE_ANALYTICS: "false"
+# Environment variables (set in Cloudflare dashboard)
+# - NEXTAUTH_SECRET
+# - AUTH_SECRET  
+# - NEXTAUTH_URL
+# - CLOUDFLARE_ACCOUNT_ID
+# - CLOUDFLARE_API_TOKEN
+
+# Headers
+headers:
+  - pattern: /canticles/*
+    headers:
+      Cache-Control: public, max-age=31536000, immutable
+  - pattern: /_next/static/*
+    headers:
+      Cache-Control: public, max-age=31536000, immutable
+
+# Redirects
+redirects:
+  - source: /api/*
+    destination: https://somatic-canticles.YOUR_SUBDOMAIN.workers.dev/api/:splat
+    status: 200

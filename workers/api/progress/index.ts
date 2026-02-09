@@ -3,14 +3,14 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { eq, and, desc, sql, count, sum, gte } from 'drizzle-orm';
 import type { Env, Variables } from '../index';
-import { createDb } from '../../lib/db';
+import { createDB } from '../../lib/db';
 import { userProgress, chapters, achievements, streaks, biorhythmSnapshots } from '../../db/schema';
-import { authMiddleware } from '../middleware/auth';
+import { jwtAuth } from '../middleware/auth';
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // Apply auth middleware to all routes
-app.use('*', authMiddleware);
+app.use('*', jwtAuth);
 
 /**
  * GET /progress/stats - Get overall progress statistics
@@ -21,7 +21,7 @@ app.get('/stats', async (c) => {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const db = createDb(c.env.DB);
+  const db = createDB(c.env.DB);
 
   // Get total chapters count
   const totalChaptersResult = await db
@@ -114,7 +114,7 @@ app.get('/recent', async (c) => {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const db = createDb(c.env.DB);
+  const db = createDB(c.env.DB);
 
   // Get query parameters
   const limit = parseInt(c.req.query('limit') || '10', 10);
@@ -236,7 +236,7 @@ app.get('/achievements', async (c) => {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const db = createDb(c.env.DB);
+  const db = createDB(c.env.DB);
 
   // Get all achievements for the user
   const userAchievements = await db
@@ -339,7 +339,7 @@ app.post('/track', zValidator('json', trackProgressSchema), async (c) => {
   }
 
   const data = c.req.valid('json');
-  const db = createDb(c.env.DB);
+  const db = createDB(c.env.DB);
   const now = new Date().toISOString();
 
   const progressId = `${user.id}-${data.chapterId}`;
@@ -416,7 +416,7 @@ app.get('/chapter/:chapterId', async (c) => {
     return c.json({ error: 'Invalid chapter ID' }, 400);
   }
 
-  const db = createDb(c.env.DB);
+  const db = createDB(c.env.DB);
 
   const progress = await db
     .select({

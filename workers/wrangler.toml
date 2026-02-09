@@ -15,12 +15,27 @@ binding = "DB"
 database_name = "somatic-canticles-db-dev"
 database_id = "local-dev-db-placeholder"
 
+# R2 Buckets for audio and image storage (dev)
+[[r2_buckets]]
+binding = "R2_AUDIO"
+bucket_name = "canticle-audio-dev"
+
+[[r2_buckets]]
+binding = "R2_IMAGES"
+bucket_name = "canticle-images-dev"
+
 [vars]
 ENVIRONMENT = "development"
 JWT_ACCESS_EXPIRY = "900"        # 15 minutes
 JWT_REFRESH_EXPIRY = "604800"    # 7 days
 RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX = "100"
+
+# Secrets (set via: wrangler secret put NAME)
+# JWT_SECRET - Required for JWT signing
+# SENTRY_DSN - Optional for error tracking
+# GOOGLE_CLIENT_ID - Google OAuth Client ID
+# GOOGLE_CLIENT_SECRET - Google OAuth Client Secret
 
 # ============================================
 # PRODUCTION ENVIRONMENT
@@ -34,31 +49,8 @@ name = "somatic-canticles-api-prod"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "somatic-canticles-db"
-database_id = "YOUR_PRODUCTION_DB_ID_HERE"
+database_id = "df9d20f7-9ad3-45a9-b08d-e41b849f0ee6"
 
-[env.production.vars]
-ENVIRONMENT = "production"
-JWT_ACCESS_EXPIRY = "900"
-JWT_REFRESH_EXPIRY = "604800"
-RATE_LIMIT_WINDOW = "60"
-RATE_LIMIT_MAX = "100"
-
-# R2 Buckets for audio and image storage
-[[r2_buckets]]
-binding = "R2_AUDIO"
-bucket_name = "canticle-audio-dev"
-
-[[r2_buckets]]
-binding = "R2_IMAGES"
-bucket_name = "canticle-images-dev"
-
-# Secrets (set via: wrangler secret put NAME)
-# JWT_SECRET - Required for JWT signing
-# SENTRY_DSN - Optional for error tracking
-# GOOGLE_CLIENT_ID - Google OAuth Client ID
-# GOOGLE_CLIENT_SECRET - Google OAuth Client Secret
-
-[env.production]
 # Production R2 buckets
 [[env.production.r2_buckets]]
 binding = "R2_AUDIO"
@@ -67,3 +59,10 @@ bucket_name = "canticle-audio"
 [[env.production.r2_buckets]]
 binding = "R2_IMAGES"
 bucket_name = "canticle-images"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+JWT_ACCESS_EXPIRY = "900"
+JWT_REFRESH_EXPIRY = "604800"
+RATE_LIMIT_WINDOW = "60"
+RATE_LIMIT_MAX = "100"

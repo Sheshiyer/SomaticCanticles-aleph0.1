@@ -7,13 +7,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Loader2, Mail, Lock, Calendar, Globe } from "lucide-react";
 
 import { register as registerUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Password requirements matching backend
 const registerSchema = z
@@ -22,10 +23,10 @@ const registerSchema = z
     password: z
       .string()
       .min(12, "Password must be at least 12 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[!@#$%^&*]/, "Password must contain at least one special character (!@#$%^&*)"),
+      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Must contain at least one number")
+      .regex(/[!@#$%^&*]/, "Must contain at least one special character (!@#$%^&*)"),
     confirmPassword: z.string(),
     birthdate: z.string().optional(),
     timezone: z.string(),
@@ -91,93 +92,153 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-        <CardDescription className="text-center">
-          Enter your details to get started
+    <Card className="w-full border-metal-700/50 bg-metal-900/80 backdrop-blur-sm shadow-xl">
+      <CardHeader className="space-y-3 pb-6">
+        <CardTitle className="text-2xl font-bold text-center text-metallic">
+          Create an account
+        </CardTitle>
+        <CardDescription className="text-center text-muted-foreground leading-relaxed">
+          Enter your details to begin your journey
         </CardDescription>
       </CardHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              {...register("email")}
-              disabled={isLoading}
-            />
+        <CardContent className="space-y-5">
+          {/* Email Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="email" className="text-foreground">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                className="pl-10"
+                {...register("email")}
+                disabled={isLoading}
+                error={errors.email?.message}
+              />
+            </div>
             {errors.email && (
-              <p className="text-xs text-red-500">{errors.email.message}</p>
+              <p className="text-xs text-rose-500 flex items-center gap-1">
+                <span>•</span>
+                {errors.email.message}
+              </p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Create a password"
-              {...register("password")}
-              disabled={isLoading}
-            />
+          {/* Password Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="password" className="text-foreground">Password</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Create a password"
+                className="pl-10"
+                {...register("password")}
+                disabled={isLoading}
+                error={errors.password?.message}
+              />
+            </div>
             {errors.password && (
-              <p className="text-xs text-red-500">{errors.password.message}</p>
+              <p className="text-xs text-rose-500 flex items-center gap-1">
+                <span>•</span>
+                {errors.password.message}
+              </p>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Must be at least 12 characters with uppercase, lowercase, number, and special character.
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              {...register("confirmPassword")}
-              disabled={isLoading}
-            />
+          {/* Confirm Password Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                className="pl-10"
+                {...register("confirmPassword")}
+                disabled={isLoading}
+                error={errors.confirmPassword?.message}
+              />
+            </div>
             {errors.confirmPassword && (
-              <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+              <p className="text-xs text-rose-500 flex items-center gap-1">
+                <span>•</span>
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="birthdate">Birthdate (Optional)</Label>
-            <Input
-              id="birthdate"
-              type="date"
-              {...register("birthdate")}
-              disabled={isLoading}
-            />
-            <p className="text-xs text-muted-foreground">
-              Used for personalized biorhythm calculations.
+          {/* Birthdate Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="birthdate" className="text-foreground">Birthdate <span className="text-muted-foreground font-normal">(Optional)</span></Label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="birthdate"
+                type="date"
+                className="pl-10"
+                {...register("birthdate")}
+                disabled={isLoading}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Used for personalized biorhythm calculations and chapter unlocks.
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
+          {/* Timezone Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="timezone" className="text-foreground">Timezone</Label>
             <Select
-              options={timezoneOptions}
               value={timezone}
               onValueChange={(value) => setValue("timezone", value)}
               disabled={isLoading}
-              placeholder="Select timezone"
-            />
+            >
+              <SelectTrigger className="pl-10">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                {timezoneOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+        <CardFooter className="flex flex-col gap-4 pt-2">
+          <Button 
+            type="submit" 
+            className="w-full h-11" 
+            disabled={isLoading}
+            shine
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              "Create account"
+            )}
           </Button>
           <div className="text-sm text-center text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link 
+              href="/auth/login" 
+              className="text-primary font-medium hover:text-amber-400 transition-colors hover:underline"
+            >
               Sign in
             </Link>
           </div>

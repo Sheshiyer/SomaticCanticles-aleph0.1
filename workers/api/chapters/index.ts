@@ -17,8 +17,38 @@ import { createDB } from '../../lib/db';
 import { chapters, userProgress } from '../../db/schema';
 import { eq, and } from 'drizzle-orm';
 import { evaluateUnlocks } from '../../lib/chapters/unlock-engine';
+import { allChapters, getChapterById } from '../../../src/lib/lore/chapter-content';
 
 const app = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
+
+// Helper functions for mapping chapter content
+function getElementForCycle(cycle: string): string {
+  const elements: Record<string, string> = {
+    physical: 'Earth',
+    emotional: 'Water',
+    intellectual: 'Air',
+    spiritual: 'Fire',
+  };
+  return elements[cycle] || 'Earth';
+}
+
+function getTarotForChapter(chapterId: number): string {
+  const tarot: Record<number, string> = {
+    1: 'The Fool - New beginnings',
+    2: 'The Magician - Manifestation',
+    3: 'The High Priestess - Intuition',
+    4: 'The Empress - Abundance',
+    5: 'The Hierophant - Tradition',
+    6: 'The Lovers - Choice',
+    7: 'The Chariot - Willpower',
+    8: 'Strength - Inner power',
+    9: 'The Hermit - Soul-searching',
+    10: 'Wheel of Fortune - Cycles',
+    11: 'Justice - Balance',
+    12: 'The World - Completion',
+  };
+  return tarot[chapterId] || 'Unknown';
+}
 
 // Validation schemas
 const updateProgressSchema = z.object({
@@ -214,7 +244,7 @@ app.get('/:id', jwtAuth, async (c) => {
       }, 403);
     }
 
-    // Parse JSON fields
+    // Parse JSON fields from database
     let content: ChapterContent | null = null;
     let loreMetadata: Record<string, unknown> | null = null;
     let unlockConditions: Record<string, unknown> | null = null;
@@ -225,6 +255,43 @@ app.get('/:id', jwtAuth, async (c) => {
       unlockConditions = chapter.unlockConditions ? JSON.parse(chapter.unlockConditions) : null;
     } catch (e) {
       console.error('Failed to parse chapter JSON fields:', e);
+    }
+
+    // If no content in database, use static content from chapter-content.ts
+    if (!content) {
+      const staticContent = getChapterById(chapterId);
+      if (staticContent) {
+        content = {
+          intro: {
+            title: "Story Context",
+            text: staticContent.storyContext.excerpt,
+            duration_minutes: 2,
+          },
+          practice: {
+            title: staticContent.practice.title,
+            focus: staticContent.storyContext.keyInsight,
+            instructions: staticContent.practice.steps,
+            duration_minutes: staticContent.practice.durationMinutes,
+          },
+          reflection: {
+            title: "Reflection",
+            questions: staticContent.reflection.prompts,
+            duration_minutes: 3,
+          },
+        };
+        
+        // Build lore metadata from static content
+        if (!loreMetadata) {
+          loreMetadata = {
+            affirmation: staticContent.storyContext.keyInsight,
+            character_focus: staticContent.storyContext.characterFocus,
+            somatic_event: staticContent.storyContext.somaticEvent,
+            element: getElementForCycle(staticContent.cycle),
+            tarot: getTarotForChapter(chapterId),
+            meaning: staticContent.storyContext.keyInsight,
+          };
+        }
+      }
     }
 
     // Determine unlock status

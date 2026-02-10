@@ -1,27 +1,45 @@
-import type * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
-interface LabelProps extends React.ComponentProps<"label"> {
-  /**
-   * Whether the field is required
-   */
-  required?: boolean;
-}
+import { cn } from "@/lib/utils"
 
-function Label({ className, children, required, ...props }: LabelProps) {
-  return (
+const labelVariants = cva(
+  // Base styles
+  "text-sm font-medium leading-none cursor-pointer select-none",
+  {
+    variants: {
+      variant: {
+        default: "text-foreground",
+        muted: "text-muted-foreground",
+        tech: "text-cyan-400",
+        required: "text-foreground after:content-['_*'] after:text-rose-500 after:ml-0.5",
+      },
+      size: {
+        default: "text-sm",
+        xs: "text-xs",
+        lg: "text-base",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+interface LabelProps
+  extends React.LabelHTMLAttributes<HTMLLabelElement>,
+    VariantProps<typeof labelVariants> {}
+
+const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
+  ({ className, variant, size, ...props }, ref) => (
     <label
-      className={cn(
-        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-        className
-      )}
-      data-slot="label"
+      ref={ref}
+      className={cn(labelVariants({ variant, size }), className)}
       {...props}
-    >
-      {children}
-      {required && <span className="text-destructive ml-1">*</span>}
-    </label>
-  );
-}
+    />
+  )
+)
+Label.displayName = "Label"
 
-export { Label };
+export { Label, labelVariants }

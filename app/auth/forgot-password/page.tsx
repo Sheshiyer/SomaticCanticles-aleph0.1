@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import { ArrowLeft, Mail, CheckCircle, Loader2 } from "lucide-react";
 
 import { forgotPassword } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -49,24 +49,24 @@ export default function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <Card className="w-full">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+      <Card className="w-full border-metal-700/50 bg-metal-900/80 backdrop-blur-sm shadow-xl">
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30">
+            <CheckCircle className="h-7 w-7 text-emerald-500" />
           </div>
-          <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-metallic">Check your email</CardTitle>
+          <CardDescription className="leading-relaxed">
             We&apos;ve sent a password reset link to your email address.
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center text-sm text-muted-foreground">
-          <p className="mb-4">
+        <CardContent className="text-center">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             If you don&apos;t see the email, check your spam folder or wait a few minutes.
           </p>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter className="pt-2">
           <Link href="/auth/login" className="w-full">
-            <Button variant="outline" className="w-full gap-2">
+            <Button variant="outline" className="w-full h-11 gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to login
             </Button>
@@ -77,20 +77,22 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Forgot password?</CardTitle>
-        <CardDescription className="text-center">
+    <Card className="w-full border-metal-700/50 bg-metal-900/80 backdrop-blur-sm shadow-xl">
+      <CardHeader className="space-y-3 pb-6">
+        <CardTitle className="text-2xl font-bold text-center text-metallic">
+          Forgot password?
+        </CardTitle>
+        <CardDescription className="text-center text-muted-foreground leading-relaxed">
           Enter your email address and we&apos;ll send you a reset link
         </CardDescription>
       </CardHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+        <CardContent className="space-y-5">
+          <div className="space-y-2.5">
+            <Label htmlFor="email" className="text-foreground">Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <Input
                 id="email"
                 type="email"
@@ -98,20 +100,37 @@ export default function ForgotPasswordPage() {
                 className="pl-10"
                 {...register("email")}
                 disabled={isLoading}
+                error={errors.email?.message}
               />
             </div>
             {errors.email && (
-              <p className="text-xs text-red-500">{errors.email.message}</p>
+              <p className="text-xs text-rose-500 flex items-center gap-1">
+                <span>•</span>
+                {errors.email.message}
+              </p>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Sending..." : "Send reset link"}
+        
+        <CardFooter className="flex flex-col gap-4 pt-2">
+          <Button 
+            type="submit" 
+            className="w-full h-11" 
+            disabled={isLoading}
+            shine
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Send reset link"
+            )}
           </Button>
           <Link
             href="/auth/login"
-            className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary"
+            className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to login

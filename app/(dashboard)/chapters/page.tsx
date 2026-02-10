@@ -5,17 +5,17 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { BookOpen, Filter, Sparkles } from "lucide-react";
 
-import { Button } from "../../../src/components/ui/button";
-import { Card, CardContent } from "../../../src/components/ui/card";
-import { Spinner } from "../../../src/components/ui/spinner";
-import { Tabs, TabsList, TabsTrigger } from "../../../src/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { ChapterCard, ChapterCardSkeleton } from "../../../src/components/chapters/ChapterCard";
+import { ChapterCard, ChapterCardSkeleton } from "@/components/chapters/ChapterCard";
 import {
   getChaptersList,
   checkChapterUnlocks,
   type ChapterSummary,
-} from "../../../src/lib/chapters/api";
+} from "@/lib/chapters/api";
 
 const containerVariants = {
   hidden: { opacity: 0 },

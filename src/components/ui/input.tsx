@@ -1,32 +1,98 @@
-import type * as React from "react";
+import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-interface InputProps extends React.ComponentProps<"input"> {
-  /**
-   * Error message to display below the input
-   */
+const inputVariants = {
+  default: [
+    "bg-metal-900/50",
+    "border border-metal-700",
+    "text-foreground placeholder:text-muted-foreground",
+    "focus:border-primary focus:ring-1 focus:ring-primary/30",
+    "hover:border-metal-600",
+  ],
+  tech: [
+    "bg-metal-900/80",
+    "border border-cyan-500/30",
+    "text-foreground placeholder:text-metal-500",
+    "focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30",
+    "focus:shadow-[0_0_15px_rgba(6,182,212,0.15)]",
+    "hover:border-cyan-500/50",
+  ],
+  ghost: [
+    "bg-transparent",
+    "border-b border-metal-700 rounded-none px-0",
+    "text-foreground placeholder:text-muted-foreground",
+    "focus:border-primary focus:ring-0",
+    "hover:border-metal-600",
+  ],
+  filled: [
+    "bg-metal-800",
+    "border border-transparent",
+    "text-foreground placeholder:text-muted-foreground",
+    "focus:bg-metal-800 focus:border-primary",
+    "hover:bg-metal-800/80",
+  ],
+};
+
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  variant?: keyof typeof inputVariants;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   error?: string;
 }
 
-function Input({ className, type, error, ...props }: InputProps) {
-  return (
-    <div className="w-full">
-      <input
-        type={type}
-        className={cn(
-          "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
-          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-          error && "border-destructive ring-destructive/20 dark:ring-destructive/40",
-          className
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ 
+    className, 
+    type, 
+    variant = "default",
+    leftIcon,
+    rightIcon,
+    error,
+    ...props 
+  }, ref) => {
+    return (
+      <div className="relative w-full">
+        {leftIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+            {leftIcon}
+          </div>
         )}
-        data-slot="input"
-        {...props}
-      />
-      {error && (
-        <p className="mt-1 text-sm text-destructive">{error}</p>
-      )}
-    </div>
-  );
-}
+        <input
+          type={type}
+          className={cn(
+            // Base styles
+            "flex h-10 w-full rounded-md px-3 py-2 text-sm",
+            "transition-all duration-200",
+            "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            "outline-none",
+            // Variant styles
+            inputVariants[variant],
+            // Icon padding
+            leftIcon && "pl-10",
+            rightIcon && "pr-10",
+            // Error state
+            error && [
+              "border-rose-500/50",
+              "focus:border-rose-500 focus:ring-rose-500/30",
+              "bg-rose-950/10",
+            ],
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+        {rightIcon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+            {rightIcon}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+Input.displayName = "Input";
 
 export { Input };

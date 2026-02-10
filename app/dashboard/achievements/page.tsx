@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Filter, Lock, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Trophy, Lock, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +26,7 @@ export default function AchievementsPage() {
     try {
       setIsLoading(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.somatic-canticles.com';
-      const res = await fetch(`${apiUrl}/progress/achievements`, {
-        credentials: 'include',
-      });
+      const res = await fetch(`${apiUrl}/progress/achievements`, { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch achievements');
       const data = await res.json();
       setAchievements(data.achievements);
@@ -42,63 +40,52 @@ export default function AchievementsPage() {
 
   const filteredAchievements = achievements.filter((achievement) => {
     switch (activeFilter) {
-      case 'unlocked':
-        return !!achievement.unlockedAt;
-      case 'locked':
-        return !achievement.unlockedAt;
+      case 'unlocked': return !!achievement.unlockedAt;
+      case 'locked': return !achievement.unlockedAt;
       case 'common':
       case 'rare':
       case 'epic':
       case 'legendary':
         return achievement.definition.rarity === activeFilter;
-      default:
-        return true;
+      default: return true;
     }
   });
 
   const unlockedCount = achievements.filter(a => a.unlockedAt).length;
   const totalCount = achievements.length;
 
-  // Group achievements by rarity for stats
   const statsByRarity = achievements.reduce((acc, achievement) => {
     const rarity = achievement.definition.rarity;
-    if (!acc[rarity]) {
-      acc[rarity] = { total: 0, unlocked: 0 };
-    }
+    if (!acc[rarity]) acc[rarity] = { total: 0, unlocked: 0 };
     acc[rarity].total++;
-    if (achievement.unlockedAt) {
-      acc[rarity].unlocked++;
-    }
+    if (achievement.unlockedAt) acc[rarity].unlocked++;
     return acc;
   }, {} as Record<string, { total: number; unlocked: number }>);
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4 space-y-6">
+      <div className="space-y-8">
+        <div className="space-y-2">
+          <Skeleton className="h-10 w-56" />
+          <Skeleton className="h-4 w-64" />
+        </div>
         <Skeleton className="h-40" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
+          {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-32" />)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 space-y-8">
+    <div className="space-y-8">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <Trophy className="h-8 w-8 text-yellow-500" />
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-metallic flex items-center gap-3">
+          <Trophy className="h-8 w-8 text-amber-500" />
           Achievements
         </h1>
-        <p className="text-muted-foreground mt-1">
-          Collect all 8 achievements on your journey
-        </p>
+        <p className="text-muted-foreground">Collect all 8 achievements on your journey</p>
       </motion.div>
 
       {/* Progress Overview */}
@@ -107,34 +94,22 @@ export default function AchievementsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card>
+        <Card variant="glass" noPadding className="border-metal-700/50">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center gap-8">
               {/* Progress Ring */}
-              <AchievementProgressRing 
-                unlocked={unlockedCount} 
-                total={totalCount}
-                size={140}
-              />
+              <AchievementProgressRing unlocked={unlockedCount} total={totalCount} size={140} />
 
               {/* Stats */}
-              <div className="flex-1 w-full">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex-1 w-full space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {Object.entries(statsByRarity).map(([rarity, stats]) => (
                     <div 
                       key={rarity}
-                      className={`
-                        p-3 rounded-lg border text-center
-                        ${rarity === 'common' && 'bg-gray-500/5 border-gray-500/20'}
-                        ${rarity === 'rare' && 'bg-blue-500/5 border-blue-500/20'}
-                        ${rarity === 'epic' && 'bg-purple-500/5 border-purple-500/20'}
-                        ${rarity === 'legendary' && 'bg-yellow-500/5 border-yellow-500/20'}
-                      `}
+                      className={`p-3 rounded-lg border text-center ${getRarityStyles(rarity)}`}
                     >
-                      <div className="capitalize text-sm text-muted-foreground mb-1">
-                        {rarity}
-                      </div>
-                      <div className="text-xl font-bold">
+                      <div className="capitalize text-xs text-muted-foreground mb-1">{rarity}</div>
+                      <div className="text-xl font-bold font-mono">
                         {stats.unlocked} <span className="text-muted-foreground text-sm">/ {stats.total}</span>
                       </div>
                     </div>
@@ -142,27 +117,27 @@ export default function AchievementsPage() {
                 </div>
 
                 {/* Next Unlock Hint */}
-                {unlockedCount < totalCount && (
-                  <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-lg flex items-center gap-3">
-                    <Sparkles className="h-5 w-5 text-primary" />
+                {unlockedCount < totalCount ? (
+                  <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg flex items-center gap-3">
+                    <Sparkles className="h-5 w-5 text-amber-500" />
                     <p className="text-sm">
                       <span className="font-medium">Next up:</span>{' '}
                       {achievements
                         .filter(a => !a.unlockedAt)
                         .sort((a, b) => b.progress.percentage - a.progress.percentage)[0]?.title}
                       {' '}
-                      ({achievements
-                        .filter(a => !a.unlockedAt)
-                        .sort((a, b) => b.progress.percentage - a.progress.percentage)[0]?.progress.percentage}% complete)
+                      <span className="text-muted-foreground">
+                        ({achievements
+                          .filter(a => !a.unlockedAt)
+                          .sort((a, b) => b.progress.percentage - a.progress.percentage)[0]?.progress.percentage}% complete)
+                      </span>
                     </p>
                   </div>
-                )}
-
-                {unlockedCount === totalCount && (
-                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-center gap-3">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                      Congratulations! You've unlocked all achievements!
+                ) : (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-3">
+                    <Trophy className="h-5 w-5 text-emerald-500" />
+                    <p className="text-sm font-medium text-emerald-400">
+                      Congratulations! You&apos;ve unlocked all achievements!
                     </p>
                   </div>
                 )}
@@ -179,24 +154,24 @@ export default function AchievementsPage() {
         transition={{ delay: 0.2 }}
       >
         <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterType)}>
-          <TabsList className="flex-wrap h-auto gap-2">
-            <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="flex-wrap h-auto gap-2 bg-metal-800/50 p-1">
+            <TabsTrigger value="all" className="data-[state=active]:bg-metal-700">
               All ({achievements.length})
             </TabsTrigger>
-            <TabsTrigger value="unlocked" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+            <TabsTrigger value="unlocked" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
               Unlocked ({unlockedCount})
             </TabsTrigger>
-            <TabsTrigger value="locked" className="data-[state=active]:bg-gray-500 data-[state=active]:text-white">
+            <TabsTrigger value="locked" className="data-[state=active]:bg-metal-700">
               <Lock className="w-3 h-3 mr-1" />
               Locked ({totalCount - unlockedCount})
             </TabsTrigger>
-            <TabsTrigger value="rare" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+            <TabsTrigger value="rare" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
               Rare
             </TabsTrigger>
-            <TabsTrigger value="epic" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+            <TabsTrigger value="epic" className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400">
               Epic
             </TabsTrigger>
-            <TabsTrigger value="legendary" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-white">
+            <TabsTrigger value="legendary" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
               Legendary
             </TabsTrigger>
           </TabsList>
@@ -211,11 +186,7 @@ export default function AchievementsPage() {
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         {filteredAchievements.map((achievement, index) => (
-          <AchievementCard 
-            key={achievement.id} 
-            achievement={achievement}
-            index={index}
-          />
+          <AchievementCard key={achievement.id} achievement={achievement} index={index} />
         ))}
       </motion.div>
 
@@ -224,15 +195,23 @@ export default function AchievementsPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center py-12"
+          className="text-center py-16"
         >
-          <Lock className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <Lock className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
           <h3 className="text-lg font-medium mb-2">No achievements found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your filters to see more achievements.
-          </p>
+          <p className="text-muted-foreground">Try adjusting your filters to see more achievements.</p>
         </motion.div>
       )}
     </div>
   );
+}
+
+function getRarityStyles(rarity: string) {
+  switch (rarity) {
+    case 'common': return 'bg-metal-800/30 border-metal-700';
+    case 'rare': return 'bg-cyan-500/5 border-cyan-500/20';
+    case 'epic': return 'bg-violet-500/5 border-violet-500/20';
+    case 'legendary': return 'bg-amber-500/5 border-amber-500/20';
+    default: return 'bg-metal-800/30 border-metal-700';
+  }
 }

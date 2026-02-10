@@ -3,45 +3,144 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Base theme - Light mode default */
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  /* ========================================
+     WARCRAFT-INSPIRED FUTURISTIC TECH THEME
+     ======================================== */
   
-  /* Power-number color palette */
-  --octave-8: #FF6B6B;
-  --transform-13: #9B59B6;
-  --solar-19: #F1C40F;
-  --architect-44: #3498DB;
-  --world-21: #2ECC71;
-  --life-125: #E74C3C;
-  --unity-152: #1ABC9C;
+  /* Base theme - Dark mode default (futuristic tech) */
+  --background: #0a0a0b;
+  --foreground: #e8e8e8;
   
-  /* Semantic colors - Light mode */
+  /* Power-number color palette - Enhanced for tech aesthetic */
+  --octave-8: #ff6b6b;
+  --transform-13: #c084fc;
+  --solar-19: #fbbf24;
+  --architect-44: #60a5fa;
+  --world-21: #4ade80;
+  --life-125: #f87171;
+  --unity-152: #2dd4bf;
+  
+  /* Tech accent colors */
+  --tech-cyan: #06b6d4;
+  --tech-amber: #f59e0b;
+  --tech-rose: #f43f5e;
+  --tech-emerald: #10b981;
+  --tech-violet: #8b5cf6;
+  
+  /* Metallic palette */
+  --metal-100: #f5f5f5;
+  --metal-200: #e5e5e5;
+  --metal-300: #d4d4d4;
+  --metal-400: #a3a3a3;
+  --metal-500: #737373;
+  --metal-600: #525252;
+  --metal-700: #404040;
+  --metal-800: #262626;
+  --metal-900: #171717;
+  --metal-950: #0a0a0a;
+  
+  /* Semantic colors - Tech theme */
   --primary: var(--solar-19);
   --primary-foreground: #0a0a0a;
   --secondary: var(--transform-13);
   --secondary-foreground: #ffffff;
-  --accent: var(--octave-8);
-  --accent-foreground: #ffffff;
+  --accent: var(--tech-cyan);
+  --accent-foreground: #0a0a0a;
   --success: var(--world-21);
   --destructive: var(--life-125);
   --destructive-foreground: #ffffff;
   --info: var(--architect-44);
   --warning: var(--solar-19);
-  --muted: #737373;
-  --muted-foreground: #525252;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
+  --muted: var(--metal-400);
+  --muted-foreground: var(--metal-500);
+  --border: var(--metal-800);
+  --input: var(--metal-800);
   --ring: var(--solar-19);
   
-  /* Card and popover */
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
+  /* Card and popover - Glassmorphism base */
+  --card: rgba(23, 23, 23, 0.8);
+  --card-foreground: #e8e8e8;
+  --popover: rgba(23, 23, 23, 0.95);
+  --popover-foreground: #e8e8e8;
   
-  /* Radius */
-  --radius: 0.625rem;
+  /* Radius - Angular tech feel */
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  /* ========================================
+     SPACING SYSTEM (8px base - Sacred Geometry)
+     ======================================== */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  
+  /* Component spacing */
+  --space-field-gap: 16px;
+  --space-section-gap: 24px;
+  --space-card-padding: 24px;
+  --space-card-padding-sm: 16px;
+  
+  /* ========================================
+     LAYOUT SYSTEM
+     ======================================== */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  --content-max-width: 768px;
+  --form-max-width: 420px;
+  --card-max-width: 480px;
+  
+  /* ========================================
+     TYPOGRAPHY SCALE
+     ======================================== */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* ========================================
+     EFFECTS
+     ======================================== */
+  --glow-primary: 0 0 20px rgba(251, 191, 36, 0.3);
+  --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.3);
+  --glow-rose: 0 0 20px rgba(244, 63, 94, 0.3);
+  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.3);
+  --glow-violet: 0 0 20px rgba(139, 92, 246, 0.3);
+  
+  /* Z-index scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
 }
 
 @theme inline {
@@ -59,6 +158,25 @@
   --color-world: var(--world-21);
   --color-life: var(--life-125);
   --color-unity: var(--unity-152);
+  
+  /* Tech colors */
+  --color-tech-cyan: var(--tech-cyan);
+  --color-tech-amber: var(--tech-amber);
+  --color-tech-rose: var(--tech-rose);
+  --color-tech-emerald: var(--tech-emerald);
+  --color-tech-violet: var(--tech-violet);
+  
+  /* Metallic colors */
+  --color-metal-100: var(--metal-100);
+  --color-metal-200: var(--metal-200);
+  --color-metal-300: var(--metal-300);
+  --color-metal-400: var(--metal-400);
+  --color-metal-500: var(--metal-500);
+  --color-metal-600: var(--metal-600);
+  --color-metal-700: var(--metal-700);
+  --color-metal-800: var(--metal-800);
+  --color-metal-900: var(--metal-900);
+  --color-metal-950: var(--metal-950);
   
   /* Semantic */
   --color-primary: var(--primary);
@@ -83,10 +201,10 @@
   --color-popover-foreground: var(--popover-foreground);
   
   /* Radius */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
   
   /* Typography scale (power numbers) */
   --font-size-architect: 44px;
@@ -103,64 +221,396 @@
   --spacing-44: 44px;
 }
 
-/* Dark mode */
+/* ========================================
+   DARK MODE (Default for tech theme)
+   ======================================== */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0a0a0b;
+  --foreground: #e8e8e8;
   
   --primary: var(--solar-19);
   --primary-foreground: #0a0a0a;
   --secondary: var(--transform-13);
   --secondary-foreground: #ffffff;
-  --accent: var(--octave-8);
-  --accent-foreground: #ffffff;
-  --muted: #a3a3a3;
-  --muted-foreground: #d4d4d4;
-  --border: #262626;
-  --input: #262626;
+  --accent: var(--tech-cyan);
+  --accent-foreground: #0a0a0a;
+  --muted: var(--metal-400);
+  --muted-foreground: var(--metal-500);
+  --border: var(--metal-800);
+  --input: var(--metal-800);
   --ring: var(--solar-19);
   
-  --card: #171717;
-  --card-foreground: #ededed;
-  --popover: #171717;
-  --popover-foreground: #ededed;
+  --card: rgba(23, 23, 23, 0.8);
+  --card-foreground: #e8e8e8;
+  --popover: rgba(23, 23, 23, 0.95);
+  --popover-foreground: #e8e8e8;
 }
 
-/* Dark mode as default (system preference) */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    
-    --primary: var(--solar-19);
-    --primary-foreground: #0a0a0a;
-    --secondary: var(--transform-13);
-    --secondary-foreground: #ffffff;
-    --accent: var(--octave-8);
-    --accent-foreground: #ffffff;
-    --muted: #a3a3a3;
-    --muted-foreground: #d4d4d4;
-    --border: #262626;
-    --input: #262626;
-    --ring: var(--solar-19);
-    
-    --card: #171717;
-    --card-foreground: #ededed;
-    --popover: #171717;
-    --popover-foreground: #ededed;
-  }
-}
-
+/* ========================================
+   BASE STYLES
+   ======================================== */
 @layer base {
   * {
     @apply border-border;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Selection styling */
+  ::selection {
+    background: rgba(251, 191, 36, 0.3);
+    color: #ffffff;
   }
 }
 
-/* Light pillar animation keyframes */
+/* ========================================
+   LAYOUT SYSTEM - DESIGN TOKENS
+   ======================================== */
+
+/* Container widths */
+.container-sm { max-width: var(--container-sm); }
+.container-md { max-width: var(--container-md); }
+.container-lg { max-width: var(--container-lg); }
+.container-xl { max-width: var(--container-xl); }
+
+/* Content constraints */
+.content-narrow { max-width: var(--content-max-width); }
+.content-form { max-width: var(--form-max-width); }
+.content-card { max-width: var(--card-max-width); }
+
+/* ========================================
+   SPACING SYSTEM - CONSISTENT RHYTHM
+   ======================================== */
+
+/* Stack - Vertical spacing between children */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.stack-xs > * + * { margin-top: var(--space-1); }
+.stack-sm > * + * { margin-top: var(--space-2); }
+.stack-md > * + * { margin-top: var(--space-4); }
+.stack-lg > * + * { margin-top: var(--space-6); }
+.stack-xl > * + * { margin-top: var(--space-8); }
+.stack-2xl > * + * { margin-top: var(--space-12); }
+
+/* Row - Horizontal spacing between children */
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.row-xs > * + * { margin-left: var(--space-1); }
+.row-sm > * + * { margin-left: var(--space-2); }
+.row-md > * + * { margin-left: var(--space-3); }
+.row-lg > * + * { margin-left: var(--space-4); }
+.row-xl > * + * { margin-left: var(--space-6); }
+
+/* Grid - Consistent grid gaps */
+.grid-gap-xs { gap: var(--space-1); }
+.grid-gap-sm { gap: var(--space-2); }
+.grid-gap-md { gap: var(--space-4); }
+.grid-gap-lg { gap: var(--space-6); }
+.grid-gap-xl { gap: var(--space-8); }
+
+/* Section spacing */
+.section-sm { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+.section-md { padding-top: var(--space-12); padding-bottom: var(--space-12); }
+.section-lg { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+.section-xl { padding-top: var(--space-20); padding-bottom: var(--space-20); }
+
+/* Card padding */
+.card-padding { padding: var(--space-card-padding); }
+.card-padding-sm { padding: var(--space-card-padding-sm); }
+
+/* ========================================
+   FORM FIELD PATTERNS
+   ======================================== */
+
+/* Form field - Label + Input + Error */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-field-sm { gap: var(--space-1); }
+.form-field-lg { gap: var(--space-3); }
+
+/* Form label */
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: var(--line-height-tight);
+}
+
+.form-label-required::after {
+  content: " *";
+  color: var(--destructive);
+}
+
+/* Form hint text */
+.form-hint {
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  line-height: var(--line-height-normal);
+}
+
+/* Form error */
+.form-error {
+  font-size: var(--text-xs);
+  color: var(--destructive);
+  line-height: var(--line-height-normal);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Checkbox/Radio field */
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.form-check-input {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.form-check-label {
+  font-size: var(--text-sm);
+  line-height: var(--line-height-normal);
+  color: var(--foreground);
+}
+
+.form-check-hint {
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  line-height: var(--line-height-normal);
+  margin-top: var(--space-1);
+}
+
+/* ========================================
+   TECH/METAL UTILITY CLASSES
+   ======================================== */
+
+/* Metallic text effect */
+.text-metallic {
+  background: linear-gradient(180deg, #ffffff 0%, #a3a3a3 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glowing text */
+.text-glow {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.text-glow-subtle {
+  text-shadow: 0 0 5px currentColor;
+}
+
+/* Tech borders */
+.border-tech {
+  border: 1px solid transparent;
+  background: linear-gradient(var(--metal-900), var(--metal-900)) padding-box,
+              linear-gradient(135deg, var(--metal-700), var(--metal-600), var(--metal-700)) border-box;
+}
+
+.border-tech-inset {
+  border: 1px solid var(--metal-800);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(23, 23, 23, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(23, 23, 23, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scan line effect */
+.scan-lines {
+  position: relative;
+}
+
+.scan-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Circuit pattern background */
+.bg-circuit {
+  background-image: 
+    linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Hexagon pattern */
+.bg-hexagon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.05'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-7.5L27.99 34H28v2.31h-.01L17 42.65V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Gradient borders */
+.border-gradient {
+  position: relative;
+  background: var(--metal-900);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--metal-600), var(--primary), var(--metal-600));
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Status indicators */
+.status-dot {
+  position: relative;
+  display: inline-flex;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  opacity: 0.75;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  background-color: inherit;
+}
+
+/* HUD elements */
+.hud-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--metal-600), transparent);
+}
+
+/* Data display */
+.data-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+/* Beveled edges */
+.beveled {
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Pressed/inset effect */
+.inset {
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* GPU acceleration */
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.animate-gpu {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Animation container optimization */
+.animation-container {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* ========================================
+   COMPONENT COMPOSITION HELPERS
+   ======================================== */
+
+/* Center content */
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-x {
+  display: flex;
+  justify-content: center;
+}
+
+.center-y {
+  display: flex;
+  align-items: center;
+}
+
+/* Full height minus header */
+.full-height {
+  min-height: calc(100dvh - 64px);
+}
+
+/* Card lift effect */
+.card-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+/* Focus styles */
+.focus-tech:focus-visible {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--primary);
+  ring-offset: 2px;
+  ring-offset-color: var(--background);
+}
+
+/* ========================================
+   ANIMATION KEYFRAMES
+   ======================================== */
+
+/* Light pillar animation */
 @keyframes pillar-glow {
   0%, 100% {
     opacity: 0.4;
@@ -183,7 +633,7 @@
   }
 }
 
-/* Unlock Animation Performance Optimizations */
+/* Unlock Animation */
 @keyframes unlock-pulse {
   0%, 100% {
     transform: scale(1);
@@ -213,25 +663,109 @@
   }
 }
 
-/* GPU Acceleration Utilities */
-.gpu-accelerated {
+/* Tech scan animation */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Data stream */
+@keyframes data-stream {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 20px;
+  }
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+  }
+}
+
+/* Border shimmer */
+@keyframes border-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Shimmer for loading states */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Typing cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ========================================
+   COMPONENT-SPECIFIC STYLES
+   ======================================== */
+
+/* Audio Player Visualizer */
+.visualizer-bar {
+  will-change: height;
+  transform: translateZ(0);
+}
+
+/* Mandala animation */
+.mandala-svg {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Light pillar */
+.light-pillar {
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+}
+
+/* Particle effect */
+.particle {
   will-change: transform, opacity;
   transform: translateZ(0);
-  backface-visibility: hidden;
+  pointer-events: none;
 }
 
-.animate-gpu {
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
+/* Confetti */
+.confetti {
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
-/* Performance: Contain layout for animation containers */
-.animation-container {
-  contain: layout style paint;
-  content-visibility: auto;
+/* Progress bar */
+.progress-bar {
+  will-change: width;
+  transform: translateZ(0);
 }
 
-/* Performance: Reduce motion for accessibility */
+/* Button press effect */
+.btn-press:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -247,39 +781,29 @@
   }
 }
 
-/* Audio Player Visualizer Optimizations */
-.visualizer-bar {
-  will-change: height;
-  transform: translateZ(0);
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Mandala animation optimization */
-.mandala-svg {
-  will-change: transform;
-  transform: translateZ(0);
+::-webkit-scrollbar-track {
+  background: var(--metal-900);
 }
 
-/* Light pillar optimization */
-.light-pillar {
-  will-change: transform, opacity, filter;
-  transform: translateZ(0);
+::-webkit-scrollbar-thumb {
+  background: var(--metal-700);
+  border-radius: 4px;
 }
 
-/* Particle effect optimization */
-.particle {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  pointer-events: none;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--metal-600);
 }
 
-/* Confetti optimization */
-.confetti {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-/* Progress bar optimization */
-.progress-bar {
-  will-change: width;
-  transform: translateZ(0);
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--metal-700) var(--metal-900);
 }

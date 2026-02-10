@@ -34,7 +34,7 @@ jobs:
         run: bun run lint
       
       - name: Type Check Frontend
-        run: cd /Volumes/madara/2026/Serpentine-raising && bunx tsc --noEmit
+        run: bunx tsc --noEmit
       
       - name: Type Check Workers
         run: cd workers && bun run typecheck

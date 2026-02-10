@@ -56,8 +56,8 @@ describe('Biorhythm Calculator', () => {
     });
 
     it('should calculate intellectual cycle (33 days)', () => {
-      const value = calculateCycle(16, CYCLE_LENGTHS.intellectual);
-      expect(value).toBeCloseTo(0.998, 2); // Near peak at ~quarter
+      const value = calculateCycle(8, CYCLE_LENGTHS.intellectual);
+      expect(value).toBeCloseTo(0.998, 2); // Near peak at quarter cycle (33/4 ≈ 8)
     });
 
     it('should throw error for zero cycle length', () => {

@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { format, addDays } from "date-fns";
-import { Activity, RefreshCw, Calendar, TrendingUp, Sparkles } from "lucide-react";
+import { Activity, RefreshCw, Calendar, TrendingUp, Sparkles, User, BookOpen } from "lucide-react";
+import Link from "next/link";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,11 +49,30 @@ const itemVariants = {
   },
 };
 
+// Get user from localStorage
+function getUser() {
+  if (typeof window === "undefined") return null;
+  const user = localStorage.getItem("user");
+  if (user) {
+    try {
+      return JSON.parse(user);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export default function DashboardPage() {
+  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
   const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    setUser(getUser());
+  }, []);
 
   // Get user's birthdate from localStorage or use a default for demo
   const getBirthdate = useCallback(() => {
@@ -161,6 +181,37 @@ export default function DashboardPage() {
       initial="hidden"
       animate="visible"
     >
+      {/* Welcome Banner */}
+      {user && (
+        <motion.div variants={itemVariants}>
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                  <User className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    Welcome back, {user.email.split("@")[0]}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {user.role === "admin" ? "Administrator" : "Member"} • Ready to continue your journey?
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/chapters">
+                  <Button size="sm" className="gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Continue Journey
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
       {/* Header */}
       <motion.div
         className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"

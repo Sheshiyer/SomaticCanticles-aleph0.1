@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   BookOpen,
+  Shield,
 } from "lucide-react";
 
 interface NavItem {
@@ -66,6 +67,13 @@ const settingsNavItems: NavItem[] = [
   },
 ];
 
+// Admin nav item (shown only for admins)
+const adminNavItem: NavItem = {
+  label: "Admin",
+  href: "/admin",
+  icon: <Shield className="h-4 w-4" />,
+};
+
 // Sidebar Nav Item Component
 function SidebarNavItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
@@ -91,11 +99,13 @@ function MobileSidebar({
   onClose,
   userEmail,
   onLogout,
+  isAdmin,
 }: {
   open: boolean;
   onClose: () => void;
   userEmail: string | null;
   onLogout: () => void;
+  isAdmin: boolean;
 }) {
   const pathname = usePathname();
   
@@ -148,6 +158,20 @@ function MobileSidebar({
                 ))}
               </nav>
             </div>
+            
+            {isAdmin && (
+              <div className="mb-6">
+                <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Admin
+                </h4>
+                <nav className="space-y-1">
+                  <SidebarNavItem
+                    item={adminNavItem}
+                    isActive={pathname.startsWith("/admin")}
+                  />
+                </nav>
+              </div>
+            )}
           </div>
           
           <div className="border-t p-4">
@@ -174,6 +198,7 @@ export default function DashboardLayout({
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -185,6 +210,7 @@ export default function DashboardLayout({
         try {
           const parsed = JSON.parse(user);
           setUserEmail(parsed.email || null);
+          setIsAdmin(parsed.role === "admin");
         } catch {
           // Invalid user data, redirect to login
           router.push("/login");
@@ -265,6 +291,7 @@ export default function DashboardLayout({
         onClose={() => setMobileNavOpen(false)}
         userEmail={userEmail}
         onLogout={handleLogout}
+        isAdmin={isAdmin}
       />
 
       {/* Main Content */}

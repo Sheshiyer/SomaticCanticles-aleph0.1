@@ -21,7 +21,7 @@ import type {
 } from './types';
 
 // API Base URL - configured via environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Flag to enable mocking (for development)
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true';
@@ -56,7 +56,7 @@ async function apiRequest<T>(
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -79,7 +79,7 @@ async function apiRequest<T>(
  */
 function getStoredTokens(): AuthTokens | null {
   if (typeof window === 'undefined') return null;
-  
+
   const tokens = localStorage.getItem('auth_tokens');
   return tokens ? JSON.parse(tokens) : null;
 }
@@ -114,7 +114,7 @@ function storeUser(user: User): void {
  */
 function getStoredUser(): User | null {
   if (typeof window === 'undefined') return null;
-  
+
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 }
@@ -131,7 +131,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
   if (USE_MOCKS) {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Mock credential validation
     if (data.email === 'test@example.com' && data.password === 'TestUser13!') {
       const response: LoginResponse = {
@@ -145,7 +145,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
       storeUser(response.data.user);
       return response;
     }
-    
+
     throw {
       success: false,
       error: {
@@ -159,7 +159,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
     method: 'POST',
     body: JSON.stringify(data),
   });
-  
+
   storeTokens(response.data.tokens);
   storeUser(response.data.user);
   return response;
@@ -172,7 +172,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
 export async function register(data: RegisterRequest): Promise<RegisterResponse> {
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Mock duplicate email check
     if (data.email === 'test@example.com') {
       throw {
@@ -183,7 +183,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
         },
       } as ApiError;
     }
-    
+
     const newUser: User = {
       id: 'user-' + Date.now(),
       email: data.email,
@@ -192,7 +192,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
       timezone: data.timezone || 'UTC',
       emailVerified: false,
     };
-    
+
     const response: RegisterResponse = {
       success: true,
       data: {
@@ -200,7 +200,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
         tokens: MOCK_TOKENS,
       },
     };
-    
+
     storeTokens(response.data.tokens);
     storeUser(response.data.user);
     return response;
@@ -210,7 +210,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
     method: 'POST',
     body: JSON.stringify(data),
   });
-  
+
   storeTokens(response.data.tokens);
   storeUser(response.data.user);
   return response;
@@ -222,7 +222,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
  */
 export async function refreshToken(): Promise<RefreshResponse> {
   const tokens = getStoredTokens();
-  
+
   if (!tokens?.refreshToken) {
     throw {
       success: false,
@@ -235,21 +235,21 @@ export async function refreshToken(): Promise<RefreshResponse> {
 
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     const newTokens: AuthTokens = {
       accessToken: 'mock_access_token_' + Date.now(),
       refreshToken: tokens.refreshToken,
       expiresIn: 900,
       tokenType: 'Bearer',
     };
-    
+
     const response: RefreshResponse = {
       success: true,
       data: {
         tokens: newTokens,
       },
     };
-    
+
     storeTokens(newTokens);
     return response;
   }
@@ -258,7 +258,7 @@ export async function refreshToken(): Promise<RefreshResponse> {
     method: 'POST',
     body: JSON.stringify({ refreshToken: tokens.refreshToken } as RefreshRequest),
   });
-  
+
   storeTokens(response.data.tokens);
   return response;
 }
@@ -269,7 +269,7 @@ export async function refreshToken(): Promise<RefreshResponse> {
  */
 export async function logout(): Promise<SuccessResponse> {
   const tokens = getStoredTokens();
-  
+
   if (!USE_MOCKS && tokens?.refreshToken) {
     try {
       await apiRequest<SuccessResponse>('/auth/logout', {
@@ -280,9 +280,9 @@ export async function logout(): Promise<SuccessResponse> {
       // Ignore errors during logout
     }
   }
-  
+
   clearTokens();
-  
+
   return {
     success: true,
     data: { message: 'Logged out successfully' },
@@ -296,7 +296,7 @@ export async function logout(): Promise<SuccessResponse> {
 export async function logoutAll(): Promise<SuccessResponse> {
   if (!USE_MOCKS) {
     const tokens = getStoredTokens();
-    
+
     if (tokens?.accessToken) {
       await apiRequest<SuccessResponse>('/auth/logout-all', {
         method: 'POST',
@@ -306,9 +306,9 @@ export async function logoutAll(): Promise<SuccessResponse> {
       });
     }
   }
-  
+
   clearTokens();
-  
+
   return {
     success: true,
     data: { message: 'Logged out from all devices' },
@@ -322,7 +322,7 @@ export async function logoutAll(): Promise<SuccessResponse> {
 export async function getMe(): Promise<{ success: true; data: { user: User } }> {
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     const user = getStoredUser() || MOCK_USER;
     return {
       success: true,
@@ -331,7 +331,7 @@ export async function getMe(): Promise<{ success: true; data: { user: User } }> 
   }
 
   const tokens = getStoredTokens();
-  
+
   return apiRequest('/auth/me', {
     headers: {
       'Authorization': `Bearer ${tokens?.accessToken}`,
@@ -348,15 +348,15 @@ export async function updateProfile(
 ): Promise<UpdateProfileResponse> {
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     const currentUser = getStoredUser() || MOCK_USER;
     const updatedUser: User = {
       ...currentUser,
       ...data,
     };
-    
+
     storeUser(updatedUser);
-    
+
     return {
       success: true,
       data: { user: updatedUser },
@@ -364,7 +364,7 @@ export async function updateProfile(
   }
 
   const tokens = getStoredTokens();
-  
+
   const response = await apiRequest<UpdateProfileResponse>('/auth/me', {
     method: 'PUT',
     headers: {
@@ -372,7 +372,7 @@ export async function updateProfile(
     },
     body: JSON.stringify(data),
   });
-  
+
   storeUser(response.data.user);
   return response;
 }
@@ -386,7 +386,7 @@ export async function changePassword(
 ): Promise<SuccessResponse> {
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     if (data.currentPassword !== 'TestUser13!') {
       throw {
         success: false,
@@ -396,7 +396,7 @@ export async function changePassword(
         },
       } as ApiError;
     }
-    
+
     return {
       success: true,
       data: { message: 'Password changed successfully' },
@@ -404,7 +404,7 @@ export async function changePassword(
   }
 
   const tokens = getStoredTokens();
-  
+
   return apiRequest<SuccessResponse>('/auth/change-password', {
     method: 'POST',
     headers: {

@@ -39,6 +39,8 @@ const corsOrigins = [
   'https://1319.tryambakam.space',
   // Allow all Pages preview deployments
   'https://*.somatic-canticles.pages.dev',
+  // Vercel deployment
+  'https://somatic-canticles-aleph0-1.vercel.app',
 ];
 
 // Middleware

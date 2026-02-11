@@ -6,7 +6,7 @@
 
 import { getAccessToken } from "../auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 // Types
 export interface ChapterSummary {
@@ -149,7 +149,7 @@ async function fetchWithAuth(
   options: RequestInit = {}
 ): Promise<Response> {
   const token = getAccessToken();
-  
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),

@@ -15,7 +15,7 @@ import type {
 export * from './types';
 
 // API Base URL - configured via environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Flag to enable mocking (for development)
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true';
@@ -25,10 +25,10 @@ const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true';
  */
 function getStoredTokens(): { accessToken: string } | null {
   if (typeof window === 'undefined') return null;
-  
+
   const tokens = localStorage.getItem('auth_tokens');
   if (!tokens) return null;
-  
+
   try {
     const parsed = JSON.parse(tokens);
     return { accessToken: parsed.accessToken };
@@ -46,7 +46,7 @@ async function apiRequest<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   const tokens = getStoredTokens();
-  
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -129,7 +129,7 @@ function generateMockPredictionData(startDate?: string, days: number = 30): Pred
     const currentDate = new Date(startDateTime);
     currentDate.setDate(currentDate.getDate() + i);
     const dateStr = currentDate.toISOString().split('T')[0];
-    
+
     const daysSinceBirth = Math.floor(
       (currentDate.getTime() - birthdate.getTime()) / (1000 * 60 * 60 * 24)
     );
@@ -191,7 +191,7 @@ export async function calculateBiorhythm(
   if (USE_MOCKS) {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 300));
-    
+
     // Validate birthdate format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
       throw {
@@ -234,7 +234,7 @@ export async function getBiorhythmPrediction(
   if (USE_MOCKS) {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 400));
-    
+
     return generateMockPredictionData(startDate, days);
   }
 
@@ -266,11 +266,11 @@ export function getBiorhythmErrorMessage(error: unknown): string {
     const apiError = error as BiorhythmApiError;
     return apiError.error?.message || 'An unexpected error occurred';
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return 'Failed to fetch biorhythm data. Please try again later.';
 }
 

@@ -2,7 +2,13 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-// import { SecretsManager, type SecretsEnv } from '../lib/secrets'; // Optional if using process.env directly
+
+import auth from './auth/index';
+import user from './user/index';
+import biorhythm from './biorhythm/index';
+import chapters from './chapters/index';
+import progress from './progress/index';
+import location from './location/index';
 
 // Type definitions
 export type Env = {
@@ -24,7 +30,7 @@ export type Variables = {
 };
 
 // Create Hono app
-const app = new Hono<{ Bindings: Env; Variables: Variables }>().basePath('/api');
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // Initialize secrets manager middleware (Placeholder or removed if using env vars directly)
 // app.use('*', async (c, next) => {
@@ -75,22 +81,28 @@ app.get('/health', (c) => {
 });
 
 // Auth routes
-app.route('/auth', await import('./auth/index').then(m => m.default));
+app.route('/api/auth', auth);
+app.route('/auth', auth); // Fallback for stripped prefix environments
 
 // User routes
-app.route('/user', await import('./user/index').then(m => m.default));
+app.route('/api/user', user);
+app.route('/user', user);
 
 // Biorhythm routes
-app.route('/biorhythm', await import('./biorhythm/index').then(m => m.default));
+app.route('/api/biorhythm', biorhythm);
+app.route('/biorhythm', biorhythm);
 
 // Chapters routes
-app.route('/chapters', await import('./chapters/index').then(m => m.default));
+app.route('/api/chapters', chapters);
+app.route('/chapters', chapters);
 
 // Progress routes
-app.route('/progress', await import('./progress/index').then(m => m.default));
+app.route('/api/progress', progress);
+app.route('/progress', progress);
 
 // Location routes
-app.route('/location', await import('./location/index').then(m => m.default));
+app.route('/api/location', location);
+app.route('/location', location);
 
 // 404 handler
 app.notFound((c) => {

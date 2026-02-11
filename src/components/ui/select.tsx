@@ -181,13 +181,17 @@ const SelectTrigger = React.forwardRef<
   <button
     ref={ref}
     className={cn(
-      "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm",
+      "flex h-10 w-full items-center justify-between rounded-md px-3 py-2 text-sm",
+      "bg-metal-900/50 border border-metal-700 text-foreground",
+      "hover:border-metal-600 transition-all duration-200",
+      "focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none",
+      "disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
     {children}
-    <ChevronDown className="h-4 w-4 opacity-50" />
+    <ChevronDown className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
   </button>
 ));
 SelectTrigger.displayName = "SelectTrigger";
@@ -195,9 +199,9 @@ SelectTrigger.displayName = "SelectTrigger";
 const SelectValue = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement> & { placeholder?: string }
->(({ className, placeholder, ...props }, ref) => (
-  <span ref={ref} className={cn("text-sm", className)} {...props}>
-    {placeholder}
+>(({ className, placeholder, children, ...props }, ref) => (
+  <span ref={ref} className={cn("text-sm truncate", className)} {...props}>
+    {children || <span className="text-muted-foreground">{placeholder}</span>}
   </span>
 ));
 SelectValue.displayName = "SelectValue";
@@ -209,7 +213,10 @@ const SelectContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
+      "relative z-50 min-w-[8rem] overflow-hidden rounded-md",
+      "bg-metal-900/95 backdrop-blur-sm border border-metal-700",
+      "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+      "text-foreground",
       className
     )}
     {...props}
@@ -226,7 +233,11 @@ const SelectItem = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-2 text-sm",
+      "outline-none transition-colors",
+      "hover:bg-metal-800 hover:text-primary",
+      "focus:bg-metal-800 focus:text-primary",
+      "data-[selected]:bg-metal-800 data-[selected]:text-primary",
       className
     )}
     {...props}

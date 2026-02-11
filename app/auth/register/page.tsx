@@ -11,10 +11,11 @@ import { Loader2, Mail, Lock, Calendar, Globe } from "lucide-react";
 
 import { register as registerUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardCorners } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LightPillar } from "@/components/effects/LightPillar";
 
 // Password requirements matching backend
 const registerSchema = z
@@ -92,10 +93,23 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full border-metal-700/50 bg-metal-900/80 backdrop-blur-sm shadow-xl">
-      <CardHeader className="space-y-3 pb-6">
-        <CardTitle className="text-2xl font-bold text-center text-metallic">
-          Create an account
+    <Card 
+      variant="glass" 
+      className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300"
+    >
+      <CardCorners color="primary" />
+      
+      {/* Top tech accent */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-32 bg-gradient-to-r from-transparent via-primary to-transparent" />
+      
+      <CardHeader className="space-y-4 pb-6 pt-8">
+        {/* Light pillar accent */}
+        <div className="flex justify-center mb-2">
+          <LightPillar color="solar" height={32} width={2} intensity="low" />
+        </div>
+        
+        <CardTitle className="text-2xl font-bold text-center bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
+          Create Your Account
         </CardTitle>
         <CardDescription className="text-center text-muted-foreground leading-relaxed">
           Enter your details to begin your journey
@@ -107,18 +121,15 @@ export default function RegisterPage() {
           {/* Email Field */}
           <div className="space-y-2.5">
             <Label htmlFor="email" className="text-foreground">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                className="pl-10"
-                {...register("email")}
-                disabled={isLoading}
-                error={errors.email?.message}
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              leftIcon={<Mail className="h-4 w-4" />}
+              {...register("email")}
+              disabled={isLoading}
+              error={errors.email?.message}
+            />
             {errors.email && (
               <p className="text-xs text-rose-500 flex items-center gap-1">
                 <span>•</span>
@@ -130,18 +141,15 @@ export default function RegisterPage() {
           {/* Password Field */}
           <div className="space-y-2.5">
             <Label htmlFor="password" className="text-foreground">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                className="pl-10"
-                {...register("password")}
-                disabled={isLoading}
-                error={errors.password?.message}
-              />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+              leftIcon={<Lock className="h-4 w-4" />}
+              {...register("password")}
+              disabled={isLoading}
+              error={errors.password?.message}
+            />
             {errors.password && (
               <p className="text-xs text-rose-500 flex items-center gap-1">
                 <span>•</span>
@@ -156,18 +164,15 @@ export default function RegisterPage() {
           {/* Confirm Password Field */}
           <div className="space-y-2.5">
             <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                className="pl-10"
-                {...register("confirmPassword")}
-                disabled={isLoading}
-                error={errors.confirmPassword?.message}
-              />
-            </div>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              leftIcon={<Lock className="h-4 w-4" />}
+              {...register("confirmPassword")}
+              disabled={isLoading}
+              error={errors.confirmPassword?.message}
+            />
             {errors.confirmPassword && (
               <p className="text-xs text-rose-500 flex items-center gap-1">
                 <span>•</span>
@@ -179,16 +184,13 @@ export default function RegisterPage() {
           {/* Birthdate Field */}
           <div className="space-y-2.5">
             <Label htmlFor="birthdate" className="text-foreground">Birthdate <span className="text-muted-foreground font-normal">(Optional)</span></Label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                id="birthdate"
-                type="date"
-                className="pl-10"
-                {...register("birthdate")}
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="birthdate"
+              type="date"
+              leftIcon={<Calendar className="h-4 w-4" />}
+              {...register("birthdate")}
+              disabled={isLoading}
+            />
             <p className="text-xs text-muted-foreground leading-relaxed">
               Used for personalized biorhythm calculations and chapter unlocks.
             </p>
@@ -202,8 +204,7 @@ export default function RegisterPage() {
               onValueChange={(value) => setValue("timezone", value)}
               disabled={isLoading}
             >
-              <SelectTrigger className="pl-10">
-                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <SelectTrigger>
                 <SelectValue placeholder="Select timezone" />
               </SelectTrigger>
               <SelectContent>

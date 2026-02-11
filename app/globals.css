@@ -159,6 +159,55 @@
   --color-life: var(--life-125);
   --color-unity: var(--unity-152);
   
+  /* Cycle color aliases (mapping to power-numbers) */
+  --color-ember-50: #fef3f2;
+  --color-ember-100: #fee4e2;
+  --color-ember-200: #fecdca;
+  --color-ember-300: #fdaba5;
+  --color-ember-400: #fa7a70;
+  --color-ember-500: #f04438;
+  --color-ember-600: #de3024;
+  --color-ember-700: #ba2318;
+  --color-ember-800: #9a1f17;
+  --color-ember-900: #801f19;
+  --color-ember-950: #460c09;
+  
+  --color-ocean-50: #f0f9ff;
+  --color-ocean-100: #e0f2fe;
+  --color-ocean-200: #bae6fd;
+  --color-ocean-300: #7dd3fc;
+  --color-ocean-400: #38bdf8;
+  --color-ocean-500: #0ea5e9;
+  --color-ocean-600: #0284c7;
+  --color-ocean-700: #0369a1;
+  --color-ocean-800: #075985;
+  --color-ocean-900: #0c4a6e;
+  --color-ocean-950: #082f49;
+  
+  --color-lunar-50: #faf5ff;
+  --color-lunar-100: #f3e8ff;
+  --color-lunar-200: #e9d5ff;
+  --color-lunar-300: #d8b4fe;
+  --color-lunar-400: #c084fc;
+  --color-lunar-500: #a855f7;
+  --color-lunar-600: #9333ea;
+  --color-lunar-700: #7e22ce;
+  --color-lunar-800: #6b21a8;
+  --color-lunar-900: #581c87;
+  --color-lunar-950: #3b0764;
+  
+  --color-solar-50: #fffbeb;
+  --color-solar-100: #fef3c7;
+  --color-solar-200: #fde68a;
+  --color-solar-300: #fcd34d;
+  --color-solar-400: #fbbf24;
+  --color-solar-500: #f59e0b;
+  --color-solar-600: #d97706;
+  --color-solar-700: #b45309;
+  --color-solar-800: #92400e;
+  --color-solar-900: #78350f;
+  --color-solar-950: #451a03;
+  
   /* Tech colors */
   --color-tech-cyan: var(--tech-cyan);
   --color-tech-amber: var(--tech-amber);
@@ -600,10 +649,7 @@
 /* Focus styles */
 .focus-tech:focus-visible {
   outline: none;
-  ring: 2px;
-  ring-color: var(--primary);
-  ring-offset: 2px;
-  ring-offset-color: var(--background);
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
 }
 
 /* ========================================

@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
     // optimizeCss: true, // Requires 'critters' package
   },
   compress: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BACKEND_API_URL || 'https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev'}/api/:path*`,
+      },
+    ];
+  },
   // Custom domain configuration
   // Primary: 1319.tryambakam.space
   // Fallback: somatic-canticles.pages.dev

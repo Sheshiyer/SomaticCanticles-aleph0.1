@@ -20,6 +20,12 @@ bucket_name = "canticle-audio"
 binding = "R2_IMAGES"
 bucket_name = "canticle-images"
 
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "somatic-canticles-db"
+database_id = "df9d20f7-9ad3-45a9-b08d-e41b849f0ee6"
+
 # Environment variables
 [vars]
 ENVIRONMENT = "production"

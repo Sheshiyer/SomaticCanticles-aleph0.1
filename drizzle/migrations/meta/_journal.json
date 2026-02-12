@@ -8,6 +8,20 @@
       "when": 1770812865712,
       "tag": "0000_fine_maginty",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770910009705,
+      "tag": "0001_curly_demogoblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770910310549,
+      "tag": "0002_right_sleeper",
+      "breakpoints": true
     }
   ]
 }

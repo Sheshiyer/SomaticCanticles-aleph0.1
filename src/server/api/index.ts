@@ -9,6 +9,8 @@ import biorhythm from './biorhythm/index';
 import chapters from './chapters/index';
 import progress from './progress/index';
 import location from './location/index';
+import highlights from './highlights/index';
+import bookmarks from './bookmarks/index';
 
 // Type definitions
 export type Env = {
@@ -103,6 +105,14 @@ app.route('/progress', progress);
 // Location routes
 app.route('/api/location', location);
 app.route('/location', location);
+
+// Highlights routes
+app.route('/api/highlights', highlights);
+app.route('/highlights', highlights);
+
+// Bookmarks routes
+app.route('/api/bookmarks', bookmarks);
+app.route('/bookmarks', bookmarks);
 
 // 404 handler
 app.notFound((c) => {

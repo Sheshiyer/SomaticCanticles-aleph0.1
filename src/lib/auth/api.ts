@@ -24,12 +24,16 @@ import type {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Flag to enable mocking (for development)
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true';
+// Force mock mode if API is localhost:8787 (dev server not running)
+const isLocalDev = typeof window !== 'undefined' && 
+  (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:8787') || 
+   process.env.NEXT_PUBLIC_API_URL === 'http://localhost:8787');
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true' || isLocalDev;
 
 // Note: Set NEXT_PUBLIC_USE_MOCK_AUTH=true in .env.local for development mocks
 // Production uses real API with seeded users
 
-// Mock user for development
+// Mock users for development
 const MOCK_USER: User = {
   id: 'test-001',
   email: 'test@example.com',
@@ -38,6 +42,16 @@ const MOCK_USER: User = {
   timezone: 'America/New_York',
   emailVerified: true,
   createdAt: '2024-01-15T08:30:00.000Z',
+};
+
+const MOCK_ADMIN: User = {
+  id: 'admin-001',
+  email: 'admin@somatic-canticles.local',
+  role: 'admin',
+  birthdate: null,
+  timezone: 'UTC',
+  emailVerified: true,
+  createdAt: '2024-01-01T00:00:00.000Z',
 };
 
 // Mock tokens for development
@@ -132,12 +146,26 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Mock credential validation
+    // Mock credential validation - Regular user
     if (data.email === 'test@example.com' && data.password === 'TestUser13!') {
       const response: LoginResponse = {
         success: true,
         data: {
           user: MOCK_USER,
+          tokens: MOCK_TOKENS,
+        },
+      };
+      storeTokens(response.data.tokens);
+      storeUser(response.data.user);
+      return response;
+    }
+
+    // Mock credential validation - Admin user
+    if (data.email === 'admin@somatic-canticles.local' && data.password === 'SomaticDev44!') {
+      const response: LoginResponse = {
+        success: true,
+        data: {
+          user: MOCK_ADMIN,
           tokens: MOCK_TOKENS,
         },
       };

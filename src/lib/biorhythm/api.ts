@@ -18,7 +18,11 @@ export * from './types';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Flag to enable mocking (for development)
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true';
+// Force mock mode if API is localhost:8787 (dev server not running)
+const isLocalDev = typeof window !== 'undefined' && 
+  (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:8787') || 
+   process.env.NEXT_PUBLIC_API_URL === 'http://localhost:8787');
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true' || isLocalDev;
 
 /**
  * Get stored tokens from localStorage
@@ -99,7 +103,7 @@ function generateMockBiorhythmData(birthdate: string, targetDate?: string): Bior
     },
     spiritual: {
       date,
-      value: calculateCycle(daysSinceBirth, 38),
+      value: calculateCycle(daysSinceBirth, 21),
       days: daysSinceBirth,
     },
   };
@@ -137,7 +141,7 @@ function generateMockPredictionData(startDate?: string, days: number = 30): Pred
     const physical = Math.sin((2 * Math.PI * daysSinceBirth) / 23);
     const emotional = Math.sin((2 * Math.PI * daysSinceBirth) / 28);
     const intellectual = Math.sin((2 * Math.PI * daysSinceBirth) / 33);
-    const spiritual = Math.sin((2 * Math.PI * daysSinceBirth) / 38);
+    const spiritual = Math.sin((2 * Math.PI * daysSinceBirth) / 21);
 
     predictions.push({
       date: dateStr,

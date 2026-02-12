@@ -1,4 +1,5 @@
 import { ChapterDetailPageClient } from "./ChapterDetailPageClient";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 // Generate static params for all 12 chapters
 export function generateStaticParams() {
@@ -9,6 +10,15 @@ export function generateStaticParams() {
   ];
 }
 
-export default function ChapterDetailPage({ params }: { params: { id: string } }) {
-  return <ChapterDetailPageClient chapterId={parseInt(params.id, 10)} />;
+export default async function ChapterDetailPage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
+  return (
+    <ErrorBoundary>
+      <ChapterDetailPageClient chapterId={parseInt(id, 10)} />
+    </ErrorBoundary>
+  );
 }

@@ -199,17 +199,28 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
           <span className="text-muted-foreground">{completedCount} completed</span>
         </div>
 
-        {/* Title Row */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl font-bold text-metallic">{chapter.title}</h1>
-            {chapter.unlock_status === "completed" && (
-              <CheckCircle2 className="h-7 w-7 text-emerald-500" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl font-bold text-metallic">{chapter.title}</h1>
+              {chapter.unlock_status === "completed" && (
+                <CheckCircle2 className="h-7 w-7 text-emerald-500" />
+              )}
+            </div>
+            {chapter.subtitle && (
+              <p className="text-lg text-muted-foreground">{chapter.subtitle}</p>
             )}
           </div>
-          {chapter.subtitle && (
-            <p className="text-lg text-muted-foreground">{chapter.subtitle}</p>
-          )}
+
+          <Button
+            size="lg"
+            className="md:w-auto w-full gap-2 px-6"
+            onClick={() => router.push(`/chapters/${chapter.id}/read`)}
+            shine
+          >
+            <BookOpen className="h-5 w-5" />
+            Read Manuscript
+          </Button>
         </div>
 
         {/* Meta Row */}
@@ -254,52 +265,66 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
         </TabsList>
 
         {/* Intro Tab */}
-        <TabsContent value="intro" className="space-y-6">
-          <Card variant="glass" noPadding className={cn("border-2", colors.border)}>
-            <CardHeader className="pb-4">
-              <CardTitle className={cn("flex items-center gap-2", colors.text)}>
-                <Scroll className="h-5 w-5" />
-                {chapter.content?.intro?.title || "Introduction"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-lg leading-relaxed">
-                {chapter.content?.intro?.text || chapter.description}
-              </p>
-              {chapter.content?.intro?.duration_minutes && (
-                <p className="text-sm text-muted-foreground">
-                  Estimated reading time: {chapter.content.intro.duration_minutes} minutes
-                </p>
-              )}
+        <TabsContent value="intro" className="space-y-6 animate-in fade-in-50 duration-500">
+          <Card variant="glass">
+            <CardContent className="pt-6 space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-metallic flex items-center gap-2">
+                  <Scroll className="h-5 w-5 text-primary" />
+                  Chapter Overview
+                </h3>
+                <div className="prose prose-invert max-w-none text-muted-foreground leading-relaxed">
+                  {chapter.description}
+                </div>
+              </div>
+
+              <div className="p-6 rounded-xl bg-metal-900/50 border border-metal-800 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10" />
+                <div className="space-y-2 text-center md:text-left">
+                  <h4 className="font-bold text-foreground">Begin Your Journey</h4>
+                  <p className="text-sm text-muted-foreground">Immerse yourself in the sacred text of this canticle.</p>
+                </div>
+                <Button
+                  size="lg"
+                  variant="glow"
+                  className="gap-2 px-8 shrink-0"
+                  onClick={() => router.push(`/chapters/${chapter.id}/read`)}
+                >
+                  <BookOpen className="h-5 w-5" />
+                  Open Manuscript
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Wisdom Card - only show if lore metadata exists */}
+                {chapter.lore_metadata && (
+                  <Card variant="glass" noPadding className="border-metal-700/50 col-span-1 md:col-span-2">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="flex items-center gap-2 text-metallic">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        Wisdom
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {(chapter.lore_metadata as { affirmation?: string }).affirmation && (
+                        <blockquote className="text-lg font-medium italic border-l-2 border-primary/50 pl-4">
+                          &ldquo;{(chapter.lore_metadata as { affirmation: string }).affirmation}&rdquo;
+                        </blockquote>
+                      )}
+                      <div className="grid gap-2 text-sm text-muted-foreground">
+                        {(chapter.lore_metadata as { element?: string }).element && (
+                          <p><span className="text-foreground">Element:</span> {(chapter.lore_metadata as { element: string }).element}</p>
+                        )}
+                        {(chapter.lore_metadata as { tarot?: string }).tarot && (
+                          <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             </CardContent>
           </Card>
-
-          {/* Wisdom Card */}
-          {chapter.lore_metadata && (
-            <Card variant="glass" noPadding className="border-metal-700/50">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-metallic">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  Wisdom
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {(chapter.lore_metadata as { affirmation?: string }).affirmation && (
-                  <blockquote className="text-lg font-medium italic border-l-2 border-primary/50 pl-4">
-                    &ldquo;{(chapter.lore_metadata as { affirmation: string }).affirmation}&rdquo;
-                  </blockquote>
-                )}
-                <div className="grid gap-2 text-sm text-muted-foreground">
-                  {(chapter.lore_metadata as { element?: string }).element && (
-                    <p><span className="text-foreground">Element:</span> {(chapter.lore_metadata as { element: string }).element}</p>
-                  )}
-                  {(chapter.lore_metadata as { tarot?: string }).tarot && (
-                    <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         {/* Practice Tab */}
@@ -429,10 +454,10 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+      </Tabs >
 
       {/* Navigation & Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-metal-800">
+      < div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-metal-800" >
         <div className="flex items-center gap-2">
           {prevChapter && prevChapter.unlock_status !== "locked" ? (
             <Button variant="outline" onClick={() => router.push(`/chapters/${prevChapter.id}`)}>
@@ -459,34 +484,36 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
           ) : null}
         </div>
 
-        {chapter.unlock_status !== "completed" ? (
-          <Button
-            size="lg"
-            onClick={handleComplete}
-            disabled={completing}
-            className="gap-2"
-            shine
-          >
-            {completing ? (
-              <>
-                <Spinner className="h-4 w-4" />
-                Completing...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="h-5 w-5" />
-                Mark as Complete
-              </>
-            )}
-          </Button>
-        ) : (
-          <div className="flex items-center gap-2 text-emerald-500">
-            <CheckCircle2 className="h-5 w-5" />
-            <span className="font-medium">Completed</span>
-          </div>
-        )}
-      </div>
-    </motion.div>
+        {
+          chapter.unlock_status !== "completed" ? (
+            <Button
+              size="lg"
+              onClick={handleComplete}
+              disabled={completing}
+              className="gap-2"
+              shine
+            >
+              {completing ? (
+                <>
+                  <Spinner className="h-4 w-4" />
+                  Completing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-5 w-5" />
+                  Mark as Complete
+                </>
+              )}
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2 text-emerald-500">
+              <CheckCircle2 className="h-5 w-5" />
+              <span className="font-medium">Completed</span>
+            </div>
+          )
+        }
+      </div >
+    </motion.div >
   );
 }
 

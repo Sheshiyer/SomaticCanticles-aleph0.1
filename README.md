@@ -1,6 +1,6 @@
 # 🌊 Somatic Canticles
 
-[![Version](https://img.shields.io/badge/version-1.0.0--beta-blue.svg)](https://github.com/yourusername/somatic-canticles)
+[![Version](https://img.shields.io/badge/version-1.1.0--beta-blue.svg)](https://github.com/yourusername/somatic-canticles)
 [![Status](https://img.shields.io/badge/status-beta-orange.svg)](https://github.com/yourusername/somatic-canticles)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -36,6 +36,11 @@ Embark on a 12-chapter journey through your physical, emotional, intellectual, a
 | ⚡ **Edge Deployed** | Cloudflare Workers + D1 database |
 | 📊 **Progress Tracking** | Streaks, achievements, completion metrics |
 | 🎭 **13s Unlock Animation** | Cinematic 5-phase transformation sequence |
+| ✨ **Active Resonance** | Persistent high-fidelity manuscript highlights |
+| 🔮 **The Oracle** | Real-time lore search and category filtering |
+| 🏆 **Chapter Celebration** | High-fidelity end-of-chapter reward animations |
+| 📍 **Scene Bookmarks** | Persistent location-based bookmarking system |
+| 📄 **Manuscript Export** | Print-ready offline export for archival |
 
 ---
 

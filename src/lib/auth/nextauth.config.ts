@@ -172,10 +172,10 @@ export const authOptions: NextAuthOptions = {
 
   // Custom pages
   pages: {
-    signIn: '/login',
+    signIn: '/auth/login',
     signOut: '/',
-    error: '/login',
-    newUser: '/register',
+    error: '/auth/login',
+    newUser: '/auth/register',
   },
 
   // Callbacks

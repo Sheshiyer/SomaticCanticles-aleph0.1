@@ -32,13 +32,8 @@ interface NavItem {
 const dashboardNavItems: NavItem[] = [
   {
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     icon: <LayoutDashboard className="h-4 w-4" />,
-  },
-  {
-    label: "Biorhythm",
-    href: "/biorhythm",
-    icon: <Activity className="h-4 w-4" />,
   },
   {
     label: "Chapters",
@@ -46,24 +41,22 @@ const dashboardNavItems: NavItem[] = [
     icon: <BookOpen className="h-4 w-4" />,
   },
   {
-    label: "Calendar",
-    href: "/calendar",
+    label: "Progress",
+    href: "/dashboard/progress",
+    icon: <Activity className="h-4 w-4" />,
+  },
+  {
+    label: "Achievements",
+    href: "/dashboard/achievements",
     icon: <Calendar className="h-4 w-4" />,
-    disabled: true,
   },
 ];
 
 const settingsNavItems: NavItem[] = [
   {
-    label: "Profile",
-    href: "/profile",
-    icon: <User className="h-4 w-4" />,
-  },
-  {
     label: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: <Settings className="h-4 w-4" />,
-    disabled: true,
   },
 ];
 
@@ -75,7 +68,12 @@ const adminNavItem: NavItem = {
 };
 
 // Sidebar Nav Item Component
-function SidebarNavItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
+function SidebarNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
+  // Check if this nav item is active (exact match or starts with for nested routes)
+  const isActive = item.href === "/dashboard" 
+    ? pathname === "/dashboard" || pathname === "/dashboard/"
+    : pathname.startsWith(item.href);
+    
   return (
     <Link
       href={item.href}
@@ -138,7 +136,7 @@ function MobileSidebar({
                   <SidebarNavItem
                     key={item.href}
                     item={item}
-                    isActive={pathname === item.href}
+                    pathname={pathname}
                   />
                 ))}
               </nav>
@@ -153,7 +151,7 @@ function MobileSidebar({
                   <SidebarNavItem
                     key={item.href}
                     item={item}
-                    isActive={pathname === item.href}
+                    pathname={pathname}
                   />
                 ))}
               </nav>
@@ -167,7 +165,7 @@ function MobileSidebar({
                 <nav className="space-y-1">
                   <SidebarNavItem
                     item={adminNavItem}
-                    isActive={pathname.startsWith("/admin")}
+                    pathname={pathname}
                   />
                 </nav>
               </div>
@@ -249,7 +247,7 @@ export default function DashboardLayout({
                   <SidebarNavItem
                     key={item.href}
                     item={item}
-                    isActive={pathname === item.href}
+                    pathname={pathname}
                   />
                 ))}
               </nav>
@@ -264,7 +262,7 @@ export default function DashboardLayout({
                   <SidebarNavItem
                     key={item.href}
                     item={item}
-                    isActive={pathname === item.href}
+                    pathname={pathname}
                   />
                 ))}
               </nav>

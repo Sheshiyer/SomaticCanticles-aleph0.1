@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
   },
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Requires 'critters' package
   },
   compress: true,
   // Custom domain configuration

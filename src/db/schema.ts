@@ -143,6 +143,26 @@ export const notifications = pgTable('notifications', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Highlights table
+export const highlights = pgTable('highlights', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  chapterId: integer('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+  sceneIndex: integer('scene_index').notNull(),
+  text: text('text').notNull(),
+  color: text('color').notNull().default('primary'), // primary, gold, resonance, danger
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Bookmarks table
+export const bookmarks = pgTable('bookmarks', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  chapterId: integer('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+  sceneIndex: integer('scene_index').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -164,3 +184,7 @@ export type RateLimit = typeof rateLimits.$inferSelect;
 export type NewRateLimit = typeof rateLimits.$inferInsert;
 export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
+export type Highlight = typeof highlights.$inferSelect;
+export type NewHighlight = typeof highlights.$inferInsert;
+export type Bookmark = typeof bookmarks.$inferSelect;
+export type NewBookmark = typeof bookmarks.$inferInsert;

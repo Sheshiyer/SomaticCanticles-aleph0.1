@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.BACKEND_API_URL || 'https://somatic-canticles-api-prod.sheshnarayan-iyer.workers.dev'}/api/:path*`,
+        destination: `${process.env.BACKEND_API_URL || 'https://khaloree.tryambakam.space'}/api/:path*`,
       },
     ];
   },

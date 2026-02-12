@@ -86,6 +86,7 @@ app.get('/health', (c) => {
 
 // Auth routes
 app.route('/api/v1/auth', auth);
+app.route('/v1/auth', auth); // Support for /v1/ prefix
 app.route('/auth', auth); // Fallback for stripped prefix environments
 
 // User routes

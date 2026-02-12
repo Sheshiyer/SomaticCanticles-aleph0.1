@@ -183,7 +183,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
     } as ApiError;
   }
 
-  const response = await apiRequest<LoginResponse>('/auth/login', {
+  const response = await apiRequest<LoginResponse>('/v1/auth/login', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -234,7 +234,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
     return response;
   }
 
-  const response = await apiRequest<RegisterResponse>('/auth/register', {
+  const response = await apiRequest<RegisterResponse>('/v1/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -282,7 +282,7 @@ export async function refreshToken(): Promise<RefreshResponse> {
     return response;
   }
 
-  const response = await apiRequest<RefreshResponse>('/auth/refresh', {
+  const response = await apiRequest<RefreshResponse>('/v1/auth/refresh', {
     method: 'POST',
     body: JSON.stringify({ refreshToken: tokens.refreshToken } as RefreshRequest),
   });
@@ -300,7 +300,7 @@ export async function logout(): Promise<SuccessResponse> {
 
   if (!USE_MOCKS && tokens?.refreshToken) {
     try {
-      await apiRequest<SuccessResponse>('/auth/logout', {
+      await apiRequest<SuccessResponse>('/v1/auth/logout', {
         method: 'POST',
         body: JSON.stringify({ refreshToken: tokens.refreshToken } as LogoutRequest),
       });

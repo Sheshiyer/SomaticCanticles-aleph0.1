@@ -47,8 +47,9 @@ const corsOrigins = [
   'https://1319.tryambakam.space',
   // Allow all Pages preview deployments
   'https://*.somatic-canticles.pages.dev',
-  // Vercel deployment
+  // Vercel deployments (production and all previews)
   'https://somatic-canticles-aleph0-1.vercel.app',
+  'https://*.vercel.app',
 ];
 
 // Middleware
@@ -64,6 +65,7 @@ app.use('*', cors({
 
     // Check wildcard patterns
     if (origin.endsWith('.somatic-canticles.pages.dev')) return origin;
+    if (origin.endsWith('.vercel.app')) return origin;
 
     // Deny other origins
     return null;

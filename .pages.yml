@@ -24,8 +24,8 @@ headers:
     headers:
       Cache-Control: public, max-age=31536000, immutable
 
-# Redirects
+# Redirects - Proxy API requests to the Worker
 redirects:
   - source: /api/*
-    destination: https://somatic-canticles.YOUR_SUBDOMAIN.workers.dev/api/:splat
+    destination: https://khaloree.tryambakam.space/api/:splat
     status: 200

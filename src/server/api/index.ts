@@ -83,7 +83,7 @@ app.get('/health', (c) => {
 });
 
 // Auth routes
-app.route('/api/auth', auth);
+app.route('/api/v1/auth', auth);
 app.route('/auth', auth); // Fallback for stripped prefix environments
 
 // User routes

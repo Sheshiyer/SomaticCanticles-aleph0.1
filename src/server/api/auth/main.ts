@@ -25,21 +25,24 @@ export async function login(c: Context<{ Bindings: Env; Variables: Variables }>)
 
     // Find user by email
     console.log(`[Auth] Attempting login for email: ${email}`);
-    // const user = await c.env.DB.prepare(
-    //   'SELECT id, email, password_hash, role, birthdate, timezone, email_verified FROM users WHERE email = ?'
-    // ).bind(email).first();
-    const user = await db.query.users.findFirst({
-      where: eq(users.email, email),
-      columns: {
-        id: true,
-        email: true,
-        passwordHash: true,
-        role: true,
-        birthdate: true,
-        timezone: true,
-        emailVerified: true,
-      }
-    });
+    let user;
+    try {
+      user = await db.query.users.findFirst({
+        where: eq(users.email, email),
+        columns: {
+          id: true,
+          email: true,
+          passwordHash: true,
+          role: true,
+          birthdate: true,
+          timezone: true,
+          emailVerified: true,
+        }
+      });
+    } catch (dbError) {
+      console.error('[Auth] Database error finding user:', dbError);
+      throw dbError;
+    }
 
     if (!user) {
       console.log(`[Auth] User not found for email: ${email}`);

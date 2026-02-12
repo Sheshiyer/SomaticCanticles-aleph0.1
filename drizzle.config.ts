@@ -6,8 +6,11 @@ dotenv.config({ path: '.env.local' });
 export default defineConfig({
     schema: './src/db/schema.ts',
     out: './drizzle/migrations',
-    dialect: 'postgresql',
+    dialect: 'sqlite',
+    driver: 'd1-http',
     dbCredentials: {
-        url: process.env.POSTGRES_URL!,
+        accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
+        databaseId: "df9d20f7-9ad3-45a9-b08d-e41b849f0ee6",
+        token: process.env.CLOUDFLARE_API_TOKEN!,
     },
 });

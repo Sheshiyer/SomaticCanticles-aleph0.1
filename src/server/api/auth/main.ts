@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import type { Env, Variables } from '../index';
 import { generateAccessToken, generateRefreshToken, hashPassword, verifyPassword } from '../../lib/crypto';
-import { db } from '../../../db';
+import { createDB } from '../../../db';
 import { users, refreshTokens, streaks } from '../../../db/schema';
 import { eq, and, gt, isNull } from 'drizzle-orm';
 
@@ -20,6 +20,9 @@ export async function login(c: Context<{ Bindings: Env; Variables: Variables }>)
   }
 
   try {
+    // Create database instance from D1 binding
+    const db = createDB(c.env.DB);
+
     // Find user by email
     console.log(`[Auth] Attempting login for email: ${email}`);
     // const user = await c.env.DB.prepare(

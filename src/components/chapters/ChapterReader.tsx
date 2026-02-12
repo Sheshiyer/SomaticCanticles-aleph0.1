@@ -15,6 +15,9 @@ import {
     type Highlight,
     type Bookmark
 } from "@/lib/chapters/api";
+import { calculateBiorhythm, type BiorhythmData } from "@/lib/biorhythm/api";
+import { getStoredUser } from "@/lib/auth/api";
+import TerminalOverlay from "../terminal/TerminalOverlay";
 import ChapterCelebration from "./ChapterCelebration";
 import { toast } from "sonner";
 import { Search, Filter, X, Trash2, Bookmark as BookmarkIcon, Download } from "lucide-react";
@@ -100,9 +103,13 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
     const [loreCategoryFilter, setLoreCategoryFilter] = useState<string | null>(null);
     const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
     const [chapterBookmarks, setChapterBookmarks] = useState<Bookmark[]>([]);
+    const [biorhythm, setBiorhythm] = useState<BiorhythmData | null>(null);
+    const [user] = useState(() => getStoredUser());
+    const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
 
     const currentScene = scenes[currentSceneIndex];
+    const hasChoices = currentScene.content.includes("```choice");
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +140,21 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
         };
         loadData();
     }, [chapterId]);
+
+    // Load biorhythm data
+    useEffect(() => {
+        const loadBiorhythm = async () => {
+            if (user?.birthdate) {
+                try {
+                    const data = await calculateBiorhythm(user.birthdate);
+                    setBiorhythm(data);
+                } catch (error) {
+                    console.error("Failed to load biorhythm for reader:", error);
+                }
+            }
+        };
+        loadBiorhythm();
+    }, [user?.birthdate]);
 
     const handleHighlight = async (color: string) => {
         if (!selection) return;
@@ -254,11 +276,22 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
 
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
+            // Terminal triggers: Ctrl+` or Ctrl+~ or Alt+T
+            if ((e.ctrlKey && (e.key === '`' || e.key === '~')) || (e.altKey && e.key === 't')) {
+                e.preventDefault();
+                setIsTerminalOpen(prev => !prev);
+                return;
+            }
+
+            if (isTerminalOpen) return;
+            if (isFocusMode && e.key === 'Escape') {
+                setIsFocusMode(false);
+                return;
+            }
+            if (isFocusMode || isSaving || isLogOpen) return;
+
             if (e.key.toLowerCase() === 'f') {
                 setIsFocusMode(prev => !prev);
-            }
-            if (e.key === 'Escape') {
-                setIsFocusMode(false);
             }
             if (e.key === 'Enter') {
                 if (currentSceneIndex < scenes.length - 1) {
@@ -461,6 +494,135 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                                 })}
                                             </span>
                                         );
+                                    },
+                                    // Custom renderer for reveal blocks
+                                    code: ({ node, className, children, ...props }: any) => {
+                                        const match = /language-(\w+)/.exec(className || "");
+                                        const lang = match ? match[1] : "";
+                                        const isInline = !className;
+
+                                        if (!isInline && lang === "reveal") {
+                                            const content = String(children).replace(/\n$/, "");
+                                            const [header, ...bodyParts] = content.split("---");
+                                            const body = bodyParts.join("---").trim();
+
+                                            const headerLines = header.split("\n");
+                                            const data: any = {};
+                                            headerLines.forEach(line => {
+                                                const [key, ...value] = line.split(":");
+                                                if (key && value.length) {
+                                                    data[key.trim().toLowerCase()] = value.join(":").trim();
+                                                }
+                                            });
+
+                                            const track = data.track || "physical";
+                                            const threshold = parseFloat(data.threshold || "0.6");
+
+                                            const currentVal = biorhythm ? (biorhythm as any)[track]?.value : 0;
+                                            const isRevealed = currentVal >= threshold;
+
+                                            return (
+                                                <div className={cn(
+                                                    "my-6 p-4 rounded-lg transition-all duration-1000",
+                                                    isRevealed
+                                                        ? "border border-primary/20 bg-primary/5 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
+                                                        : "border border-dashed border-metal-800 bg-metal-950/50 opacity-40 grayscale blur-[2px] pointer-events-none select-none"
+                                                )}>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Sparkles className={cn("w-3 h-3", isRevealed ? "text-primary animate-pulse" : "text-muted-foreground")} />
+                                                        <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">
+                                                            {track} resonance {isRevealed ? "Active" : "Locked"}
+                                                        </span>
+                                                    </div>
+                                                    {isRevealed ? (
+                                                        <div className="text-sm italic leading-relaxed text-foreground/80">
+                                                            <ReactMarkdown>{body}</ReactMarkdown>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-xs text-muted-foreground italic m-0">
+                                                            [ Increase {track} resonance to unlock deep narrative layer ]
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            );
+                                        }
+
+                                        if (!isInline && lang === "choice") {
+                                            const content = String(children).replace(/\n$/, "");
+                                            const lines = content.split("\n");
+                                            const data: any = {};
+                                            lines.forEach(line => {
+                                                const [key, ...value] = line.split(":");
+                                                if (key && value.length) {
+                                                    data[key.trim().toLowerCase()] = value.join(":").trim();
+                                                }
+                                            });
+
+                                            const label = data.label || "Continue Path";
+                                            const target = data.target;
+                                            const requirement = data.requirement;
+
+                                            // Check requirement if any
+                                            let isLocked = false;
+                                            let lockReason = "";
+
+                                            if (requirement && biorhythm) {
+                                                try {
+                                                    // Simple requirement parser: "intellectual > 0.5"
+                                                    const [track, op, valStr] = requirement.split(/\s+/);
+                                                    const val = parseFloat(valStr);
+                                                    const currentVal = (biorhythm as any)[track]?.value;
+
+                                                    if (currentVal !== undefined) {
+                                                        if (op === ">" && !(currentVal > val)) isLocked = true;
+                                                        if (op === "<" && !(currentVal < val)) isLocked = true;
+                                                        if (isLocked) lockReason = `Requires ${track} ${op} ${val} (Current: ${currentVal.toFixed(2)})`;
+                                                    }
+                                                } catch (e) {
+                                                    console.error("Choice requirement error:", e);
+                                                }
+                                            }
+
+                                            return (
+                                                <div className="my-8 p-4 rounded-xl border border-metal-800 bg-metal-900/50 hover:bg-metal-900 transition-all group overflow-hidden relative">
+                                                    <div className="flex items-center justify-between gap-4 relative z-10">
+                                                        <div className="flex-1">
+                                                            <h3 className="text-sm font-bold text-metallic mb-1">{label}</h3>
+                                                            {isLocked && (
+                                                                <p className="text-[10px] text-rose-400 font-mono italic">{lockReason}</p>
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            size="sm"
+                                                            variant={isLocked ? "ghost" : "glow"}
+                                                            disabled={isLocked || isSaving}
+                                                            onClick={() => {
+                                                                if (target) {
+                                                                    const targetIndex = scenes.findIndex(s =>
+                                                                        s.title.toLowerCase() === target.toLowerCase() ||
+                                                                        String(s.id) === String(target)
+                                                                    );
+                                                                    if (targetIndex !== -1) {
+                                                                        setCurrentSceneIndex(targetIndex);
+                                                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                                                    } else {
+                                                                        toast.error("Path Unstable", {
+                                                                            description: `Could not relocate scene: ${target}`
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className="rounded-full px-6"
+                                                        >
+                                                            {isLocked ? <Moon className="w-3.5 h-3.5 opacity-50" /> : "Initiate Jump"}
+                                                        </Button>
+                                                    </div>
+                                                    {isLocked && <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] pointer-events-none" />}
+                                                </div>
+                                            );
+                                        }
+
+                                        return <code className={className} {...props}>{children}</code>;
                                     }
                                 }}
                             >
@@ -498,8 +660,11 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                         <Button
                             id="finish-chapter-btn"
                             variant="glow"
-                            className="group relative overflow-hidden px-8 py-6 rounded-xl"
-                            disabled={isSaving}
+                            className={cn(
+                                "group relative overflow-hidden px-8 py-6 rounded-xl",
+                                hasChoices && "opacity-20 grayscale pointer-events-none"
+                            )}
+                            disabled={isSaving || (hasChoices && currentSceneIndex < scenes.length - 1)}
                             onClick={async () => {
                                 if (currentSceneIndex === scenes.length - 1) {
                                     try {
@@ -712,14 +877,40 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
             <div className={cn("fixed top-20 right-4 bottom-20 w-px bg-gradient-to-b from-transparent via-metal-800 to-transparent hidden xl:block transition-opacity duration-1000", isFocusMode && "opacity-0")} />
 
             {/* Highlights Counter (Floating Mini) */}
-            {highlights.length > 0 && (
-                <div className="fixed bottom-6 right-6 z-40">
-                    <Button variant="outline" size="sm" className="gap-2 bg-background/50 backdrop-blur-md rounded-full border-metal-800 shadow-lg">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        <span className="text-[10px] font-mono">{highlights.length} Resonances</span>
-                    </Button>
-                </div>
-            )}
-        </div>
+            {
+                highlights.length > 0 && (
+                    <div className="fixed bottom-6 right-6 z-40">
+                        <Button variant="outline" size="sm" className="gap-2 bg-background/50 backdrop-blur-md rounded-full border-metal-800 shadow-lg">
+                            <Sparkles className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] font-mono">{highlights.length} Resonances</span>
+                        </Button>
+                    </div>
+                )
+            }
+
+            {/* Terminal Interface */}
+            <TerminalOverlay
+                isOpen={isTerminalOpen}
+                onClose={() => setIsTerminalOpen(false)}
+                onCommand={(cmd, args) => {
+                    if (cmd === "jump") {
+                        const target = args[0];
+                        if (!target) return;
+                        const targetIndex = scenes.findIndex(s =>
+                            s.title.toLowerCase().includes(target.toLowerCase()) ||
+                            String(s.id) === String(target)
+                        );
+                        if (targetIndex !== -1) {
+                            setCurrentSceneIndex(targetIndex);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                            setIsTerminalOpen(false);
+                            toast.success("Jump Initiated", {
+                                description: `Relocated to scene: ${scenes[targetIndex].title}`
+                            });
+                        }
+                    }
+                }}
+            />
+        </div >
     );
 }

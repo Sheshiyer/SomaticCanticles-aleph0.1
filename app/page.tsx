@@ -41,7 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAuth } from "@/components/AuthProvider";
+import { useSession } from "next-auth/react";
 import {
   TechFrame,
   HudPanel,
@@ -154,11 +154,11 @@ const navLinks = [
 ];
 
 // Auth Modal Component
-function AuthModal({ 
-  trigger, 
+function AuthModal({
+  trigger,
   title = "Sign In Required",
   description = "Please sign in or create an account to access this feature."
-}: { 
+}: {
   trigger: React.ReactNode;
   title?: string;
   description?: string;
@@ -192,7 +192,8 @@ function AuthModal({
 
 // Navigation Header Component
 function NavigationHeader() {
-  const { isAuthenticated } = useAuth();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -319,8 +320,8 @@ function BiorhythmsExplainerSection() {
             What Are Biorhythms?
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
-            Biorhythms are natural cycles that influence your physical, emotional, 
-            intellectual, and spiritual states. Discovered in the early 20th century, 
+            Biorhythms are natural cycles that influence your physical, emotional,
+            intellectual, and spiritual states. Discovered in the early 20th century,
             these rhythms begin at birth and continue throughout your life.
           </p>
         </motion.div>
@@ -331,7 +332,7 @@ function BiorhythmsExplainerSection() {
           <CornerOrnament position="top-right" />
           <CornerOrnament position="bottom-left" />
           <CornerOrnament position="bottom-right" />
-          
+
           {/* Wave Visualization */}
           <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             {cycles.map((cycle, index) => {
@@ -414,7 +415,7 @@ function ChapterProgressionSection() {
             Chapter Progression
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
-            Chapters unlock based on your biorhythm peaks. Each canticle becomes 
+            Chapters unlock based on your biorhythm peaks. Each canticle becomes
             available when your cycles align with the right conditions.
           </p>
         </motion.div>
@@ -425,7 +426,7 @@ function ChapterProgressionSection() {
           <CornerOrnament position="top-right" />
           <CornerOrnament position="bottom-left" />
           <CornerOrnament position="bottom-right" />
-          
+
           {/* ChapterTreeNode Component Placeholder */}
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -443,18 +444,16 @@ function ChapterProgressionSection() {
               <motion.div
                 key={chapter.num}
                 variants={itemVariants}
-                className={`flex items-center gap-3 rounded-lg border p-3 ${
-                  chapter.status === "unlocked"
-                    ? "border-primary/30 bg-primary/5"
-                    : "border-border/50 bg-background/50 opacity-60"
-                }`}
+                className={`flex items-center gap-3 rounded-lg border p-3 ${chapter.status === "unlocked"
+                  ? "border-primary/30 bg-primary/5"
+                  : "border-border/50 bg-background/50 opacity-60"
+                  }`}
               >
                 <div
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                    chapter.status === "unlocked"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${chapter.status === "unlocked"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                    }`}
                 >
                   {chapter.status === "unlocked" ? (
                     <Play className="h-3 w-3" />
@@ -555,7 +554,8 @@ function ExpectedTimeline() {
 }
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuth();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   return (
     <TooltipProvider>
@@ -585,7 +585,7 @@ export default function HomePage() {
               <CornerOrnament position="top-right" />
               <CornerOrnament position="bottom-left" />
               <CornerOrnament position="bottom-right" />
-              
+
               {/* Background gradient orb */}
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-lg">
                 <div className="h-[600px] w-[600px] rounded-full bg-gradient-to-br from-ember-500/5 via-ocean-500/5 to-lunar-500/5 blur-3xl" />
@@ -724,7 +724,7 @@ export default function HomePage() {
                         <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">
                           {cycle.element}
                         </p>
-                        
+
                         {/* Data Display for cycle period */}
                         <DataDisplay
                           label="Period"
@@ -732,7 +732,7 @@ export default function HomePage() {
                           unit="days"
                           variant={cycle.color === "ember" ? "warning" : cycle.color === "ocean" ? "default" : cycle.color === "solar" ? "success" : "tech"}
                         />
-                        
+
                         {/* Description */}
                         <p className="text-sm leading-relaxed text-muted-foreground">
                           {cycle.description}
@@ -760,7 +760,7 @@ export default function HomePage() {
               <CornerOrnament position="top-right" />
               <CornerOrnament position="bottom-left" />
               <CornerOrnament position="bottom-right" />
-              
+
               <motion.div
                 variants={containerVariants}
                 className="grid gap-8 sm:grid-cols-3"
@@ -799,7 +799,7 @@ export default function HomePage() {
               <CornerOrnament position="top-right" />
               <CornerOrnament position="bottom-left" />
               <CornerOrnament position="bottom-right" />
-              
+
               {/* Subtle background decoration */}
               <div className="pointer-events-none absolute inset-0 opacity-50 overflow-hidden rounded-lg">
                 <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />

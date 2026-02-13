@@ -4,17 +4,13 @@
  * Handles all API communication for chapters
  */
 
-import { getAccessToken } from "../auth";
+import { getSession } from "next-auth/react";
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
-// Caching layer for metadata
-interface CacheItem<T> {
-  data: T;
-  timestamp: number;
-}
-const CHAPTER_LIST_CACHE_KEY = 'chapter_list_cache';
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// Cache removed
+
 
 // Retry config
 const MAX_RETRIES = 3;
@@ -389,7 +385,8 @@ async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const token = getAccessToken();
+  const session = await getSession();
+  const token = session?.accessToken;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -407,8 +404,7 @@ async function fetchWithAuth(
 
   if (response.status === 401) {
     // Token expired or invalid
-    localStorage.removeItem("auth_token");
-    window.location.href = "/auth/login";
+    // window.location.href = "/auth/login"; // NextAuth handles this via middleware mostly, or we can use signIn
     throw new ChapterApiError("Authentication required", "AUTH_REQUIRED", 401);
   }
 
@@ -434,17 +430,8 @@ async function withRetry<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promis
  * Get all chapters with unlock status
  */
 export async function getChaptersList(): Promise<ChaptersListResponse> {
-  // Check cache first
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(CHAPTER_LIST_CACHE_KEY);
-    if (cached) {
-      const item: CacheItem<ChaptersListResponse> = JSON.parse(cached);
-      if (Date.now() - item.timestamp < CACHE_TTL) {
-        console.log("Serving chapters from cache");
-        return item.data;
-      }
-    }
-  }
+  // Cache check removed
+
 
   if (USE_MOCKS) {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -460,12 +447,8 @@ export async function getChaptersList(): Promise<ChaptersListResponse> {
       },
     };
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(CHAPTER_LIST_CACHE_KEY, JSON.stringify({
-        data: result,
-        timestamp: Date.now()
-      }));
-    }
+    // Cache set removed
+
 
     return result;
   }
@@ -479,13 +462,8 @@ export async function getChaptersList(): Promise<ChaptersListResponse> {
 
     const data = await withRetry(fn);
 
-    // Update cache
-    if (data.success && typeof window !== 'undefined') {
-      localStorage.setItem(CHAPTER_LIST_CACHE_KEY, JSON.stringify({
-        data,
-        timestamp: Date.now()
-      }));
-    }
+    // Cache update removed
+
 
     return data;
   } catch (error) {
@@ -714,12 +692,10 @@ export async function saveChapterNotes(
 }
 
 /**
- * Invalidate the chapter list cache
+ * Invalidate the chapter list cache - Deprecated (no-op)
  */
 export function invalidateChapterCache() {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(CHAPTER_LIST_CACHE_KEY);
-  }
+  // No-op
 }
 
 /**

@@ -16,7 +16,7 @@ import {
     type Bookmark
 } from "@/lib/chapters/api";
 import { calculateBiorhythm, type BiorhythmData } from "@/lib/biorhythm/api";
-import { getStoredUser } from "@/lib/auth/api";
+import { useSession } from "next-auth/react";
 import TerminalOverlay from "../terminal/TerminalOverlay";
 import ChapterCelebration from "./ChapterCelebration";
 import { toast } from "sonner";
@@ -104,7 +104,8 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
     const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
     const [chapterBookmarks, setChapterBookmarks] = useState<Bookmark[]>([]);
     const [biorhythm, setBiorhythm] = useState<BiorhythmData | null>(null);
-    const [user] = useState(() => getStoredUser());
+    const { data: session } = useSession();
+    const user = session?.user;
     const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
 

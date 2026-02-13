@@ -9,7 +9,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, Calendar, Globe } from "lucide-react";
 
-import { register as registerUser } from "@/lib/auth";
+import { register as registerUser, signIn } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardCorners } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,7 +82,19 @@ export default function RegisterPage() {
         timezone: data.timezone,
       });
 
+      // Sign in the user immediately after registration
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error("Account created but failed to sign in automatically. Please sign in.");
+      }
+
       toast.success("Account created successfully!");
+      router.refresh(); // Update client-side session state
       router.push("/");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Registration failed. Please try again.";
@@ -93,21 +105,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card 
-      variant="glass" 
+    <Card
+      variant="glass"
       className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300"
     >
       <CardCorners color="primary" />
-      
+
       {/* Top tech accent */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-32 bg-gradient-to-r from-transparent via-primary to-transparent" />
-      
+
       <CardHeader className="space-y-4 pb-6 pt-8">
         {/* Light pillar accent */}
         <div className="flex justify-center mb-2">
           <LightPillar color="solar" height={32} width={2} intensity="low" />
         </div>
-        
+
         <CardTitle className="text-2xl font-bold text-center bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
           Create Your Account
         </CardTitle>
@@ -219,9 +231,9 @@ export default function RegisterPage() {
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4 pt-2">
-          <Button 
-            type="submit" 
-            className="w-full h-11" 
+          <Button
+            type="submit"
+            className="w-full h-11"
             disabled={isLoading}
             shine
           >
@@ -236,8 +248,8 @@ export default function RegisterPage() {
           </Button>
           <div className="text-sm text-center text-muted-foreground">
             Already have an account?{" "}
-            <Link 
-              href="/auth/login" 
+            <Link
+              href="/auth/login"
               className="text-primary font-medium hover:text-amber-400 transition-colors hover:underline"
             >
               Sign in

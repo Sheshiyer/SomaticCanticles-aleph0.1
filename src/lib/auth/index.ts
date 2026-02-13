@@ -32,29 +32,10 @@ export type {
 // API functions (for backward compatibility and server-side use)
 export {
   // Authentication
-  login,
   register,
-  refreshToken,
-  logout,
-  logoutAll,
-  
-  // Profile
-  getMe,
-  updateProfile,
-  
+
   // Password
   changePassword,
   forgotPassword,
   resetPassword,
-  
-  // State helpers
-  isAuthenticated,
-  getAccessToken,
-  getCurrentUser,
-  initAuth,
-  getStoredTokens,
-  storeTokens,
-  clearTokens,
-  getStoredUser,
-  storeUser,
 } from './api';

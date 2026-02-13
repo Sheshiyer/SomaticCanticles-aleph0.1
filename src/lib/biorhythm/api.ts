@@ -14,32 +14,14 @@ import type {
 // Re-export types for convenience
 export * from './types';
 
+import { getSession } from "next-auth/react";
+
+// ... imports ...
+
 // API Base URL - configured via environment
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
-// Flag to enable mocking (for development)
-// Force mock mode if API is localhost:8787 (dev server not running)
-const isLocalDev = typeof window !== 'undefined' && 
-  (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:8787') || 
-   process.env.NEXT_PUBLIC_API_URL === 'http://localhost:8787');
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === 'true' || isLocalDev;
-
-/**
- * Get stored tokens from localStorage
- */
-function getStoredTokens(): { accessToken: string } | null {
-  if (typeof window === 'undefined') return null;
-
-  const tokens = localStorage.getItem('auth_tokens');
-  if (!tokens) return null;
-
-  try {
-    const parsed = JSON.parse(tokens);
-    return { accessToken: parsed.accessToken };
-  } catch {
-    return null;
-  }
-}
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === "true";
 
 /**
  * Helper function to make authenticated API requests
@@ -49,13 +31,14 @@ async function apiRequest<T>(
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  const tokens = getStoredTokens();
+  const session = await getSession();
+  const token = session?.accessToken;
 
   const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(tokens?.accessToken && { 'Authorization': `Bearer ${tokens.accessToken}` }),
+      ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options?.headers,
     },
   });

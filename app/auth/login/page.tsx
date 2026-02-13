@@ -9,7 +9,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock } from "lucide-react";
 
-import { login } from "@/lib/auth";
+import { signIn } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardCorners } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  
+
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -53,12 +53,18 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login({
+      const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
+        redirect: false,
       });
 
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
       toast.success("Welcome back!");
+      router.refresh(); // Update client-side session state
       router.push(callbackUrl);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Invalid email or password";
@@ -69,21 +75,21 @@ export default function LoginPage() {
   };
 
   return (
-    <Card 
-      variant="glass" 
+    <Card
+      variant="glass"
       className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300"
     >
       <CardCorners color="primary" />
-      
+
       {/* Top tech accent */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-32 bg-gradient-to-r from-transparent via-primary to-transparent" />
-      
+
       <CardHeader className="space-y-4 pb-6 pt-8">
         {/* Light pillar accent */}
         <div className="flex justify-center mb-2">
           <LightPillar color="solar" height={32} width={2} intensity="low" />
         </div>
-        
+
         <CardTitle className="text-2xl font-bold text-center bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
           Welcome Back
         </CardTitle>
@@ -171,9 +177,9 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4 pt-2">
-          <Button 
-            type="submit" 
-            className="w-full h-11" 
+          <Button
+            type="submit"
+            className="w-full h-11"
             disabled={isLoading}
             shine
           >
@@ -186,7 +192,7 @@ export default function LoginPage() {
               "Sign in"
             )}
           </Button>
-          
+
           <div className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link

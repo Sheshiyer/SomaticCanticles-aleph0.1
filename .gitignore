@@ -43,3 +43,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 workers/.wrangler/
+
+# local
+.wrangler/
+dist/
+*.log
+*.bak
+dist_check_2/
+tail_log.txt

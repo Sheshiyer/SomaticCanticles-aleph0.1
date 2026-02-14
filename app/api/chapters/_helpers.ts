@@ -61,12 +61,9 @@ type MinimalSession = {
 
 export async function getSessionAndClient() {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (!error && user) {
+  const userResult = await supabase.auth.getUser();
+  if (!userResult.error && userResult.data.user) {
+    const user = userResult.data.user;
     return {
       supabase,
       session: {
@@ -76,6 +73,13 @@ export async function getSessionAndClient() {
         },
       } as MinimalSession,
     };
+  }
+
+  // Secondary fallback for environments where session cookie is present but
+  // getUser() is unavailable during this request.
+  const sessionResult = await supabase.auth.getSession();
+  if (!sessionResult.error && sessionResult.data.session) {
+    return { supabase, session: sessionResult.data.session as MinimalSession };
   }
 
   // Fallback for token-based calls where cookie session is missing.

@@ -389,7 +389,13 @@ async function apiRequest(
 ): Promise<Response> {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  let token = session?.access_token;
+  if (!token) {
+    // Refresh auth state from persisted browser session when available.
+    await supabase.auth.getUser();
+    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+    token = refreshedSession?.access_token;
+  }
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -404,6 +410,7 @@ async function apiRequest(
   const response = await fetch(`${base}${endpoint}`, {
     ...options,
     headers,
+    credentials: "include",
   });
 
   if (response.status === 401) {

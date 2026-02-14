@@ -1,6 +1,3 @@
-// Dashboard Layout - Protected layout for authenticated users
-// Includes sidebar navigation and header with user menu
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard,
   Activity,
@@ -20,6 +18,7 @@ import {
   X,
   BookOpen,
   Shield,
+  Loader2,
 } from "lucide-react";
 
 interface NavItem {
@@ -70,10 +69,10 @@ const adminNavItem: NavItem = {
 // Sidebar Nav Item Component
 function SidebarNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
   // Check if this nav item is active (exact match or starts with for nested routes)
-  const isActive = item.href === "/dashboard" 
+  const isActive = item.href === "/dashboard"
     ? pathname === "/dashboard" || pathname === "/dashboard/"
     : pathname.startsWith(item.href);
-    
+
   return (
     <Link
       href={item.href}
@@ -106,7 +105,7 @@ function MobileSidebar({
   isAdmin: boolean;
 }) {
   const pathname = usePathname();
-  
+
   if (!open) return null;
 
   return (
@@ -125,7 +124,7 @@ function MobileSidebar({
               <X className="h-5 w-5" />
             </Button>
           </div>
-          
+
           <div className="flex-1 overflow-auto p-4">
             <div className="mb-6">
               <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -141,7 +140,7 @@ function MobileSidebar({
                 ))}
               </nav>
             </div>
-            
+
             <div className="mb-6">
               <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Account
@@ -156,7 +155,7 @@ function MobileSidebar({
                 ))}
               </nav>
             </div>
-            
+
             {isAdmin && (
               <div className="mb-6">
                 <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -171,7 +170,7 @@ function MobileSidebar({
               </div>
             )}
           </div>
-          
+
           <div className="border-t p-4">
             <Button
               variant="ghost"
@@ -197,34 +196,74 @@ export default function DashboardLayout({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const supabase = createClient();
 
   useEffect(() => {
-    // Get user from localStorage
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem("user");
-      if (user) {
-        try {
-          const parsed = JSON.parse(user);
-          setUserEmail(parsed.email || null);
-          setIsAdmin(parsed.role === "admin");
-        } catch {
-          // Invalid user data, redirect to login
-          router.push("/login");
-        }
-      } else {
-        // No user, redirect to login
-        router.push("/login");
-      }
-    }
-  }, [router]);
+    const checkUser = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-  const handleLogout = () => {
+        if (error || !session) {
+          router.push("/auth/login");
+          return;
+        }
+
+        setUserEmail(session.user.email || null);
+
+        // Fetch user role from public.users table for accuracy
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        // Check if role is admin either in metadata or public table
+        const role = userData?.role || session.user.user_metadata?.role;
+        setIsAdmin(role === 'admin');
+
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        router.push("/auth/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        router.push('/auth/login');
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session) {
+          setUserEmail(session.user.email || null);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router, supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem("auth_tokens");
     localStorage.removeItem("user");
-    router.push("/login");
+    router.push("/auth/login");
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,7 +275,7 @@ export default function DashboardLayout({
               Somatic Canticles
             </Link>
           </div>
-          
+
           <div className="flex-1 overflow-auto p-4">
             <div className="mb-6">
               <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -252,7 +291,7 @@ export default function DashboardLayout({
                 ))}
               </nav>
             </div>
-            
+
             <div className="mb-6">
               <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Account
@@ -267,8 +306,22 @@ export default function DashboardLayout({
                 ))}
               </nav>
             </div>
+
+            {isAdmin && (
+              <div className="mb-6">
+                <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Admin
+                </h4>
+                <nav className="space-y-1">
+                  <SidebarNavItem
+                    item={adminNavItem}
+                    pathname={pathname}
+                  />
+                </nav>
+              </div>
+            )}
           </div>
-          
+
           <div className="border-t p-4">
             <Button
               variant="ghost"
@@ -307,7 +360,7 @@ export default function DashboardLayout({
                 <Menu className="h-5 w-5" />
               </Button>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <span className="hidden text-sm text-muted-foreground md:inline">
                 {userEmail}
@@ -316,7 +369,7 @@ export default function DashboardLayout({
             </div>
           </div>
         </header>
-        
+
         {/* Page Content */}
         <main className="container mx-auto p-4 md:p-6 lg:p-8">
           {children}

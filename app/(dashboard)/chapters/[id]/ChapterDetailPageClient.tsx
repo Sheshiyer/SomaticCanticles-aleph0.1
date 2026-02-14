@@ -312,6 +312,9 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
                         {(chapter.lore_metadata as { element?: string }).element && (
                           <p><span className="text-foreground">Element:</span> {(chapter.lore_metadata as { element: string }).element}</p>
                         )}
+                        {(chapter.lore_metadata as { book_name?: string }).book_name && (
+                          <p><span className="text-foreground">Book:</span> {(chapter.lore_metadata as { book_name: string }).book_name}</p>
+                        )}
                         {(chapter.lore_metadata as { tarot?: string }).tarot && (
                           <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
                         )}

@@ -19,7 +19,7 @@ export default async function ReadPage({ params }: ReadPageProps) {
   const supabase = await createClient();
   const { data: chapter, error: chapterError } = await supabase
     .from("chapters")
-    .select("id, order, title, cycle")
+    .select("id, order, title, cycle, content")
     .or(`id.eq.${requestedId},order.eq.${requestedId}`)
     .order("order", { ascending: true })
     .limit(1)
@@ -29,7 +29,15 @@ export default async function ReadPage({ params }: ReadPageProps) {
   }
 
   // Manuscript mapping is canonical by chapter order.
-  const content = await getManuscriptContent(chapter.order);
+  const contentFromFile = await getManuscriptContent(chapter.order);
+  const contentFromDb =
+    chapter.content &&
+    typeof chapter.content === "object" &&
+    "markdown" in chapter.content &&
+    typeof chapter.content.markdown === "string"
+      ? chapter.content.markdown
+      : null;
+  const content = contentFromFile ?? contentFromDb;
   if (!content) {
     notFound();
   }

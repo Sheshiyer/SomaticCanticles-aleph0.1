@@ -9,8 +9,6 @@
 
 ---
 
-## The Information Scream
-
 The datascapes of the choroid plexus were screaming.
 
 It wasn't a sound. Sound was a luxury of the physical world, a crude tool for a crude reality. This was a shriek of pure information, a wave of semantic agony that crashed over their self-consciousness interface systems. To Dr. Jian Quoril, it felt like swallowing glass. Every particle of the scream was a paradox, a violation of logic that his mind was forced to compute. From the command seat of the *Vajra*, his immersion craft, he felt the feedback as a phantom migraine, a pressure building behind his eyes. He gripped the phantom arms of his chair, his real body suspended in a cool gel half a world away, while his mind wrestled with the computational storm raging inside a stranger's consciousness.

@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 
 const CONFIGURED_API_BASE = process.env.NEXT_PUBLIC_API_URL?.trim();
 const API_BASE_URL = CONFIGURED_API_BASE || "/api";
-const INTERNAL_API_BASE = "/api";
+const INTERNAL_API_BASE = "/internal-api";
 
 // Cache removed
 

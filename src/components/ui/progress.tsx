@@ -52,7 +52,7 @@ const Progress = React.forwardRef<
   valueLabel,
   ...props 
 }, ref) => {
-  const variantStyles = progressVariants[variant];
+  const variantStyles = progressVariants[variant] ?? progressVariants.default;
   
   const sizeClasses = {
     sm: "h-1.5",

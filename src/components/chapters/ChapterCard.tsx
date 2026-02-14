@@ -17,7 +17,7 @@ const cycleColors = {
     borderHover: "hover:border-amber-500/50",
     text: "text-amber-400",
     icon: "text-amber-500",
-    progress: "amber",
+    progress: "warning",
     glow: "shadow-amber-500/10",
     glowHover: "hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
     corner: "border-amber-500/40",

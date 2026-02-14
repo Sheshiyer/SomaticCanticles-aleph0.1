@@ -69,11 +69,10 @@ export default function ProgressPage() {
   const fetchProgressData = async () => {
     try {
       setIsLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.somatic-canticles.com';
       
       const [statsRes, activityRes] = await Promise.all([
-        fetch(`${apiUrl}/progress/stats`, { credentials: 'include' }),
-        fetch(`${apiUrl}/progress/recent?limit=10`, { credentials: 'include' })
+        fetch(`/api/progress/stats`, { credentials: 'include' }),
+        fetch(`/api/progress/recent?limit=10`, { credentials: 'include' })
       ]);
 
       if (!statsRes.ok) throw new Error('Failed to fetch stats');
@@ -89,8 +88,8 @@ export default function ProgressPage() {
 
       // Optional parallel data: chapter topology + achievement summary
       const [chaptersResult, achievementsResult] = await Promise.allSettled([
-        fetch(`${apiUrl}/chapters/list`, { credentials: 'include' }),
-        fetch(`${apiUrl}/progress/achievements`, { credentials: 'include' }),
+        fetch(`/api/chapters/list`, { credentials: 'include' }),
+        fetch(`/api/progress/achievements`, { credentials: 'include' }),
       ]);
 
       if (chaptersResult.status === 'fulfilled' && chaptersResult.value.ok) {
@@ -411,9 +410,11 @@ export default function ProgressPage() {
           </div>
 
           <div className="mt-4">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/chapters">Open Chapters & Lore</Link>
-            </Button>
+            <Link href="/chapters">
+              <Button variant="outline" size="sm">
+                Open Chapters & Lore
+              </Button>
+            </Link>
           </div>
         </HudPanel>
       </motion.div>

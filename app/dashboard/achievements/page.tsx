@@ -26,8 +26,7 @@ export default function AchievementsPage() {
   const fetchAchievements = async () => {
     try {
       setIsLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.somatic-canticles.com';
-      const res = await fetch(`${apiUrl}/progress/achievements`, { credentials: 'include' });
+      const res = await fetch(`/api/progress/achievements`, { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch achievements');
       const data = await res.json();
       setAchievements(data.achievements);

@@ -7,7 +7,9 @@ import { createClient } from '@/lib/supabase/client';
 
 
 const CONFIGURED_API_BASE = process.env.NEXT_PUBLIC_API_URL?.trim();
-const API_BASE_URL = CONFIGURED_API_BASE || "/api";
+// Always use app-local API routes. These are Supabase-auth aware and avoid
+// legacy worker JWT mismatches when NEXT_PUBLIC_API_URL points elsewhere.
+const API_BASE_URL = "/api";
 const INTERNAL_API_BASE = "/internal-api";
 
 // Cache removed
@@ -429,6 +431,9 @@ async function withRetry<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promis
   try {
     return await fn();
   } catch (error) {
+    if (error instanceof ChapterApiError && error.status === 401) {
+      throw error;
+    }
     if (retries <= 0) throw error;
     const delay = INITIAL_RETRY_DELAY * Math.pow(2, MAX_RETRIES - retries);
     console.warn(`API call failed, retrying in ${delay}ms... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);

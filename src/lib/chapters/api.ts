@@ -507,6 +507,7 @@ export async function getChapterDetail(
       };
     }
 
+
     // Mock content for each chapter
     const mockContent: ChapterContent = {
       intro: {
@@ -897,3 +898,51 @@ export async function deleteBookmark(
     return { success: false, error };
   }
 }
+
+/**
+ * Get related lore for a chapter based on cycle/tags
+ */
+export async function getRelatedLore(
+  cycle?: string | null,
+  tags?: string[]
+): Promise<{ success: boolean; data: any[]; error?: any }> {
+  if (USE_MOCKS) {
+    return {
+      success: true,
+      data: [
+        { title: "The Physical Cycle", type: "article", category: "Core", cycle: "physical" },
+        { title: "Somatic Grounding", type: "practice", category: "Ritual", tags: ["somatic"] }
+      ].filter(l => !cycle || l.cycle === cycle)
+    };
+  }
+
+  try {
+    const supabase = createClient();
+
+    // Build query
+    let query = supabase
+      .from('lore')
+      .select('title, type, category, cycle, tags, achievement_id, unlock_level, source_path')
+      .limit(5);
+
+    if (cycle) {
+      query = query.eq('cycle', cycle);
+    }
+    // If no cycle, maybe fetch generic or tag-based?
+    // For now, let's strictly fetch by cycle if provided.
+
+    // If we want to use tags, we'd need an OR condition or overlap,
+    // but PostgREST OR syntax with arrays is tricky.
+    // Let's stick to Cycle-based context for now as per the plan.
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    return { success: true, data: data || [] };
+  } catch (error) {
+    console.error("Failed to fetch related lore:", error);
+    return { success: false, error, data: [] };
+  }
+}
+

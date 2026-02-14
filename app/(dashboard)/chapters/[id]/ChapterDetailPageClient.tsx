@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
   ChevronLeft, ChevronRight, Clock, CheckCircle2, Sparkles, Lock, BookOpen,
-  ArrowLeft, Activity, Scroll, Brain, Lightbulb, Play, Pause
+  ArrowLeft, Activity, Scroll, Brain, Lightbulb, Play, Pause, Book
 } from "lucide-react";
+
+import { RelatedLore } from "@/components/reading/RelatedLore";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -254,7 +256,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
       {/* Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TechFrame variant="tech" size="sm">
-          <TabsList className="grid w-full grid-cols-3 bg-metal-800/50 p-1">
+          <TabsList className="grid w-full grid-cols-4 bg-metal-800/50 p-1">
             <TabsTrigger value="intro" className="gap-2 data-[state=active]:bg-metal-700">
               <Scroll className="h-4 w-4" />
               Introduction
@@ -267,165 +269,181 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
               <Brain className="h-4 w-4" />
               Reflection
             </TabsTrigger>
+            <TabsTrigger value="grimoire" className="gap-2 data-[state=active]:bg-metal-700">
+              <Book className="h-4 w-4" />
+              Grimoire
+            </TabsTrigger>
           </TabsList>
         </TechFrame>
 
         {/* Intro Tab */}
         <TabsContent value="intro" className="space-y-6 animate-in fade-in-50 duration-500">
           <HudPanel title="Chapter Overview" icon={<Scroll className="h-5 w-5" />} className="scan-lines">
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-metallic flex items-center gap-2">
-                  <Scroll className="h-5 w-5 text-primary" />
-                  Chapter Overview
-                </h3>
-                <div className="prose prose-invert max-w-none text-muted-foreground leading-relaxed">
-                  {chapter.description}
-                </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-metallic flex items-center gap-2">
+                <Scroll className="h-5 w-5 text-primary" />
+                Chapter Overview
+              </h3>
+              <div className="prose prose-invert max-w-none text-muted-foreground leading-relaxed">
+                {chapter.description}
               </div>
+            </div>
 
-              <div className="p-6 rounded-xl bg-metal-900/50 border border-metal-800 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10" />
-                <div className="space-y-2 text-center md:text-left">
-                  <h4 className="font-bold text-foreground">Begin Your Journey</h4>
-                  <p className="text-sm text-muted-foreground">Immerse yourself in the sacred text of this canticle.</p>
-                </div>
-                <Button
-                  size="lg"
-                  variant="glow"
-                  className="gap-2 px-8 shrink-0"
-                  onClick={() => router.push(`/chapters/${chapter.id}/read`)}
-                >
-                  <BookOpen className="h-5 w-5" />
-                  Open Manuscript
-                </Button>
+            <div className="p-6 rounded-xl bg-metal-900/50 border border-metal-800 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10" />
+              <div className="space-y-2 text-center md:text-left">
+                <h4 className="font-bold text-foreground">Begin Your Journey</h4>
+                <p className="text-sm text-muted-foreground">Immerse yourself in the sacred text of this canticle.</p>
               </div>
+              <Button
+                size="lg"
+                variant="glow"
+                className="gap-2 px-8 shrink-0"
+                onClick={() => router.push(`/chapters/${chapter.id}/read`)}
+              >
+                <BookOpen className="h-5 w-5" />
+                Open Manuscript
+              </Button>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Wisdom Card - only show if lore metadata exists */}
-                {chapter.lore_metadata && (
-                  <HudPanel title="Wisdom" icon={<Sparkles className="h-5 w-5" />} variant="tech">
-                      {(chapter.lore_metadata as { affirmation?: string }).affirmation && (
-                        <blockquote className="text-lg font-medium italic border-l-2 border-primary/50 pl-4">
-                          &ldquo;{(chapter.lore_metadata as { affirmation: string }).affirmation}&rdquo;
-                        </blockquote>
-                      )}
-                      <div className="grid gap-2 text-sm text-muted-foreground">
-                        {(chapter.lore_metadata as { element?: string }).element && (
-                          <p><span className="text-foreground">Element:</span> {(chapter.lore_metadata as { element: string }).element}</p>
-                        )}
-                        {(chapter.lore_metadata as { book_name?: string }).book_name && (
-                          <p><span className="text-foreground">Book:</span> {(chapter.lore_metadata as { book_name: string }).book_name}</p>
-                        )}
-                        {(chapter.lore_metadata as { tarot?: string }).tarot && (
-                          <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
-                        )}
-                      </div>
-                  </HudPanel>
-                )}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Wisdom Card - only show if lore metadata exists */}
+              {chapter.lore_metadata && (
+                <HudPanel title="Wisdom" icon={<Sparkles className="h-5 w-5" />} variant="tech">
+                  {(chapter.lore_metadata as { affirmation?: string }).affirmation && (
+                    <blockquote className="text-lg font-medium italic border-l-2 border-primary/50 pl-4">
+                      &ldquo;{(chapter.lore_metadata as { affirmation: string }).affirmation}&rdquo;
+                    </blockquote>
+                  )}
+                  <div className="grid gap-2 text-sm text-muted-foreground">
+                    {(chapter.lore_metadata as { element?: string }).element && (
+                      <p><span className="text-foreground">Element:</span> {(chapter.lore_metadata as { element: string }).element}</p>
+                    )}
+                    {(chapter.lore_metadata as { book_name?: string }).book_name && (
+                      <p><span className="text-foreground">Book:</span> {(chapter.lore_metadata as { book_name: string }).book_name}</p>
+                    )}
+                    {(chapter.lore_metadata as { tarot?: string }).tarot && (
+                      <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
+                    )}
+                  </div>
+                </HudPanel>
+              )}
+            </div>
           </HudPanel>
         </TabsContent>
 
         {/* Practice Tab */}
         <TabsContent value="practice" className="space-y-6">
           <HudPanel title={chapter.content?.practice?.title || "Somatic Practice"} icon={<Activity className="h-5 w-5" />} variant="tech" className="scan-lines">
-              {chapter.content?.practice?.instructions ? (
-                <ol className="list-decimal space-y-3 pl-5">
-                  {chapter.content.practice.instructions.map((instruction, index) => (
-                    <li key={index} className="leading-relaxed pl-2">
-                      {instruction}
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="text-muted-foreground">Practice instructions coming soon...</p>
-              )}
+            {chapter.content?.practice?.instructions ? (
+              <ol className="list-decimal space-y-3 pl-5">
+                {chapter.content.practice.instructions.map((instruction, index) => (
+                  <li key={index} className="leading-relaxed pl-2">
+                    {instruction}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="text-muted-foreground">Practice instructions coming soon...</p>
+            )}
 
-              {/* Audio Player Section */}
-              <div className="rounded-xl border border-metal-700 bg-metal-900/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium flex items-center gap-2 text-metallic">
-                    <Activity className="w-4 h-4 text-primary" />
-                    Guided Audio Practice
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    {Math.floor(sessionTime / 60)}:{(sessionTime % 60).toString().padStart(2, '0')}
-                  </div>
+            {/* Audio Player Section */}
+            <div className="rounded-xl border border-metal-700 bg-metal-900/50 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium flex items-center gap-2 text-metallic">
+                  <Activity className="w-4 h-4 text-primary" />
+                  Guided Audio Practice
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  {Math.floor(sessionTime / 60)}:{(sessionTime % 60).toString().padStart(2, '0')}
                 </div>
+              </div>
 
-                {chapter.audio_url ? (
-                  <div className="space-y-4">
-                    {/* Simple Audio Player UI */}
-                    <div className="flex items-center gap-4">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="h-12 w-12 rounded-full"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                      >
-                        {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-                      </Button>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-1.5 bg-metal-800 rounded-full overflow-hidden">
-                          <div className="h-full w-1/3 bg-primary rounded-full" />
-                        </div>
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>0:00</span>
-                          <span>{chapter.duration_minutes}:00</span>
-                        </div>
+              {chapter.audio_url ? (
+                <div className="space-y-4">
+                  {/* Simple Audio Player UI */}
+                  <div className="flex items-center gap-4">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-12 w-12 rounded-full"
+                      onClick={() => setIsPlaying(!isPlaying)}
+                    >
+                      {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                    </Button>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-1.5 bg-metal-800 rounded-full overflow-hidden">
+                        <div className="h-full w-1/3 bg-primary rounded-full" />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>0:00</span>
+                        <span>{chapter.duration_minutes}:00</span>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Audio: {chapter.title} - {chapter.duration_minutes} minute guided practice
-                    </p>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground text-center">
-                    <Activity className="w-10 h-10 mb-3 opacity-50" />
-                    <p>Audio for this chapter is coming soon</p>
-                    <p className="text-sm">Practice with the written instructions above</p>
-                  </div>
-                )}
-              </div>
+                  <p className="text-xs text-muted-foreground">
+                    Audio: {chapter.title} - {chapter.duration_minutes} minute guided practice
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground text-center">
+                  <Activity className="w-10 h-10 mb-3 opacity-50" />
+                  <p>Audio for this chapter is coming soon</p>
+                  <p className="text-sm">Practice with the written instructions above</p>
+                </div>
+              )}
+            </div>
           </HudPanel>
         </TabsContent>
 
         {/* Reflection Tab */}
         <TabsContent value="reflection" className="space-y-6">
           <HudPanel title={chapter.content?.reflection?.title || "Reflection"} icon={<Brain className="h-5 w-5" />} variant="default" className="scan-lines">
-              {chapter.content?.reflection?.questions ? (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">Take a moment to reflect on these questions:</p>
-                  <ol className="space-y-3">
-                    {chapter.content.reflection.questions.map((question, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                          {index + 1}
-                        </span>
-                        <span className="leading-relaxed pt-0.5">{question}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ) : (
-                <p className="text-muted-foreground">Reflection questions coming soon...</p>
-              )}
+            {chapter.content?.reflection?.questions ? (
+              <div className="space-y-4">
+                <p className="text-muted-foreground">Take a moment to reflect on these questions:</p>
+                <ol className="space-y-3">
+                  {chapter.content.reflection.questions.map((question, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                        {index + 1}
+                      </span>
+                      <span className="leading-relaxed pt-0.5">{question}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Reflection questions coming soon...</p>
+            )}
           </HudPanel>
 
           {/* Notes Card */}
           <HudPanel title="Your Notes" icon={<BookOpen className="h-5 w-5" />} variant="default" className="scan-lines">
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Write your reflections here..."
-                className="min-h-[150px] resize-none"
-              />
-              <div className="flex justify-end">
-                <Button onClick={handleSaveNotes} variant="outline">
-                  Save Notes
-                </Button>
-              </div>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Write your reflections here..."
+              className="min-h-[150px] resize-none"
+            />
+            <div className="flex justify-end">
+              <Button onClick={handleSaveNotes} variant="outline">
+                Save Notes
+              </Button>
+            </div>
+          </HudPanel>
+        </TabsContent>
+
+        {/* Grimoire Tab */}
+        <TabsContent value="grimoire" className="space-y-6">
+          <HudPanel title="Archives & Lore" icon={<Book className="h-5 w-5" />} variant="default" className="scan-lines">
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Unlock the deeper mysteries of the {chapter.cycle} cycle. As you progress, more entries from the World Bible will appear here.
+              </p>
+              <RelatedLore cycle={chapter.cycle} />
+            </div>
           </HudPanel>
         </TabsContent>
       </Tabs >

@@ -367,6 +367,104 @@ serve(async (req) => {
          }), { headers: { "Content-Type": "application/json" } });
       }
     }
+    if (name === "resonance") {
+       try {
+           const discordId = interaction.member?.user.id;
+           const options = interaction.data?.options;
+           const cycleOption = options?.find(o => o.name === "cycle");
+           const selectedCycle = cycleOption?.value as string | undefined;
+
+           if (!discordId) return new Response("User not found", { status: 400 });
+
+           // Get User Data
+           const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+           const { data: user, error: dbError } = await supabase.from('users').select('birthdate').eq('discord_id', discordId).single();
+
+           if (dbError) {
+                console.error("DB Error:", dbError);
+                throw new Error("Database connection failed");
+           }
+
+           if (!user || !user.birthdate) {
+             return new Response(JSON.stringify({
+               type: 4,
+               data: {
+                 content: "❌ **Signal Lost.**\n\nRun `/calibrate` to link your Anamnesis Engine.",
+                 flags: 64
+               }
+             }), { headers: { "Content-Type": "application/json" } });
+           }
+
+           const bio = calculateBiorhythm(new Date(user.birthdate));
+
+           // Embed Logic
+           let embedTitle = "Harmonic Resonance";
+           let embedDescription = "Overall system coherence analysis.";
+           let fields: any[] = [];
+           // @ts-ignore
+           let color: "default" | "success" | "warning" | "error" = "default";
+
+           if (selectedCycle) {
+                // Specific Cycle
+                // @ts-ignore
+                const value = bio[selectedCycle] as number;
+                // @ts-ignore
+                const label = bio.labels[selectedCycle];
+                embedTitle = `${selectedCycle.charAt(0).toUpperCase() + selectedCycle.slice(1)} Resonance`;
+                embedDescription = `Detailed analysis of the ${selectedCycle} field.`;
+                
+                if (label === "High") color = "success";
+                if (label === "Critical") color = "warning";
+                if (label === "Low") color = "error";
+
+                fields.push({
+                    name: `${label} Frequency`,
+                    value: `\`${generateProgressBar(value)}\` ${Math.round(value * 100)}%`,
+                    inline: false
+                });
+           } else {
+                // General Overview (similar to status but with actions)
+                fields = [
+                    { name: "Physical", value: `${Math.round(bio.physical * 100)}%`, inline: true },
+                    { name: "Emotional", value: `${Math.round(bio.emotional * 100)}%`, inline: true },
+                    { name: "Intellectual", value: `${Math.round(bio.intellectual * 100)}%`, inline: true },
+                ];
+           }
+
+           const embed = createTechFrameEmbed(embedTitle, embedDescription, color);
+           embed.fields = fields;
+
+           return new Response(JSON.stringify({
+             type: 4, // Channel Message
+             data: {
+               embeds: [embed],
+               components: [
+                 {
+                   type: 1,
+                   components: [
+                     {
+                       type: 2,
+                       style: 1, // Primary
+                       label: selectedCycle ? `Boost ${selectedCycle.charAt(0).toUpperCase() + selectedCycle.slice(1)}` : "Align Frequencies",
+                       custom_id: selectedCycle ? `boost_${selectedCycle}` : "boost_all",
+                       emoji: { name: "⚡" }
+                     }
+                   ]
+                 }
+               ]
+             }
+           }), { headers: { "Content-Type": "application/json" } });
+       } catch (err: any) {
+           console.error("Resonance Error:", err);
+           return new Response(JSON.stringify({
+             type: 4,
+             data: {
+               content: `⚠️ **Signal Interference**: ${err.message || "Unknown error"}`,
+               flags: 64
+             }
+           }), { headers: { "Content-Type": "application/json" } });
+       }
+    }
   }
 
   // Handle Component Interactions (Buttons)
@@ -382,6 +480,25 @@ serve(async (req) => {
         type: 4,
         data: responseData
       }), { headers: { "Content-Type": "application/json" } });
+    }
+
+    if (custom_id?.startsWith("boost_")) {
+        // Boost Logic (Ephemeral simulation)
+        const target = custom_id.replace("boost_", "");
+        const messages = [
+            "Initiating coherence protocols...",
+            "Amplifying resonant frequencies...",
+            "Stabilizing harmonic outputs...",
+            "Signal boosted. Clarity increased by 13%."
+        ];
+        
+        return new Response(JSON.stringify({
+            type: 4,
+            data: {
+                content: `⚡ **Resonance Amplified: ${target.toUpperCase()}**\n\n${messages[3]}`,
+                flags: 64 // Ephemeral
+            }
+        }), { headers: { "Content-Type": "application/json" } });
     }
   }
 

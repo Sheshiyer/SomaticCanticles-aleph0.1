@@ -57,18 +57,53 @@ After 2 waves of development (80 tasks), the Somatic Canticles webapp is ready f
 
 ### 📊 Stats
 
-- **Lines of Code:** ~50,000
-- **Components:** 40+
-- **API Endpoints:** 15
-- **Database Tables:** 8
-- **Migrations:** 5
-- **Documentation:** 50+ pages
+- **Documentation:** 60+ pages
 
 ### 🙏 Contributors
 
 - Development Team - Architecture and implementation
 - Content Team - Manuscript integration and canticle scripts
 - Design Team - UI/UX and warcraftcn-ui adaptation
+
+---
+
+## [1.0.0] - 2026-02-14
+
+### 🚀 Stable Release
+
+The *Somatic Canticles* project has reached its stable milestone, integrating the core web experience with the Discord-based "Somatic Oracle" and a complete achievements system.
+
+### ✨ New Features
+
+#### 🔮 The Somatic Oracle (Discord Integration)
+- **Daily Sunrise Protocol** - Automated DM dispatch of biorhythm insights at 6 AM UTC.
+- **Slash Commands** - `/codex` for codon lookup, `/calibrate` for account linking, `/status` for instant checks.
+- **Role Sync** - "Neophyte" role auto-assigned upon linking via the `/calibrate` OTP flow.
+- **Ed25519 Security** - Cryptographic verification for all Discord interactions.
+
+#### 🥚 Easter Eggs & Secrets
+- **The Tryambakam Acrostic** - Hidden message in Chapter 21-27 titles ("CONNECT").
+- **The Binary Heartbeat** - Interactive terminal sequence in Chapter 13 (`BINARY` command).
+- **The Glitch** - Subtle visual anomalies triggered by specific user interactions.
+
+#### 🏆 Progression System
+- **Achievements Dashboard** - Track 8 detailed milestones (Streak, Cycle Master, etc.).
+- **Rarity Tiering** - Common, Rare, Epic, and Legendary achievements.
+- **Dynamic Unlock Logic** - Real-time tracking of chapter completion and streak data.
+
+#### 📚 Lore System
+- **Supabase Integration** - Migrated static JSON lore to a scalable Postgres database.
+- **Admin Tools** - Dashboard for content management and user oversight.
+
+### 🐛 Bug Fixes
+- Resolved `NaN%` display issue on empty Achievements page.
+- Fixed `Failed to load` errors for users with no history.
+- Corrected "Congratulations" message triggering prematurely.
+- Stabilized `AchievementCard` rendering logic.
+
+### 🔒 Security
+- **RPDA (Remote Personality Dispatch Architecture)** - Secure, serverless function architecture for all Discord interactions.
+- **OTP Verification** - Time-based one-time password flow for linking Discord and Web accounts.
 
 ---
 
@@ -95,8 +130,8 @@ After 2 waves of development (80 tasks), the Somatic Canticles webapp is ready f
 
 | Version | Date | Status |
 |---------|------|--------|
-| 1.0.0-beta | 2026-02-09 | Current |
-| 1.0.0 | TBD | Stable Release |
+| 1.0.0-beta | 2026-02-09 | Beta Release |
+| 1.0.0 | 2026-02-14 | **Stable Release** |
 
 ---
 

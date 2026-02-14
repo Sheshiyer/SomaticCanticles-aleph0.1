@@ -36,6 +36,20 @@ const commands = [
             .setDescription("The 3-letter sequence (e.g., AUG)")
             .setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName("resonance")
+    .setDescription("Check your current biorhythm resonance.")
+    .addStringOption(option =>
+        option.setName("cycle")
+            .setDescription("Specific cycle to analyze")
+            .setRequired(false)
+            .addChoices(
+                { name: "Physical", value: "physical" },
+                { name: "Emotional", value: "emotional" },
+                { name: "Intellectual", value: "intellectual" },
+                { name: "Spiritual", value: "spiritual" }
+            )
+    ),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(token);

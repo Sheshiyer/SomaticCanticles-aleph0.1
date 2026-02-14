@@ -748,7 +748,98 @@ export const allChapters: ChapterContent[] = [
   chapter1, chapter2, chapter3,    // Physical
   chapter4, chapter5, chapter6,    // Emotional
   chapter7, chapter8, chapter9,    // Intellectual
-  chapter10, chapter11, chapter12  // Spiritual
+  chapter10, chapter11, chapter12, // Spiritual
+  
+  // Missing Chapters (Placeholder / Easter Egg)
+  {
+    id: 13,
+    trilogySource: { book: 2, bookTitle: "The Myocardial Chorus", chapter: 13, chapterTitle: "The Binary Heartbeat" },
+    webappTitle: "The Binary Heartbeat",
+    cycle: "intellectual",
+    storyContext: { excerpt: "01001001 00100000 01000001 01001101...", somaticEvent: "System Reboot", characterFocus: "Jian", keyInsight: "I AM LISTENING" },
+    practice: { title: "Decoding", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Static", durationMinutes: 5, soundscape: "Binary", intention: "Listen" }
+  },
+  { id: 14, trilogySource: { book: 2, bookTitle: "The Myocardial Chorus", chapter: 14, chapterTitle: "Pattern Recognition" }, webappTitle: "Pattern Recognition", cycle: "intellectual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 15, trilogySource: { book: 2, bookTitle: "The Myocardial Chorus", chapter: 15, chapterTitle: "The Witness Integration" }, webappTitle: "The Witness Integration", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 16, trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 16, chapterTitle: "The Void" }, webappTitle: "The Void", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 17, trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 17, chapterTitle: "Emergence" }, webappTitle: "Emergence", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 18, trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 18, chapterTitle: "Synthesis" }, webappTitle: "Synthesis", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 19, trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 19, chapterTitle: "Calibration II" }, webappTitle: "Calibration II", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+  { id: 20, trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 20, chapterTitle: "The Threshold" }, webappTitle: "The Threshold", cycle: "spiritual", storyContext: { excerpt: "Redacted", somaticEvent: "None", characterFocus: "None", keyInsight: "None" }, practice: { title: "None", durationMinutes: 0, preparation: "", steps: [], closing: "" }, reflection: { prompts: [], journalSuggestion: "" }, canticle: { title: "Silence", durationMinutes: 0, soundscape: "None", intention: "None" } },
+
+  // ACROSTIC: C-O-N-N-E-C-T (Chapters 21-27)
+  {
+    id: 21,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 21, chapterTitle: "Critical Mass" },
+    webappTitle: "Critical Mass",
+    cycle: "spiritual",
+    storyContext: { excerpt: "The system reached critical mass.", somaticEvent: "Overload", characterFocus: "Team", keyInsight: "Breakthrough imminent." },
+    practice: { title: "Holding Charge", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Pressure", durationMinutes: 5, soundscape: "Rising tone", intention: "Containment" }
+  },
+  {
+    id: 22,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 22, chapterTitle: "Omega Point" },
+    webappTitle: "Omega Point",
+    cycle: "spiritual",
+    storyContext: { excerpt: "The end is the beginning.", somaticEvent: "Convergence", characterFocus: "Corvan", keyInsight: "All is one." },
+    practice: { title: "Point Focus", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Singularity", durationMinutes: 5, soundscape: "Focus", intention: "Merge" }
+  },
+  {
+    id: 23,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 23, chapterTitle: "Neural Bridging" },
+    webappTitle: "Neural Bridging",
+    cycle: "spiritual",
+    storyContext: { excerpt: "New pathways formed.", somaticEvent: "Connection", characterFocus: "Jian", keyInsight: "Bridge established." },
+    practice: { title: "Bridging", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Synapse", durationMinutes: 5, soundscape: "Spark", intention: "Connect" }
+  },
+  {
+    id: 24,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 24, chapterTitle: "Null Event" },
+    webappTitle: "Null Event",
+    cycle: "spiritual",
+    storyContext: { excerpt: "ERROR: PAGE NOT FOUND. REBOOTING...", somaticEvent: "Void", characterFocus: "System", keyInsight: "Reset." },
+    practice: { title: "Reset", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Silence", durationMinutes: 5, soundscape: "None", intention: "Empty" }
+  },
+  {
+    id: 25,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 25, chapterTitle: "Event Horizon" },
+    webappTitle: "Event Horizon",
+    cycle: "spiritual",
+    storyContext: { excerpt: "No return.", somaticEvent: "Crossing", characterFocus: "Sona", keyInsight: "Commitment." },
+    practice: { title: "Crossing", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Gravity", durationMinutes: 5, soundscape: "Deep bass", intention: "Pull" }
+  },
+  {
+    id: 26,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 26, chapterTitle: "Coherence Field" },
+    webappTitle: "Coherence Field",
+    cycle: "spiritual",
+    storyContext: { excerpt: "The field stabilized.", somaticEvent: "Harmony", characterFocus: "Gideon", keyInsight: "Unity." },
+    practice: { title: "Field Sensing", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Resonance", durationMinutes: 5, soundscape: "Hum", intention: "Align" }
+  },
+  {
+    id: 27,
+    trilogySource: { book: 3, bookTitle: "The Ripening", chapter: 27, chapterTitle: "The New Beginning" },
+    webappTitle: "The New Beginning",
+    cycle: "spiritual",
+    storyContext: { excerpt: "It is done. It has begun.", somaticEvent: "Birth", characterFocus: "All", keyInsight: "Authorship." },
+    practice: { title: "Authorship", durationMinutes: 5, preparation: "", steps: [], closing: "" },
+    reflection: { prompts: [], journalSuggestion: "" },
+    canticle: { title: "Dawn", durationMinutes: 5, soundscape: "Birds", intention: "Begin" }
+  }
 ];
 
 export function getChapterById(id: number): ChapterContent | undefined {

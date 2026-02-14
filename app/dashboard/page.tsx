@@ -280,9 +280,9 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 <Link href="/chapters">
-                  <Button size="sm" className="gap-2">
+                  <Button size="default" className="gap-2 whitespace-nowrap">
                     <BookOpen className="h-4 w-4" />
                     Continue Journey
                   </Button>
@@ -327,7 +327,8 @@ export default function DashboardPage() {
         </div>
         <Button
           variant="outline"
-          size="sm"
+          size="default"
+          className="shrink-0 whitespace-nowrap"
           onClick={() => fetchData(true)}
           disabled={refreshing}
         >

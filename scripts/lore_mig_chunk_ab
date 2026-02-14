@@ -1,0 +1,143 @@
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Noesis', 'Awareness of the Field', 'stage', '{"stage":3,"name":"Noesis","archetype":"The Seeker","state":"Awareness of the Field"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Anamnesis', 'Recovery of Truth', 'stage', '{"stage":4,"name":"Anamnesis","archetype":"The Witness","state":"Recovery of Truth"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Aletheia', 'Restored Logic', 'stage', '{"stage":5,"name":"Aletheia","archetype":"The Architect","state":"Restored Logic"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Severance', 'Breaking the Vine', 'stage', '{"stage":6,"name":"Severance","archetype":"The Liberator","state":"Breaking the Vine"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Authorship', 'The New Beginning', 'stage', '{"stage":7,"name":"Authorship","archetype":"The Source","state":"The New Beginning"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Sahasrara Galaxy', 'Reality is structured and mappable.', 'faction', '{"name":"Sahasrara Galaxy","sectors":"The Crown Sectors","tradition":"Vedic Systematics","house":"House Quoril (The Architects)","principle":"Reality is structured and mappable.","focus":"Neuro-cartography, systematic mapping, higher-order logic.","vessel":"Manas Yantra"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Ajna Galaxy', 'The Way flows naturally.', 'faction', '{"name":"Ajna Galaxy","sectors":"The Third Eye Sectors","tradition":"Daoist Flow Dynamics","house":"House Luminth (The Weavers)","principle":"The Way flows naturally.","focus":"Narrative vision, light-weaving, observation without interference.","vessel":"Yìshí Qìxiè"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Anahata Galaxy', 'Reality is resonant and harmonious.', 'faction', '{"name":"Anahata Galaxy","sectors":"The Heart Sectors","tradition":"Sufi Resonance","house":"House Vireth (The Alchemists)","principle":"Reality is resonant and harmonious.","focus":"Emotional attunement, frequency alignment, bio-acoustic engineering.","vessel":"Adawat al-Wa''i"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Muladhara Galaxy', 'Reality is structured and must be defended.', 'faction', '{"name":"Muladhara Galaxy","sectors":"The Root Sectors","tradition":"Kabbalistic Tzimtzum","house":"House Seter (The Guardians)","principle":"Reality is structured and must be defended.","focus":"Boundary maintenance, defensive shielding, atomic density.","vessel":"Klei Toda''ah"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Manipura Galaxy', 'Reality is transformed by Will.', 'faction', '{"name":"Manipura Galaxy","sectors":"The Fire Networks","tradition":"Yogic Transformation","principle":"Reality is transformed by Will.","focus":"Power dynamics, transformation, rapid evolution.","vessel":"Agni Yantra"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Svadhishthana Galaxy', 'Reality is fluid and adaptable.', 'faction', '{"name":"Svadhishthana Galaxy","sectors":"The Water Collective","tradition":"Tantric Fluidity","principle":"Reality is fluid and adaptable.","focus":"Creativity, flow states, emotional processing.","vessel":"Jala Yantra"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Vishuddha Galaxy', 'Reality is created through Speech.', 'faction', '{"name":"Vishuddha Galaxy","sectors":"The Communication Grid","tradition":"Hermetic Expression","principle":"Reality is created through Speech.","focus":"Communication protocols, truth-telling, code.","vessel":"Vak Yantra"}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Dr. Jian Quoril', 'The Neuro-Cartographer. Specialty: Somatic Datascape Mapping & Resonance Topology', 'character', '{"name":"Dr. Jian Quoril","role":"The Neuro-Cartographer","house":"House Quoril","enneagram":"Type 5 - The Investigator","specialty":"Somatic Datascape Mapping & Resonance Topology","psychology":"Finds security in knowledge; views emotion as unreliable data.","arc_summary":"From Rigid Logic to Integrated Wisdom.","arcs":{"book_1":"Grudgingly accepts limits of logic; integrates qualitative data.","book_2":"Evolves ''system'' definition to include paradox; maps emotional topology.","book_3":"Refuses ''Certainty''; chooses ''Aliveness''. Holds Manas Interface as moving constellation."}}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Gideon Seter', 'The Systems Immunologist. Specialty: Bio-Threat Assessment & Tzimtzum Compression Shielding', 'character', '{"name":"Gideon Seter","role":"The Systems Immunologist","house":"House Seter","enneagram":"Type 8 - The Challenger","specialty":"Bio-Threat Assessment & Tzimtzum Compression Shielding","psychology":"Decisive, grounded, protective. Binary worldview: threat/non-threat.","arc_summary":"From Protector to Guardian.","arcs":{"book_1":"Learns to use strength as container (space-holding) rather than shield.","book_2":"Learns discerning vulnerability for internal healing.","book_3":"Refuses ''Safety''; chooses ''Growth''. Holds Coherence Vector."}}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Dr. Sona Vireth', 'The Bio-Acoustic Engineer. Specialty: Metabolic Emergence & Emotional Frequency Analysis', 'character', '{"name":"Dr. Sona Vireth","role":"The Bio-Acoustic Engineer","house":"House Vireth","enneagram":"Type 4 - The Individualist","specialty":"Metabolic Emergence & Emotional Frequency Analysis","psychology":"Deeply empathetic, intuitive, creative. Feels everything.","arc_summary":"From Emotional Container to Resonant Channel.","arcs":{"book_1":"Differentiates empathy from identification. Validates intuitive data.","book_2":"Masters Coherence Cultivation; becomes active lighthouse.","book_3":"Refuses ''Peace'' (Anesthesia); chooses ''Depth''. Holds Note Vector (Joy)."}}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();
+
+INSERT INTO public.lore (term, definition, category, details, source)
+VALUES ('Dr. Corvan Luminth', 'The Psycho-Pathologist & Team Lead. Specialty: Aletheia Mapping & Narrative Diagnostics', 'character', '{"name":"Dr. Corvan Luminth","role":"The Psycho-Pathologist & Team Lead","house":"House Luminth","enneagram":"Type 9 - The Peacemaker","specialty":"Aletheia Mapping & Narrative Diagnostics","psychology":"Calm, patient, holistic thinker. Seeks harmony.","arc_summary":"From Passive Witness to Active Alchemist.","arcs":{"book_1":"Accepts burden of authorship; edits rather than just interpreting.","book_2":"Masters holding space for conflict; reality as dialogue.","book_3":"Refuses ''Perfect Meaning''; chooses ''Reality''. Holds Bell Vector (Clarity)."}}', 'world_bible_json')
+ON CONFLICT (term) DO UPDATE SET
+    definition = EXCLUDED.definition,
+    category = EXCLUDED.category,
+    details = EXCLUDED.details,
+    source = EXCLUDED.source,
+    updated_at = now();

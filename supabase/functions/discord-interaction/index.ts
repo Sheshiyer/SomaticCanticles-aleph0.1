@@ -5,6 +5,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import { createTechFrameEmbed } from "../_shared/embeds.ts";
 import { calculateBiorhythm, generateProgressBar } from "../_shared/biorhythm.ts";
 import { addRoleToUser, ROLES } from "../_shared/roles.ts";
+import { getCodonResult } from "../_shared/codons.ts";
 
 // Define Types
 interface APIInteraction {
@@ -310,6 +311,61 @@ serve(async (req) => {
           ]
         }
       }), { headers: { "Content-Type": "application/json" } });
+    }
+    if (name === "codex") {
+      const options = interaction.data?.options;
+      const sequenceOption = options?.find(o => o.name === "sequence");
+      
+      if (!sequenceOption || typeof sequenceOption.value !== 'string') {
+        return new Response(JSON.stringify({
+          type: 4,
+          data: { content: "Sequence required (e.g., AUG).", flags: 64 }
+        }), { headers: { "Content-Type": "application/json" } });
+      }
+
+      const sequence = sequenceOption.value.toUpperCase();
+
+      try {
+        const result = getCodonResult(sequence);
+        
+        const embed = createTechFrameEmbed(
+          `Codex Analysis: ${sequence}`,
+          result.description,
+          result.isSpecial ? "success" : "default"
+        );
+
+        embed.fields = [
+          {
+            name: "Amino Acid",
+            value: result.aminoAcid,
+            inline: true
+          },
+          {
+            name: "Resonance",
+            value: result.resonance,
+            inline: true
+          },
+          {
+            name: "Frequency",
+            value: `${result.frequency} Hz`,
+            inline: true
+          }
+        ];
+
+        return new Response(JSON.stringify({
+            type: 4,
+            data: { embeds: [embed] }
+        }), { headers: { "Content-Type": "application/json" } });
+
+      } catch (err: any) {
+         return new Response(JSON.stringify({
+            type: 4,
+            data: { 
+                content: `**Synthesis Failure:** ${err.message}`, 
+                flags: 64 
+            }
+         }), { headers: { "Content-Type": "application/json" } });
+      }
     }
   }
 

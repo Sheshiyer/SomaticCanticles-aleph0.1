@@ -28,6 +28,14 @@ const commands = [
             .setDescription("Chapter number to dispatch.")
             .setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName("codex")
+    .setDescription("Synthesize a DNA Codon via the Anamnesis Engine.")
+    .addStringOption(option =>
+      option.setName("sequence")
+            .setDescription("The 3-letter sequence (e.g., AUG)")
+            .setRequired(true)
+    ),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(token);

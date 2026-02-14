@@ -193,7 +193,7 @@ export default function ChaptersPage() {
                 invalidateChapterCache();
                 fetchChapters(true);
               }}
-              className="text-xs opacity-50 hover:opacity-100"
+              className="shrink-0 whitespace-nowrap opacity-50 hover:opacity-100"
             >
               <RefreshCcw className="mr-2 h-3 w-3" />
               Refresh

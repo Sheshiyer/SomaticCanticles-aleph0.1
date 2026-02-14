@@ -453,267 +453,267 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
             )}>
                 {/* TechFrame wrapper for content */}
                 <TechFrame variant="default" size="lg" className="scan-lines mb-8">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentSceneIndex}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.4, ease: "easeInOut" }}
-                        className="min-h-[60vh]"
-                    >
-                        <div className="mb-8 opacity-50 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Layers className="w-4 h-4" />
-                                <h2 className="text-xs uppercase tracking-[0.2em] m-0">{currentScene.title}</h2>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentSceneIndex}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                            className="min-h-[60vh]"
+                        >
+                            <div className="mb-8 opacity-50 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Layers className="w-4 h-4" />
+                                    <h2 className="text-xs uppercase tracking-[0.2em] m-0">{currentScene.title}</h2>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                    Active Resonance
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                Active Resonance
-                            </div>
-                        </div>
 
-                        <div onMouseUp={handleSelection} className="relative">
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                    // Custom renderer for text to find lore terms
-                                    text: ({ node, ...props }) => {
-                                        const text = props.children as string;
-                                        if (typeof text !== 'string') return <span>{text}</span>;
+                            <div onMouseUp={handleSelection} className="relative">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        // Custom renderer for text to find lore terms
+                                        text: ({ node, ...props }) => {
+                                            const text = props.children as string;
+                                            if (typeof text !== 'string') return <span>{text}</span>;
 
-                                        // Simple regex-based splitting for known terms
-                                        const terms = Object.keys(LORE_DEFINITIONS);
-                                        const regex = new RegExp(`(${terms.join('|')})`, 'gi');
-                                        const parts = text.split(regex);
-
-                                        return (
-                                            <span>
-                                                {parts.map((part, i) => {
-                                                    const definition = findLoreDefinition(part);
-                                                    if (definition) {
-                                                        return <OraclePopover key={i} definition={definition}>{part}</OraclePopover>;
-                                                    }
-                                                    return <span key={i}>{part}</span>;
-                                                })}
-                                            </span>
-                                        );
-                                    },
-                                    // Custom renderer for reveal blocks
-                                    code: ({ node, className, children, ...props }: any) => {
-                                        const match = /language-(\w+)/.exec(className || "");
-                                        const lang = match ? match[1] : "";
-                                        const isInline = !className;
-
-                                        if (!isInline && lang === "reveal") {
-                                            const content = String(children).replace(/\n$/, "");
-                                            const [header, ...bodyParts] = content.split("---");
-                                            const body = bodyParts.join("---").trim();
-
-                                            const headerLines = header.split("\n");
-                                            const data: any = {};
-                                            headerLines.forEach(line => {
-                                                const [key, ...value] = line.split(":");
-                                                if (key && value.length) {
-                                                    data[key.trim().toLowerCase()] = value.join(":").trim();
-                                                }
-                                            });
-
-                                            const track = data.track || "physical";
-                                            const threshold = parseFloat(data.threshold || "0.6");
-
-                                            const currentVal = biorhythm ? (biorhythm as any)[track]?.value : 0;
-                                            const isRevealed = currentVal >= threshold;
+                                            // Simple regex-based splitting for known terms
+                                            const terms = Object.keys(LORE_DEFINITIONS);
+                                            const regex = new RegExp(`(${terms.join('|')})`, 'gi');
+                                            const parts = text.split(regex);
 
                                             return (
-                                                <TechFrame 
-                                                    variant={isRevealed ? "tech" : "default"} 
-                                                    size="default"
-                                                    className={cn(
-                                                        "my-6 transition-all duration-1000 scan-lines",
-                                                        isRevealed
-                                                            ? "shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
-                                                            : "opacity-40 grayscale blur-[2px] pointer-events-none select-none"
-                                                    )}
-                                                >
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <Sparkles className={cn("w-3 h-3", isRevealed ? "text-primary animate-pulse" : "text-muted-foreground")} />
-                                                        <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">
-                                                            {track} resonance {isRevealed ? "Active" : "Locked"}
-                                                        </span>
-                                                    </div>
-                                                    {isRevealed ? (
-                                                        <div className="text-sm italic leading-relaxed text-foreground/80">
-                                                            <ReactMarkdown>{body}</ReactMarkdown>
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-xs text-muted-foreground italic m-0">
-                                                            [ Increase {track} resonance to unlock deep narrative layer ]
-                                                        </p>
-                                                    )}
-                                                </TechFrame>
+                                                <span>
+                                                    {parts.map((part, i) => {
+                                                        const definition = findLoreDefinition(part);
+                                                        if (definition) {
+                                                            return <OraclePopover key={i} definition={definition}>{part}</OraclePopover>;
+                                                        }
+                                                        return <span key={i}>{part}</span>;
+                                                    })}
+                                                </span>
                                             );
-                                        }
+                                        },
+                                        // Custom renderer for reveal blocks
+                                        code: ({ node, className, children, ...props }: any) => {
+                                            const match = /language-(\w+)/.exec(className || "");
+                                            const lang = match ? match[1] : "";
+                                            const isInline = !className;
 
-                                        if (!isInline && lang === "choice") {
-                                            const content = String(children).replace(/\n$/, "");
-                                            const lines = content.split("\n");
-                                            const data: any = {};
-                                            lines.forEach(line => {
-                                                const [key, ...value] = line.split(":");
-                                                if (key && value.length) {
-                                                    data[key.trim().toLowerCase()] = value.join(":").trim();
-                                                }
-                                            });
+                                            if (!isInline && lang === "reveal") {
+                                                const content = String(children).replace(/\n$/, "");
+                                                const [header, ...bodyParts] = content.split("---");
+                                                const body = bodyParts.join("---").trim();
 
-                                            const label = data.label || "Continue Path";
-                                            const target = data.target;
-                                            const requirement = data.requirement;
-
-                                            // Check requirement if any
-                                            let isLocked = false;
-                                            let lockReason = "";
-
-                                            if (requirement && biorhythm) {
-                                                try {
-                                                    // Simple requirement parser: "intellectual > 0.5"
-                                                    const [track, op, valStr] = requirement.split(/\s+/);
-                                                    const val = parseFloat(valStr);
-                                                    const currentVal = (biorhythm as any)[track]?.value;
-
-                                                    if (currentVal !== undefined) {
-                                                        if (op === ">" && !(currentVal > val)) isLocked = true;
-                                                        if (op === "<" && !(currentVal < val)) isLocked = true;
-                                                        if (isLocked) lockReason = `Requires ${track} ${op} ${val} (Current: ${currentVal.toFixed(2)})`;
+                                                const headerLines = header.split("\n");
+                                                const data: any = {};
+                                                headerLines.forEach(line => {
+                                                    const [key, ...value] = line.split(":");
+                                                    if (key && value.length) {
+                                                        data[key.trim().toLowerCase()] = value.join(":").trim();
                                                     }
-                                                } catch (e) {
-                                                    console.error("Choice requirement error:", e);
-                                                }
+                                                });
+
+                                                const track = data.track || "physical";
+                                                const threshold = parseFloat(data.threshold || "0.6");
+
+                                                const currentVal = biorhythm ? (biorhythm as any)[track]?.value : 0;
+                                                const isRevealed = currentVal >= threshold;
+
+                                                return (
+                                                    <TechFrame
+                                                        variant={isRevealed ? "tech" : "default"}
+                                                        size="default"
+                                                        className={cn(
+                                                            "my-6 transition-all duration-1000 scan-lines",
+                                                            isRevealed
+                                                                ? "shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
+                                                                : "opacity-40 grayscale blur-[2px] pointer-events-none select-none"
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <Sparkles className={cn("w-3 h-3", isRevealed ? "text-primary animate-pulse" : "text-muted-foreground")} />
+                                                            <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">
+                                                                {track} resonance {isRevealed ? "Active" : "Locked"}
+                                                            </span>
+                                                        </div>
+                                                        {isRevealed ? (
+                                                            <div className="text-sm italic leading-relaxed text-foreground/80">
+                                                                <ReactMarkdown>{body}</ReactMarkdown>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-xs text-muted-foreground italic m-0">
+                                                                [ Increase {track} resonance to unlock deep narrative layer ]
+                                                            </p>
+                                                        )}
+                                                    </TechFrame>
+                                                );
                                             }
 
-                                            return (
-                                                <TechFrame variant="gold" size="default" className="my-8 transition-all group overflow-hidden relative scan-lines">
-                                                    <div className="flex items-center justify-between gap-4 relative z-10">
-                                                        <div className="flex-1">
-                                                            <h3 className="text-sm font-bold text-metallic mb-1">{label}</h3>
-                                                            {isLocked && (
-                                                                <p className="text-[10px] text-rose-400 font-mono italic">{lockReason}</p>
-                                                            )}
-                                                        </div>
-                                                        <Button
-                                                            size="sm"
-                                                            variant={isLocked ? "ghost" : "glow"}
-                                                            disabled={isLocked || isSaving}
-                                                            onClick={() => {
-                                                                if (target) {
-                                                                    const targetIndex = scenes.findIndex(s =>
-                                                                        s.title.toLowerCase() === target.toLowerCase() ||
-                                                                        String(s.id) === String(target)
-                                                                    );
-                                                                    if (targetIndex !== -1) {
-                                                                        setCurrentSceneIndex(targetIndex);
-                                                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                                                    } else {
-                                                                        toast.error("Path Unstable", {
-                                                                            description: `Could not relocate scene: ${target}`
-                                                                        });
-                                                                    }
-                                                                }
-                                                            }}
-                                                            className="rounded-full px-6"
-                                                        >
-                                                            {isLocked ? <Moon className="w-3.5 h-3.5 opacity-50" /> : "Initiate Jump"}
-                                                        </Button>
-                                                    </div>
-                                                    {isLocked && <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] pointer-events-none" />}
-                                                </TechFrame>
-                                            );
-                                        }
+                                            if (!isInline && lang === "choice") {
+                                                const content = String(children).replace(/\n$/, "");
+                                                const lines = content.split("\n");
+                                                const data: any = {};
+                                                lines.forEach(line => {
+                                                    const [key, ...value] = line.split(":");
+                                                    if (key && value.length) {
+                                                        data[key.trim().toLowerCase()] = value.join(":").trim();
+                                                    }
+                                                });
 
-                                        return <code className={className} {...props}>{children}</code>;
-                                    }
-                                }}
-                            >
-                                {currentScene.content}
-                            </ReactMarkdown>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                                                const label = data.label || "Continue Path";
+                                                const target = data.target;
+                                                const requirement = data.requirement;
+
+                                                // Check requirement if any
+                                                let isLocked = false;
+                                                let lockReason = "";
+
+                                                if (requirement && biorhythm) {
+                                                    try {
+                                                        // Simple requirement parser: "intellectual > 0.5"
+                                                        const [track, op, valStr] = requirement.split(/\s+/);
+                                                        const val = parseFloat(valStr);
+                                                        const currentVal = (biorhythm as any)[track]?.value;
+
+                                                        if (currentVal !== undefined) {
+                                                            if (op === ">" && !(currentVal > val)) isLocked = true;
+                                                            if (op === "<" && !(currentVal < val)) isLocked = true;
+                                                            if (isLocked) lockReason = `Requires ${track} ${op} ${val} (Current: ${currentVal.toFixed(2)})`;
+                                                        }
+                                                    } catch (e) {
+                                                        console.error("Choice requirement error:", e);
+                                                    }
+                                                }
+
+                                                return (
+                                                    <TechFrame variant="gold" size="default" className="my-8 transition-all group overflow-hidden relative scan-lines">
+                                                        <div className="flex items-center justify-between gap-4 relative z-10">
+                                                            <div className="flex-1">
+                                                                <h3 className="text-sm font-bold text-metallic mb-1">{label}</h3>
+                                                                {isLocked && (
+                                                                    <p className="text-[10px] text-rose-400 font-mono italic">{lockReason}</p>
+                                                                )}
+                                                            </div>
+                                                            <Button
+                                                                size="sm"
+                                                                variant={isLocked ? "ghost" : "glow"}
+                                                                disabled={isLocked || isSaving}
+                                                                onClick={() => {
+                                                                    if (target) {
+                                                                        const targetIndex = scenes.findIndex(s =>
+                                                                            s.title.toLowerCase() === target.toLowerCase() ||
+                                                                            String(s.id) === String(target)
+                                                                        );
+                                                                        if (targetIndex !== -1) {
+                                                                            setCurrentSceneIndex(targetIndex);
+                                                                            window.scrollTo({ top: 0, behavior: "smooth" });
+                                                                        } else {
+                                                                            toast.error("Path Unstable", {
+                                                                                description: `Could not relocate scene: ${target}`
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="rounded-full px-6"
+                                                            >
+                                                                {isLocked ? <Moon className="w-3.5 h-3.5 opacity-50" /> : "Initiate Jump"}
+                                                            </Button>
+                                                        </div>
+                                                        {isLocked && <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] pointer-events-none" />}
+                                                    </TechFrame>
+                                                );
+                                            }
+
+                                            return <code className={className} {...props}>{children}</code>;
+                                        }
+                                    }}
+                                >
+                                    {currentScene.content}
+                                </ReactMarkdown>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
                 </TechFrame>
 
                 {/* Pagination Navigation - wrapped in HudPanel */}
                 <HudPanel variant="default" className="scan-lines mt-8">
-                <div className="flex flex-col items-center gap-10">
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="outline"
-                            disabled={currentSceneIndex === 0}
-                            onClick={() => setCurrentSceneIndex(prev => prev - 1)}
-                            className="gap-2"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                            Previous Scene
-                        </Button>
+                    <div className="flex flex-col items-center gap-10">
+                        <div className="flex items-center gap-4">
+                            <Button
+                                variant="outline"
+                                disabled={currentSceneIndex === 0}
+                                onClick={() => setCurrentSceneIndex(prev => prev - 1)}
+                                className="gap-2"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                                Previous Scene
+                            </Button>
 
-                        <div className="flex items-center gap-1">
-                            {scenes.map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={cn(
-                                        "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                                        i === currentSceneIndex ? "bg-primary w-4" : "bg-metal-800"
-                                    )}
-                                />
-                            ))}
+                            <div className="flex items-center gap-1">
+                                {scenes.map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={cn(
+                                            "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                                            i === currentSceneIndex ? "bg-primary w-4" : "bg-metal-800"
+                                        )}
+                                    />
+                                ))}
+                            </div>
+
+                            <Button
+                                id="finish-chapter-btn"
+                                variant="glow"
+                                className={cn(
+                                    "group relative overflow-hidden px-8 py-6 rounded-xl",
+                                    hasChoices && "opacity-20 grayscale pointer-events-none"
+                                )}
+                                disabled={isSaving || (hasChoices && currentSceneIndex < scenes.length - 1)}
+                                onClick={async () => {
+                                    if (currentSceneIndex === scenes.length - 1) {
+                                        try {
+                                            setIsSaving(true);
+                                            await completeChapter(chapterId);
+                                            setIsCelebrationOpen(true);
+                                        } catch (error) {
+                                            console.error("Failed to complete chapter:", error);
+                                            toast.error("Failed to save progress");
+                                            setIsCelebrationOpen(true); // Still show celebration if progress fails locally
+                                        } finally {
+                                            setIsSaving(false);
+                                        }
+                                    } else {
+                                        setCurrentSceneIndex(prev => prev + 1);
+                                    }
+                                }}
+                            >
+                                {isSaving ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+                                        Synchronizing...
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center gap-2 relative z-10">
+                                            <span>{currentSceneIndex === scenes.length - 1 ? "Finish Chapter" : "Next Scene"}</span>
+                                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary-foreground/10 to-primary/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                    </>
+                                )}
+                            </Button>
                         </div>
 
-                        <Button
-                            id="finish-chapter-btn"
-                            variant="glow"
-                            className={cn(
-                                "group relative overflow-hidden px-8 py-6 rounded-xl",
-                                hasChoices && "opacity-20 grayscale pointer-events-none"
-                            )}
-                            disabled={isSaving || (hasChoices && currentSceneIndex < scenes.length - 1)}
-                            onClick={async () => {
-                                if (currentSceneIndex === scenes.length - 1) {
-                                    try {
-                                        setIsSaving(true);
-                                        await completeChapter(chapterId);
-                                        setIsCelebrationOpen(true);
-                                    } catch (error) {
-                                        console.error("Failed to complete chapter:", error);
-                                        toast.error("Failed to save progress");
-                                        setIsCelebrationOpen(true); // Still show celebration if progress fails locally
-                                    } finally {
-                                        setIsSaving(false);
-                                    }
-                                } else {
-                                    setCurrentSceneIndex(prev => prev + 1);
-                                }
-                            }}
-                        >
-                            {isSaving ? (
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                                    Synchronizing...
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="flex items-center gap-2 relative z-10">
-                                        <span>{currentSceneIndex === scenes.length - 1 ? "Finish Chapter" : "Next Scene"}</span>
-                                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </div>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary-foreground/10 to-primary/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                                </>
-                            )}
-                        </Button>
+                        {currentSceneIndex === scenes.length - 1 && (
+                            <p className="text-sm text-muted-foreground italic">You have reached the final segment of this canticle.</p>
+                        )}
                     </div>
-
-                    {currentSceneIndex === scenes.length - 1 && (
-                        <p className="text-sm text-muted-foreground italic">You have reached the final segment of this canticle.</p>
-                    )}
-                </div>
                 </HudPanel>
             </main>
 
@@ -772,107 +772,107 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                             className="fixed top-0 right-0 z-[101] h-screen w-80 border-l border-metal-800 shadow-2xl"
                         >
                             <TechFrame variant="default" size="lg" className="h-full rounded-none border-0 scan-lines">
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-metallic">Resonance Log</h3>
-                                <Button variant="ghost" size="icon" onClick={() => setIsLogOpen(false)}>
-                                    <ChevronRight className="h-4 w-4" />
-                                </Button>
-                            </div>
-                            <div className="space-y-6">
-                                {/* Lore / Oracle Search Section */}
-                                <div className="space-y-4 pt-2">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <BookOpen className="w-3.5 h-3.5 text-primary" />
-                                        <span className="text-[10px] uppercase tracking-widest font-bold">The Oracle</span>
-                                    </div>
-                                    <Input
-                                        placeholder="Search lore..."
-                                        value={loreSearchQuery}
-                                        onChange={(e) => setLoreSearchQuery(e.target.value)}
-                                        className="h-8 text-xs bg-metal-900/50 border-metal-800"
-                                        leftIcon={<Search className="w-3 h-3 text-muted-foreground" />}
-                                    />
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {["technology", "spiritual", "biological", "protocol"].map(cat => (
-                                            <Badge
-                                                key={cat}
-                                                variant="outline"
-                                                className={cn(
-                                                    "text-[9px] cursor-pointer hover:bg-metal-800 transition-colors uppercase tracking-tighter py-0 px-2 h-5",
-                                                    loreCategoryFilter === cat ? "bg-primary/20 border-primary/50 text-primary" : "text-muted-foreground border-metal-800"
-                                                )}
-                                                onClick={() => setLoreCategoryFilter(loreCategoryFilter === cat ? null : cat)}
-                                            >
-                                                {cat}
-                                            </Badge>
-                                        ))}
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-metallic">Resonance Log</h3>
+                                    <Button variant="ghost" size="icon" onClick={() => setIsLogOpen(false)}>
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                                <div className="space-y-6">
+                                    {/* Lore / Oracle Search Section */}
+                                    <div className="space-y-4 pt-2">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <BookOpen className="w-3.5 h-3.5 text-primary" />
+                                            <span className="text-[10px] uppercase tracking-widest font-bold">The Oracle</span>
+                                        </div>
+                                        <Input
+                                            placeholder="Search lore..."
+                                            value={loreSearchQuery}
+                                            onChange={(e) => setLoreSearchQuery(e.target.value)}
+                                            className="h-8 text-xs bg-metal-900/50 border-metal-800"
+                                            leftIcon={<Search className="w-3 h-3 text-muted-foreground" />}
+                                        />
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {["technology", "spiritual", "biological", "protocol"].map(cat => (
+                                                <Badge
+                                                    key={cat}
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "text-[9px] cursor-pointer hover:bg-metal-800 transition-colors uppercase tracking-tighter py-0 px-2 h-5",
+                                                        loreCategoryFilter === cat ? "bg-primary/20 border-primary/50 text-primary" : "text-muted-foreground border-metal-800"
+                                                    )}
+                                                    onClick={() => setLoreCategoryFilter(loreCategoryFilter === cat ? null : cat)}
+                                                >
+                                                    {cat}
+                                                </Badge>
+                                            ))}
+                                        </div>
+
+                                        <div className="space-y-2 mt-4">
+                                            {Object.values(LORE_DEFINITIONS)
+                                                .filter(def => {
+                                                    const matchesSearch = def.term.toLowerCase().includes(loreSearchQuery.toLowerCase()) ||
+                                                        def.definition.toLowerCase().includes(loreSearchQuery.toLowerCase());
+                                                    const matchesCategory = !loreCategoryFilter || def.category === loreCategoryFilter;
+                                                    return matchesSearch && matchesCategory;
+                                                })
+                                                .slice(0, 5) // Limit results
+                                                .map(def => (
+                                                    <OraclePopover key={def.term} definition={def}>
+                                                        <div className="p-2 rounded border border-metal-800 bg-metal-900/30 hover:bg-metal-800/50 transition-colors cursor-help">
+                                                            <div className="flex justify-between items-start">
+                                                                <span className="text-[10px] font-bold text-metallic">{def.term}</span>
+                                                                <span className="text-[8px] opacity-40 uppercase">{def.category}</span>
+                                                            </div>
+                                                        </div>
+                                                    </OraclePopover>
+                                                ))
+                                            }
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-2 mt-4">
-                                        {Object.values(LORE_DEFINITIONS)
-                                            .filter(def => {
-                                                const matchesSearch = def.term.toLowerCase().includes(loreSearchQuery.toLowerCase()) ||
-                                                    def.definition.toLowerCase().includes(loreSearchQuery.toLowerCase());
-                                                const matchesCategory = !loreCategoryFilter || def.category === loreCategoryFilter;
-                                                return matchesSearch && matchesCategory;
-                                            })
-                                            .slice(0, 5) // Limit results
-                                            .map(def => (
-                                                <OraclePopover key={def.term} definition={def}>
-                                                    <div className="p-2 rounded border border-metal-800 bg-metal-900/30 hover:bg-metal-800/50 transition-colors cursor-help">
-                                                        <div className="flex justify-between items-start">
-                                                            <span className="text-[10px] font-bold text-metallic">{def.term}</span>
-                                                            <span className="text-[8px] opacity-40 uppercase">{def.category}</span>
+                                    <div className="h-px bg-metal-800 my-4" />
+
+                                    {/* Resonance Log Section */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles className="w-3.5 h-3.5 text-primary" />
+                                            <span className="text-[10px] uppercase tracking-widest font-bold">Captured Resonance</span>
+                                        </div>
+                                        <div className="space-y-4 overflow-y-auto max-h-[40vh] pr-2 custom-scrollbar">
+                                            {highlights.length === 0 ? (
+                                                <div className="text-center py-8 opacity-30 italic text-xs">
+                                                    No resonances captured yet.
+                                                </div>
+                                            ) : (
+                                                highlights.map((h) => (
+                                                    <div key={h.id} className="group relative p-3 rounded-lg border border-metal-800 bg-metal-900/50 hover:border-primary/30 transition-colors">
+                                                        <button
+                                                            onClick={() => handleDeleteHighlight(h.id)}
+                                                            className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-metal-800 text-rose-400 hover:text-rose-300 transition-all border border-metal-700 shadow-xl"
+                                                        >
+                                                            <Trash2 className="w-2.5 h-2.5" />
+                                                        </button>
+                                                        <p className="text-[11px] leading-relaxed line-clamp-3 mb-2 italic opacity-80">
+                                                            "{h.text}"
+                                                        </p>
+                                                        <div className="flex items-center justify-between opacity-50 text-[9px] uppercase tracking-tighter">
+                                                            <span>Scene {h.sceneId + 1}</span>
+                                                            <div className={cn("w-2 h-2 rounded-full", h.color || "bg-yellow-400/30")} />
                                                         </div>
                                                     </div>
-                                                </OraclePopover>
-                                            ))
-                                        }
+                                                ))
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="h-px bg-metal-800 my-4" />
-
-                                {/* Resonance Log Section */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <Sparkles className="w-3.5 h-3.5 text-primary" />
-                                        <span className="text-[10px] uppercase tracking-widest font-bold">Captured Resonance</span>
-                                    </div>
-                                    <div className="space-y-4 overflow-y-auto max-h-[40vh] pr-2 custom-scrollbar">
-                                        {highlights.length === 0 ? (
-                                            <div className="text-center py-8 opacity-30 italic text-xs">
-                                                No resonances captured yet.
-                                            </div>
-                                        ) : (
-                                            highlights.map((h) => (
-                                                <div key={h.id} className="group relative p-3 rounded-lg border border-metal-800 bg-metal-900/50 hover:border-primary/30 transition-colors">
-                                                    <button
-                                                        onClick={() => handleDeleteHighlight(h.id)}
-                                                        className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-metal-800 text-rose-400 hover:text-rose-300 transition-all border border-metal-700 shadow-xl"
-                                                    >
-                                                        <Trash2 className="w-2.5 h-2.5" />
-                                                    </button>
-                                                    <p className="text-[11px] leading-relaxed line-clamp-3 mb-2 italic opacity-80">
-                                                        "{h.text}"
-                                                    </p>
-                                                    <div className="flex items-center justify-between opacity-50 text-[9px] uppercase tracking-tighter">
-                                                        <span>Scene {h.sceneId + 1}</span>
-                                                        <div className={cn("w-2 h-2 rounded-full", h.color || "bg-yellow-400/30")} />
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleExport}
-                                className="mt-8 flex items-center justify-center gap-2 w-full p-2.5 rounded-lg border border-metal-800 bg-metal-900/30 hover:bg-metal-800/50 transition-all text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground group"
-                            >
-                                <Download className="w-3 h-3 group-hover:scale-110 transition-transform" />
-                                Export Manuscript
-                            </button>
+                                <button
+                                    onClick={handleExport}
+                                    className="mt-8 flex items-center justify-center gap-2 w-full p-2.5 rounded-lg border border-metal-800 bg-metal-900/30 hover:bg-metal-800/50 transition-all text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground group"
+                                >
+                                    <Download className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                                    Export Manuscript
+                                </button>
                             </TechFrame>
                         </motion.div>
                     </>
@@ -904,6 +904,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
             {/* Terminal Interface */}
             <TerminalOverlay
                 isOpen={isTerminalOpen}
+                chapterId={chapterId}
                 onClose={() => setIsTerminalOpen(false)}
                 onCommand={(cmd, args) => {
                     if (cmd === "jump") {

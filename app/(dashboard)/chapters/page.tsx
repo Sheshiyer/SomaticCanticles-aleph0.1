@@ -156,7 +156,7 @@ export default function ChaptersPage() {
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 9 }).map((_, i) => (
             <ChapterCardSkeleton key={i} index={i} />
           ))}
         </div>
@@ -179,7 +179,9 @@ export default function ChaptersPage() {
         >
           <TechFrame variant="default">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-metallic">The 12 Somatic Canticles</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-metallic">
+                {stats.total > 0 ? `Somatic Canticles (${stats.total})` : "Somatic Canticles"}
+              </h1>
               <p className="text-muted-foreground">
                 {stats.completed}/{stats.total} chapters completed · {stats.unlocked} unlocked
               </p>

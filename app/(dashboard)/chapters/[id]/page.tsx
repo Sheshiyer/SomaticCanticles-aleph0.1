@@ -1,13 +1,18 @@
 import { ChapterDetailPageClient } from "./ChapterDetailPageClient";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { getAllManuscriptInfo } from "@/lib/chapters/manuscripts";
 
-// Generate static params for all 12 chapters
+// Generate static params from manuscript source of truth (supports 3-book trilogy growth)
 export function generateStaticParams() {
-  return [
-    { id: "1" }, { id: "2" }, { id: "3" }, { id: "4" },
-    { id: "5" }, { id: "6" }, { id: "7" }, { id: "8" },
-    { id: "9" }, { id: "10" }, { id: "11" }, { id: "12" },
-  ];
+  const manuscriptParams = getAllManuscriptInfo().map((entry) => ({
+    id: String(entry.chapter),
+  }));
+
+  if (manuscriptParams.length > 0) {
+    return manuscriptParams;
+  }
+
+  return [{ id: "1" }];
 }
 
 export default async function ChapterDetailPage({

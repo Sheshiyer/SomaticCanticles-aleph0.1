@@ -1,15 +1,19 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Clock, BookOpen, Flame, Trophy, TrendingUp, Calendar, ChevronRight, Activity, Lock, CheckCircle2
+  Clock, BookOpen, Flame, Trophy, TrendingUp, Calendar, ChevronRight, Activity, CheckCircle2, Scroll
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TechFrame, HudPanel, DataDisplay } from '@/components/ui/frame';
+import { Button } from '@/components/ui/button';
+import { trilogyData } from '@/lib/lore/trilogy-data';
+import { LORE_DEFINITIONS } from '@/lib/chapters/lore';
 import { toast } from 'sonner';
 
 interface ProgressStats {
@@ -36,9 +40,26 @@ interface ActivityItem {
   currentCount?: number;
 }
 
+type ChapterUnlockStatus = 'locked' | 'unlocked' | 'in-progress' | 'in_progress' | 'completed';
+
+interface ChapterListItem {
+  id: number;
+  order: number;
+  title: string;
+  cycle?: string | null;
+  unlock_status: ChapterUnlockStatus;
+}
+
+function normalizeUnlockStatus(status: ChapterUnlockStatus): 'locked' | 'unlocked' | 'in-progress' | 'completed' {
+  if (status === 'in_progress') return 'in-progress';
+  return status;
+}
+
 export default function ProgressPage() {
   const [stats, setStats] = useState<ProgressStats | null>(null);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [chapterList, setChapterList] = useState<ChapterListItem[]>([]);
+  const [achievementTotal, setAchievementTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -65,6 +86,40 @@ export default function ProgressPage() {
 
       setStats(statsData.stats);
       setActivities(activityData.activities);
+
+      // Optional parallel data: chapter topology + achievement summary
+      const [chaptersResult, achievementsResult] = await Promise.allSettled([
+        fetch(`${apiUrl}/chapters/list`, { credentials: 'include' }),
+        fetch(`${apiUrl}/progress/achievements`, { credentials: 'include' }),
+      ]);
+
+      if (chaptersResult.status === 'fulfilled' && chaptersResult.value.ok) {
+        const chaptersData = await chaptersResult.value.json();
+        const chapters = Array.isArray(chaptersData?.data?.chapters)
+          ? chaptersData.data.chapters.map((chapter: Record<string, unknown>) => ({
+              id: Number(chapter.id),
+              order: Number(chapter.order),
+              title: String(chapter.title ?? `Chapter ${chapter.order}`),
+              cycle: (chapter.cycle as string | null | undefined) ?? null,
+              unlock_status: (chapter.unlock_status as ChapterUnlockStatus | undefined) ?? 'locked',
+            }))
+          : [];
+
+        setChapterList(
+          chapters
+            .filter((chapter: ChapterListItem) => Number.isFinite(chapter.id) && Number.isFinite(chapter.order))
+            .sort((a: ChapterListItem, b: ChapterListItem) => a.order - b.order)
+        );
+      } else {
+        setChapterList([]);
+      }
+
+      if (achievementsResult.status === 'fulfilled' && achievementsResult.value.ok) {
+        const achievementsData = await achievementsResult.value.json();
+        setAchievementTotal(Number(achievementsData?.summary?.total || 0));
+      } else {
+        setAchievementTotal(0);
+      }
     } catch (error) {
       toast.error('Failed to load progress data');
       console.error(error);
@@ -119,12 +174,56 @@ export default function ProgressPage() {
     );
   }
 
+  const totalChapters = stats?.totalChapters || chapterList.length || 0;
+  const resolvedAchievementTotal = achievementTotal || Math.max(stats?.achievementsUnlocked || 0, 0);
+  const chapterSlots =
+    chapterList.length > 0
+      ? chapterList.map((chapter) => ({
+          id: chapter.id,
+          order: chapter.order,
+          title: chapter.title,
+          unlock_status: normalizeUnlockStatus(chapter.unlock_status),
+        }))
+      : Array.from({ length: totalChapters }, (_, index) => {
+          const chapterNum = index + 1;
+          const completed = chapterNum <= (stats?.completedChapters || 0);
+          const unlocked = chapterNum <= (stats?.unlockedChapters || 0);
+          return {
+            id: chapterNum,
+            order: chapterNum,
+            title: `Chapter ${chapterNum}`,
+            unlock_status: completed ? 'completed' as const : unlocked ? 'unlocked' as const : 'locked' as const,
+          };
+        });
+
+  const loreEntriesTotal = Object.keys(LORE_DEFINITIONS).length;
+  const unlockedLoreNodes = chapterSlots.filter((chapter) => chapter.unlock_status !== 'locked').length;
+  const completedLoreNodes = chapterSlots.filter((chapter) => chapter.unlock_status === 'completed').length;
+  const trilogyBooks = trilogyData.books.map((book) => {
+    const chapterNumbers = new Set(book.chapters.map((chapter) => chapter.chapter_number));
+    const matchedSlots = chapterSlots.filter((slot) => chapterNumbers.has(slot.order));
+    const totalInBook = matchedSlots.length > 0 ? matchedSlots.length : book.chapters.length;
+    const unlockedInBook = matchedSlots.filter((slot) => slot.unlock_status !== 'locked').length;
+    const completedInBook = matchedSlots.filter((slot) => slot.unlock_status === 'completed').length;
+    const progress = totalInBook > 0 ? Math.round((completedInBook / totalInBook) * 100) : 0;
+    return {
+      id: book.id,
+      title: book.title,
+      total: totalInBook,
+      unlocked: unlockedInBook,
+      completed: completedInBook,
+      progress,
+    };
+  });
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-metallic">Your Progress</h1>
-        <p className="text-muted-foreground">Track your journey through the 12 somatic canticles</p>
+        <p className="text-muted-foreground">
+          Track your journey through {totalChapters || 'your'} somatic canticles
+        </p>
       </div>
 
       {/* Stats Cards - DataDisplay */}
@@ -149,7 +248,7 @@ export default function ProgressPage() {
         >
           <DataDisplay
             label="Chapters Completed"
-            value={`${stats?.completedChapters || 0} / ${stats?.totalChapters || 12}`}
+            value={`${stats?.completedChapters || 0} / ${totalChapters || 0}`}
             icon={<BookOpen className="h-4 w-4" />}
             variant="success"
             trendValue={`${stats?.completionPercentage || 0}% complete`}
@@ -175,10 +274,10 @@ export default function ProgressPage() {
         >
           <DataDisplay
             label="Achievements"
-            value={`${stats?.achievementsUnlocked || 0} / 8`}
+            value={`${stats?.achievementsUnlocked || 0} / ${resolvedAchievementTotal || 0}`}
             icon={<Trophy className="h-4 w-4 text-amber-500" />}
             variant="tech"
-            trendValue="View all achievements"
+            trendValue={resolvedAchievementTotal ? 'Live achievement total' : 'Achievement scan pending'}
           />
         </motion.div>
       </div>
@@ -190,7 +289,9 @@ export default function ProgressPage() {
         transition={{ delay: 0.5 }}
       >
         <HudPanel title="Overall Progress" variant="tech" className="scan-lines">
-          <p className="text-sm text-muted-foreground mb-6">Your journey through all 12 chapters</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Your journey through all {totalChapters || 0} chapters
+          </p>
           <div className="space-y-6">
             <div className="space-y-2.5">
               <div className="flex justify-between text-sm">
@@ -207,18 +308,18 @@ export default function ProgressPage() {
 
             {/* Chapter Grid - TechFrame */}
             <TechFrame variant="default" size="sm">
-              <div className="grid grid-cols-12 gap-1.5">
-                {[...Array(12)].map((_, i) => {
-                  const chapterNum = i + 1;
-                  const isCompleted = chapterNum <= (stats?.completedChapters || 0);
-                  const isUnlocked = chapterNum <= (stats?.unlockedChapters || 0);
+              <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9 lg:grid-cols-12">
+                {chapterSlots.map((chapter, index) => {
+                  const isCompleted = chapter.unlock_status === 'completed';
+                  const isUnlocked = chapter.unlock_status !== 'locked';
 
                   return (
                     <motion.div
-                      key={i}
+                      key={chapter.id}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.6 + i * 0.05 }}
+                      transition={{ delay: 0.6 + Math.min(index, 20) * 0.03 }}
+                      title={chapter.title}
                       className={`
                         aspect-square rounded-md flex items-center justify-center text-xs font-medium
                         ${isCompleted 
@@ -229,7 +330,7 @@ export default function ProgressPage() {
                         }
                       `}
                     >
-                      {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : chapterNum}
+                      {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : chapter.order}
                     </motion.div>
                   );
                 })}
@@ -255,11 +356,73 @@ export default function ProgressPage() {
         </HudPanel>
       </motion.div>
 
+      {/* Lore + Easter Egg Tracking */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <HudPanel
+          title="Lore Matrix"
+          variant="tech"
+          className="scan-lines"
+          icon={<Scroll className="h-5 w-5" />}
+        >
+          <p className="mb-4 text-sm text-muted-foreground">
+            Trilogy-aware progression with space for lore and hidden unlocks.
+          </p>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            {trilogyBooks.map((book) => (
+              <div key={book.id} className="rounded-lg border border-metal-700 bg-metal-900/40 p-3">
+                <p className="text-sm font-semibold text-metallic">{book.title}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {book.completed}/{book.total} completed · {book.unlocked} unlocked
+                </p>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-metal-800">
+                  <div
+                    className="h-full rounded-full bg-cyan-500/80 transition-all"
+                    style={{ width: `${book.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <DataDisplay
+              label="Lore Terms"
+              value={loreEntriesTotal}
+              variant="default"
+              trendValue="Oracle lexicon entries"
+            />
+            <DataDisplay
+              label="Lore Nodes Unlocked"
+              value={unlockedLoreNodes}
+              variant="tech"
+              trendValue={`${completedLoreNodes} fully integrated`}
+            />
+            <DataDisplay
+              label="Easter Egg Slots"
+              value={chapterSlots.length}
+              variant="warning"
+              trendValue="Bound to chapter unlock flow"
+            />
+          </div>
+
+          <div className="mt-4">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/chapters">Open Chapters & Lore</Link>
+            </Button>
+          </div>
+        </HudPanel>
+      </motion.div>
+
       {/* Recent Activity - HudPanel */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.75 }}
       >
         <HudPanel 
           title="Recent Activity" 

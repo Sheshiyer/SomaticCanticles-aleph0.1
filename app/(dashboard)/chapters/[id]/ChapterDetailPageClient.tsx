@@ -181,6 +181,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
   const CycleIcon = colors.icon;
   const { prevChapter, nextChapter } = getAdjacentChapters();
   const completedCount = allChapters.filter((c) => c.unlock_status === "completed").length;
+  const totalChapters = allChapters.length || Math.max(chapter.order, 1);
 
   return (
     <motion.div
@@ -197,7 +198,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
             <ArrowLeft className="mr-1.5 h-4 w-4" />
             Back
           </Button>
-          <span className="text-muted-foreground">Chapter {chapter.order} of 12</span>
+          <span className="text-muted-foreground">Chapter {chapter.order} of {totalChapters}</span>
           <span className="text-muted-foreground">·</span>
           <span className="text-muted-foreground">{completedCount} completed</span>
         </div>

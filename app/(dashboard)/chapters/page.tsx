@@ -146,11 +146,6 @@ export default function ChaptersPage() {
     fetchChapters();
   }, [fetchChapters]);
 
-  // Check unlocks on mount
-  useEffect(() => {
-    handleCheckUnlocks();
-  }, []);
-
   if (loading) {
     return (
       <div className="space-y-6">

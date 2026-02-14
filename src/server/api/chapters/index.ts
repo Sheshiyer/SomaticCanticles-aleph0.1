@@ -131,6 +131,8 @@ app.get('/list', jwtAuth, async (c) => {
     const chaptersWithStatus: ChapterWithStatus[] = allChapters.map(chapter => {
       const progress = progressMap.get(chapter.id);
 
+      const isAdmin = user.role === 'admin';
+
       let unlockStatus: ChapterWithStatus['unlock_status'] = 'locked';
       if (progress?.completedAt) {
         unlockStatus = 'completed';
@@ -138,8 +140,8 @@ app.get('/list', jwtAuth, async (c) => {
         unlockStatus = progress.completionPercentage && progress.completionPercentage > 0
           ? 'in_progress'
           : 'unlocked';
-      } else if (chapter.id === 1) {
-        // Chapter 1 is always unlocked
+      } else if (chapter.id === 1 || isAdmin) {
+        // Chapter 1 is always unlocked, and admins have access to everything
         unlockStatus = 'unlocked';
       }
 
@@ -224,8 +226,9 @@ app.get('/:id', jwtAuth, async (c) => {
         and(eq(progress.userId, user.id), eq(progress.chapterId, chapterId)),
     });
 
-    // Check if chapter is unlocked (chapter 1 is always unlocked)
-    const isUnlocked = chapterId === 1 || progress?.unlockedAt !== null;
+    // Check if chapter is unlocked (chapter 1 is always unlocked or user is admin)
+    const isAdmin = user.role === 'admin';
+    const isUnlocked = isAdmin || chapterId === 1 || progress?.unlockedAt !== null;
 
     if (!isUnlocked) {
       return c.json({

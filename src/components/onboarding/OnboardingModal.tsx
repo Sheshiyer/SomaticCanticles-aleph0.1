@@ -65,18 +65,23 @@ export function OnboardingModal({ open, onComplete }: OnboardingModalProps) {
                 throw updateError;
             }
 
-            // Also update the profiles table if it exists
+            // Also upsert to the users table directly (create if missing)
+            // This ensures the public.users row exists for role checks
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
             const { error: profileError } = await supabase
-                .from('profiles')
+                .from('users')
                 .upsert({
                     id: user.id,
+                    email: user.email!,
                     birthdate,
+                    timezone,
                     updated_at: new Date().toISOString(),
-                });
+                }, { onConflict: 'id' });
 
             if (profileError) {
                 console.error('Profile update error:', profileError);
-                // Don't fail if profile update fails
+                throw profileError;
             }
 
             toast.success('Welcome! Your profile is all set up.');

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getChapterDetail } from "@/lib/chapters/api";
+import { createClient } from "@/lib/supabase/server";
 import { getManuscriptContent } from "@/lib/chapters/manuscripts";
 import { ChapterReader } from "@/components/chapters/ChapterReader";
 
@@ -8,36 +8,40 @@ interface ReadPageProps {
 }
 
 export default async function ReadPage({ params }: ReadPageProps) {
-    const { id } = await params;
-    const chapterId = parseInt(id, 10);
+  const { id } = await params;
+  const requestedId = parseInt(id, 10);
 
-    if (isNaN(chapterId)) {
-        notFound();
-    }
+  if (isNaN(requestedId)) {
+    notFound();
+  }
 
-    // Fetch chapter details for title and cycle theme
-    const chapterResponse = await getChapterDetail(chapterId);
-    if (!chapterResponse.success || !chapterResponse.data) {
-        notFound();
-    }
+  // Server-safe chapter lookup: accept route by DB id or legacy order number.
+  const supabase = await createClient();
+  const { data: chapter, error: chapterError } = await supabase
+    .from("chapters")
+    .select("id, order, title, cycle")
+    .or(`id.eq.${requestedId},order.eq.${requestedId}`)
+    .order("order", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (chapterError || !chapter) {
+    notFound();
+  }
 
-    // Fetch manuscript content
-    const content = await getManuscriptContent(chapterId);
-    if (!content) {
-        // If manuscript file not found but chapter exists, show a placeholder or 404
-        notFound();
-    }
+  // Manuscript mapping is canonical by chapter order.
+  const content = await getManuscriptContent(chapter.order);
+  if (!content) {
+    notFound();
+  }
 
-    const chapter = chapterResponse.data;
-
-    return (
-        <div className="bg-background min-h-screen">
-            <ChapterReader
-                chapterId={chapterId}
-                title={chapter.title}
-                content={content}
-                cycle={chapter.cycle}
-            />
-        </div>
-    );
+  return (
+    <div className="bg-background min-h-screen">
+      <ChapterReader
+        chapterId={chapter.id}
+        title={chapter.title}
+        content={content}
+        cycle={chapter.cycle}
+      />
+    </div>
+  );
 }

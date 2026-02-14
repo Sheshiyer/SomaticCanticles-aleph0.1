@@ -54,6 +54,7 @@ const itemVariants = {
 export default function DashboardPage() {
   const supabase = createClient();
   const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,15 +74,37 @@ export default function DashboardPage() {
 
       setUser(user);
 
-      // Check if user has birthdate in metadata
-      const userBirthdate = user.user_metadata?.birthdate;
+      // Fetch user role from public.users table
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role, birthdate')
+        .eq('id', user.id)
+        .single();
 
-      if (userBirthdate) {
-        setBirthdate(userBirthdate);
+      if (userData) {
+        setUserRole(userData.role);
+        if (userData.birthdate) {
+          setBirthdate(userData.birthdate);
+        } else {
+          // Check if user has birthdate in metadata
+          const userBirthdate = user.user_metadata?.birthdate;
+          if (userBirthdate) {
+            setBirthdate(userBirthdate);
+          } else {
+            // Show onboarding modal if no birthdate
+            setShowOnboarding(true);
+            setLoading(false);
+          }
+        }
       } else {
-        // Show onboarding modal if no birthdate
-        setShowOnboarding(true);
-        setLoading(false);
+        // Fallback to user metadata
+        const userBirthdate = user.user_metadata?.birthdate;
+        if (userBirthdate) {
+          setBirthdate(userBirthdate);
+        } else {
+          setShowOnboarding(true);
+          setLoading(false);
+        }
       }
     };
 
@@ -199,11 +222,11 @@ export default function DashboardPage() {
       {/* Welcome Banner */}
       {user && (
         <motion.div variants={itemVariants}>
-          <Card className="border-primary/20 bg-primary/5">
+          <Card className="border-primary/20 bg-gradient-to-br from-background to-primary/5">
             <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <User className="h-6 w-6 text-primary" />
+                <div className="rounded-full bg-primary/10 p-2">
+                  <User className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">
@@ -213,6 +236,15 @@ export default function DashboardPage() {
                     Ready to continue your journey?
                   </p>
                 </div>
+                {/* Admin Badge */}
+                {userRole === 'admin' && (
+                  <div className="ml-2">
+                    <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-4 py-2 border border-amber-500/30">
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">Admin</span>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
                 <Link href="/chapters">

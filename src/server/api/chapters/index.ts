@@ -547,13 +547,15 @@ app.post('/check-unlock', jwtAuth, async (c) => {
       orderBy: (chapters, { asc }) => [asc(chapters.order)],
     });
 
-    // Evaluate unlocks
+    // Evaluate unlocks (with admin bypass if user has admin role)
+    const isAdmin = user.role === 'admin';
     const unlockedChapterIds = await evaluateUnlocks(
       user.id,
       currentBiorhythm,
       userProgressData,
       allChapters,
-      db
+      db,
+      isAdmin // Pass admin flag for bypass
     );
 
     // Get details of newly unlocked chapters

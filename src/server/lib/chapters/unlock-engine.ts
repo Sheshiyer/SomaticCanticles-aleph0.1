@@ -236,8 +236,14 @@ async function shouldUnlockChapter(
   userId: string,
   currentBiorhythm: BiorhythmState | null,
   userProgress: UserProgressEntry[],
-  db: DB
+  db: DB,
+  isAdmin: boolean = false
 ): Promise<boolean> {
+  // ADMIN BYPASS: Admins get instant access to all chapters
+  if (isAdmin) {
+    return true;
+  }
+
   // Chapter 1 is always unlocked
   if (chapter.id === 1) return true;
 
@@ -331,7 +337,8 @@ export async function evaluateUnlocks(
   currentBiorhythm: BiorhythmState | null,
   userProgressData: UserProgressEntry[],
   allChapters: ChapterWithConditions[],
-  db: DB
+  db: DB,
+  isAdmin: boolean = false
 ): Promise<number[]> {
   const newlyUnlocked: number[] = [];
   const now = new Date();
@@ -343,7 +350,8 @@ export async function evaluateUnlocks(
       userId,
       currentBiorhythm,
       userProgressData,
-      db
+      db,
+      isAdmin // Pass admin flag
     );
 
     if (shouldUnlock) {
@@ -394,12 +402,18 @@ export async function getChapterUnlockStatus(
   userId: string,
   currentBiorhythm: BiorhythmState | null,
   userProgressData: UserProgressEntry[],
-  db: DB
+  db: DB,
+  isAdmin: boolean = false
 ): Promise<{
   unlocked: boolean;
   reason?: string;
   conditions?: ChapterUnlockConditions;
 }> {
+  // ADMIN BYPASS: Admins see all chapters as unlocked
+  if (isAdmin) {
+    return { unlocked: true, reason: 'Admin access' };
+  }
+
   const chapter = await db.query.chapters.findFirst({
     where: (chapters, { eq }) => eq(chapters.id, chapterId),
   });

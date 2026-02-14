@@ -41,8 +41,23 @@ function Select({
   placeholder,
   error,
   onValueChange,
+  children,
   ...props
 }: SelectProps) {
+  const parsed = React.useMemo(() => parseSelectChildren(children), [children]);
+  const resolvedOptions = (options && options.length > 0 ? options : parsed.options) ?? [];
+  const resolvedPlaceholder = placeholder ?? parsed.placeholder;
+  const mergedClassName = cn(parsed.triggerClassName, className);
+
+  const currentValue =
+    typeof props.value === "string" && props.value.length > 0 ? props.value : undefined;
+  const hasCurrentValue =
+    currentValue ? resolvedOptions.some((option) => option.value === currentValue) : true;
+  const optionsWithCurrent =
+    !hasCurrentValue && currentValue
+      ? [{ value: currentValue, label: currentValue }, ...resolvedOptions]
+      : resolvedOptions;
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onValueChange?.(e.target.value);
   };
@@ -55,18 +70,18 @@ function Select({
             "h-9 w-full min-w-0 appearance-none rounded-md border border-input bg-transparent px-3 py-1 pr-8 text-base shadow-xs outline-none transition-[color,box-shadow] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
             "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
             error && "border-destructive ring-destructive/20 dark:ring-destructive/40",
-            className
+            mergedClassName
           )}
           data-slot="select"
           onChange={handleChange}
           {...props}
         >
-          {placeholder && (
+          {resolvedPlaceholder && (
             <option value="" disabled>
-              {placeholder}
+              {resolvedPlaceholder}
             </option>
           )}
-          {options?.map((option) => (
+          {optionsWithCurrent.map((option) => (
             <option
               key={option.value}
               value={option.value}
@@ -81,6 +96,72 @@ function Select({
       {error && <p className="mt-1 text-sm text-destructive">{error}</p>}
     </div>
   );
+}
+
+function parseSelectChildren(children: React.ReactNode): {
+  options: SelectOption[];
+  placeholder?: string;
+  triggerClassName?: string;
+} {
+  const options: SelectOption[] = [];
+  let placeholder: string | undefined;
+  let triggerClassName: string | undefined;
+
+  const walk = (node: React.ReactNode) => {
+    React.Children.forEach(node, (child) => {
+      if (!React.isValidElement(child)) return;
+      const element = child as React.ReactElement<Record<string, unknown>>;
+
+      const componentName =
+        typeof element.type === "string"
+          ? element.type
+          : ((element.type as { displayName?: string }).displayName ?? "");
+
+      if (componentName === "SelectTrigger") {
+        if (typeof element.props.className === "string") {
+          triggerClassName = cn(triggerClassName, element.props.className);
+        }
+      }
+
+      if (componentName === "SelectValue") {
+        if (!placeholder && typeof element.props.placeholder === "string") {
+          placeholder = element.props.placeholder;
+        }
+      }
+
+      if (componentName === "SelectItem") {
+        const value = typeof element.props.value === "string" ? element.props.value : "";
+        if (!value) return;
+        options.push({
+          value,
+          label: extractText(element.props.children as React.ReactNode) || value,
+          disabled: Boolean(element.props.disabled),
+        });
+      }
+
+      if (element.props?.children) {
+        walk(element.props.children as React.ReactNode);
+      }
+    });
+  };
+
+  walk(children);
+
+  return { options, placeholder, triggerClassName };
+}
+
+function extractText(node: React.ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map((item) => extractText(item)).join("").trim();
+  }
+  if (React.isValidElement(node)) {
+    const element = node as React.ReactElement<Record<string, unknown>>;
+    return extractText(element.props.children as React.ReactNode);
+  }
+  return "";
 }
 
 /**

@@ -57,7 +57,7 @@ interface UserData {
   discordListening?: boolean;
 }
 
-const timezones = [
+const timezones = Intl.supportedValuesOf ? Intl.supportedValuesOf('timeZone') : [
   "UTC", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
   "America/Anchorage", "America/Honolulu", "Europe/London", "Europe/Paris", "Europe/Berlin",
   "Europe/Moscow", "Asia/Dubai", "Asia/Kolkata", "Asia/Bangkok", "Asia/Singapore",

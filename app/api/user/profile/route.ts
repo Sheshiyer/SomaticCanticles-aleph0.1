@@ -44,10 +44,10 @@ export async function PATCH(req: NextRequest) {
 
     const supabase = await createClient();
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { success: false, error: { message: "Unauthorized" } },
         { status: 401 }
@@ -58,15 +58,15 @@ export async function PATCH(req: NextRequest) {
       parsed.data.birthdate === undefined ? null : parsed.data.birthdate;
     const resolvedTimezone =
       timezone ??
-      (typeof session.user.user_metadata?.timezone === "string"
-        ? session.user.user_metadata.timezone
+      (typeof user.user_metadata?.timezone === "string"
+        ? user.user_metadata.timezone
         : "UTC");
 
     const admin = createAdminClient();
 
     // Merge auth metadata so dashboard fallbacks always have latest values.
     const mergedMetadata = {
-      ...(session.user.user_metadata || {}),
+      ...(user.user_metadata || {}),
       birthdate,
       timezone: resolvedTimezone,
     };
@@ -88,7 +88,7 @@ export async function PATCH(req: NextRequest) {
     const { error: upsertError } = await admin.from("users").upsert(
       {
         id: auth.userId,
-        email: auth.email || session.user.email || "",
+        email: auth.email || user.email || "",
         role: currentProfile?.role || "user",
         birthdate,
         timezone: resolvedTimezone,

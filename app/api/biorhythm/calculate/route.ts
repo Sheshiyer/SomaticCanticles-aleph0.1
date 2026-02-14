@@ -24,10 +24,10 @@ async function resolveBirthdate(
 
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     // Fallback: bearer token auth.
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.slice("Bearer ".length).trim();
@@ -59,14 +59,14 @@ async function resolveBirthdate(
   }
 
   const metadataBirthdate =
-    typeof session.user.user_metadata?.birthdate === "string"
-      ? session.user.user_metadata.birthdate
+    typeof user.user_metadata?.birthdate === "string"
+      ? user.user_metadata.birthdate
       : null;
 
   const { data } = await supabase
     .from("users")
     .select("birthdate")
-    .eq("id", session.user.id)
+    .eq("id", user.id)
     .single();
 
   return data?.birthdate ?? metadataBirthdate;

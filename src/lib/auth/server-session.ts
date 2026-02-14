@@ -18,11 +18,11 @@ export async function requireSession(): Promise<SessionResult> {
   try {
     const supabase = await createClient();
     const {
-      data: { session },
+      data: { user },
       error,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
-    if (error || !session) {
+    if (error || !user) {
       return {
         ok: false,
         response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
@@ -31,8 +31,8 @@ export async function requireSession(): Promise<SessionResult> {
 
     return {
       ok: true,
-      userId: session.user.id,
-      email: session.user.email ?? null,
+      userId: user.id,
+      email: user.email ?? null,
     };
   } catch (sessionError) {
     console.error("Session guard failed:", sessionError);
@@ -50,9 +50,9 @@ export async function getSessionUserId(): Promise<string | null> {
   try {
     const supabase = await createClient();
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    return session?.user.id ?? null;
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id ?? null;
   } catch {
     return null;
   }

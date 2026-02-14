@@ -20,6 +20,14 @@ const commands = [
   new SlashCommandBuilder()
     .setName("status")
     .setDescription("Check your connection status with the Oracle"),
+  new SlashCommandBuilder()
+    .setName("dispatch")
+    .setDescription("Admin: Dispatch a Witness Card for a specific chapter.")
+    .addIntegerOption(option =>
+      option.setName("chapter")
+            .setDescription("Chapter number to dispatch.")
+            .setRequired(true)
+    ),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(token);

@@ -4,6 +4,7 @@ import nacl from "https://esm.sh/tweetnacl@1.0.3";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import { createTechFrameEmbed } from "../_shared/embeds.ts";
 import { calculateBiorhythm, generateProgressBar } from "../_shared/biorhythm.ts";
+import { addRoleToUser, ROLES } from "../_shared/roles.ts";
 
 // Define Types
 interface APIInteraction {
@@ -89,31 +90,60 @@ async function handleWitness(discordId: string, chapterId: string) {
     };
   }
 
-  // 2. Check Biorhythm (Mock Logic for now - ideally check logic per chapter)
+  // 2. Check User Progress for this Chapter
+  const { data: progress } = await supabase
+    .from('user_progress')
+    .select('unlocked_at, completed_at, chapters ( id, title, subtitle, audio_url, cycle )')
+    .eq('user_id', user.id)
+    .eq('chapter_id', parseInt(chapterId))
+    .single();
+
   const bio = calculateBiorhythm(new Date(user.birthdate || new Date()));
-  // Example: Unlock Chapter 1 if Physical > 0.2 (Low bar for intro)
+  const bioValue = progress?.chapters?.cycle ? bio[progress.chapters.cycle as keyof typeof bio] : 0;
+  const bioPercent = typeof bioValue === 'number' ? Math.round(bioValue * 100) : 0;
 
-  // In real app, check 'user_progress' or unlock rules.
-  // For MVP, we assume Chapter 1 is "Calibration" -> Always unlock if linked.
+  // 3. Handle Locked State
+  if (!progress || !progress.unlocked_at) {
+     const embed = createTechFrameEmbed(
+      "Signal Locked",
+      `Your biorhythm is vibrating, but this frequency is not yet attuned.`,
+      "error"
+    );
+    embed.fields = [
+      {
+         name: "Current Resonance",
+         value: `${progress?.chapters?.cycle || 'Unknown'} Cycle: ${bioPercent}%`,
+         inline: true
+      },
+      {
+        name: "Status",
+        value: "🔒 Sealed via Anamnesis",
+        inline: true
+      }
+    ];
+    return { embeds: [embed], flags: 64 };
+  }
 
-  // Unlock Content
-  // Update DB (Mock)
-  // await supabase.from('user_progress').insert(...)
+  // 4. Handle Unlocked State
+  const chapter = progress.chapters;
+  // @ts-ignore - Drizzle types might differ from Supabase JSON response
+  const audioUrl = chapter?.audio_url || "https://somatic-canticles.com/dashboard";
 
   const embed = createTechFrameEmbed(
-    "Canticle I: The Body Electric",
-    "Connection established. The somatic bridge is stable.",
+    `Canticle ${chapterId}: ${chapter?.title}`,
+    chapter?.subtitle || "Transmission received.",
     "success"
   );
+  
   embed.fields = [
     {
-      name: "Vibration Analyzed",
-      value: `Physical Cycle: ${Math.round(bio.physical * 100)}% \`${generateProgressBar(bio.physical, 5)}\``,
-      inline: true
+      name: "Resonance Frequency",
+      value: `${chapter?.cycle?.toUpperCase()} Cycle: ${bioPercent}% \`${generateProgressBar(typeof bioValue === 'number' ? bioValue : 0, 5)}\``,
+      inline: false
     },
     {
       name: "Artifact Unlocked",
-      value: "[Access Transmission >>](https://somatic-canticles.com/chapter/1)",
+      value: `[🎧 Listen to Transmission](${audioUrl})`,
       inline: false
     }
   ];
@@ -142,11 +172,142 @@ serve(async (req) => {
       const discordId = interaction.member?.user.id;
       const otp = generateOTP();
       await storeOTP(discordId!, otp);
+
+      // Auto-assign Neophyte role on calibration attempt
+      try {
+        await addRoleToUser(discordId!, ROLES.Neophyte, Deno.env.get("DISCORD_TOKEN")!);
+      } catch (e) {
+        console.error("Failed to assign role:", e);
+      }
+
       return new Response(JSON.stringify({
         type: 4,
         data: {
           content: `**Somatic Oracle**\n\nSomanaut detected. Initiate signal handshake.\n\nEnter this Calibration Key in your dashboard Settings:\n# \`${otp}\`\n\n*This key expires in 5 minutes.*`,
           flags: 64
+        }
+      }), { headers: { "Content-Type": "application/json" } });
+    }
+
+    if (name === "status") {
+      const discordId = interaction.member?.user.id;
+      if (!discordId) return new Response("User not found", { status: 400 });
+
+      // Check if user is linked
+      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      const { data: user } = await supabase.from('users').select('birthdate').eq('discord_id', discordId).single();
+
+      if (!user || !user.birthdate) {
+        return new Response(JSON.stringify({
+          type: 4,
+          data: {
+            content: "❌ **Signal Lost.**\n\nYou are not linked to the Anamnesis Engine, or your birthdate is missing.\nRun `/calibrate` to establish a connection.",
+            flags: 64
+          }
+        }), { headers: { "Content-Type": "application/json" } });
+      }
+
+      // Calculate Biorhythm
+      const bio = calculateBiorhythm(new Date(user.birthdate));
+
+      // Create Embed
+      const embed = createTechFrameEmbed(
+        "Current Biometric Status",
+        `Real-time harmonic analysis for <@${discordId}>.`
+      );
+
+      embed.fields = [
+        {
+          name: "Physical // " + bio.labels.physical,
+          value: `\`${generateProgressBar(bio.physical)}\` ${Math.round(bio.physical * 100)}%`,
+          inline: false
+        },
+        {
+          name: "Emotional // " + bio.labels.emotional,
+          value: `\`${generateProgressBar(bio.emotional)}\` ${Math.round(bio.emotional * 100)}%`,
+          inline: false
+        },
+        {
+          name: "Intellectual // " + bio.labels.intellectual,
+          value: `\`${generateProgressBar(bio.intellectual)}\` ${Math.round(bio.intellectual * 100)}%`,
+          inline: false
+        }
+      ];
+
+      return new Response(JSON.stringify({
+        type: 4,
+        data: {
+          embeds: [embed],
+          flags: 64
+        }
+      }), { headers: { "Content-Type": "application/json" } });
+    }
+
+    if (name === "dispatch") {
+      const options = interaction.data?.options;
+      const chapterOption = options?.find(o => o.name === "chapter");
+      
+      if (!chapterOption || typeof chapterOption.value !== 'number') {
+         return new Response(JSON.stringify({
+            type: 4,
+            data: { content: "Invalid chapter number.", flags: 64 }
+         }), { headers: { "Content-Type": "application/json" } });
+      }
+
+      const chapterId = chapterOption.value;
+      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      
+      // Fetch Chapter Data
+      const { data: chapter, error } = await supabase
+        .from('chapters')
+        .select('*')
+        .eq('id', chapterId)
+        .single();
+
+      if (error || !chapter) {
+         return new Response(JSON.stringify({
+            type: 4,
+            data: { content: `**Error:** Chapter ${chapterId} not found in the archives.`, flags: 64 }
+         }), { headers: { "Content-Type": "application/json" } });
+      }
+
+      // Create Witness Card
+      const embed = createTechFrameEmbed(
+        `Canticle ${chapterId}: ${chapter.title}`,
+        chapter.description || "The signal is waiting to be witnessed.",
+        "default"
+      );
+
+      embed.fields = [
+        {
+          name: "Resonance Cycle",
+          value: `\`${chapter.cycle ? chapter.cycle.toUpperCase() : "UNKNOWN"}\``,
+          inline: true
+        },
+        {
+          name: "Duration",
+          value: `${chapter.duration_minutes || "??"} mins`,
+          inline: true
+        }
+      ];
+
+      return new Response(JSON.stringify({
+        type: 4,
+        data: {
+          embeds: [embed],
+          components: [
+            {
+              type: 1, // Action Row
+              components: [
+                {
+                  type: 2, // Button
+                  style: 1, // Primary (Blurple)
+                  label: "👁️ Witness",
+                  custom_id: `witness_${chapterId}`
+                }
+              ]
+            }
+          ]
         }
       }), { headers: { "Content-Type": "application/json" } });
     }

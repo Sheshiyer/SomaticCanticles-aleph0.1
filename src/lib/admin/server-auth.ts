@@ -18,11 +18,11 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
   try {
     const supabase = await createClient();
     const {
-      data: { session },
+      data: { user },
       error: sessionError,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
-    if (sessionError || !session) {
+    if (sessionError || !user) {
       return {
         ok: false,
         response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
@@ -32,7 +32,7 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
     const { data: userData, error: userError } = await supabase
       .from("users")
       .select("role")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .single();
 
     if (userError) {
@@ -42,7 +42,7 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
       };
     }
 
-    const role = userData?.role || session.user.user_metadata?.role;
+    const role = userData?.role || user.user_metadata?.role;
     if (role !== "admin") {
       return {
         ok: false,
@@ -52,8 +52,8 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
 
     return {
       ok: true,
-      userId: session.user.id,
-      email: session.user.email ?? null,
+      userId: user.id,
+      email: user.email ?? null,
     };
   } catch (error) {
     console.error("Admin auth guard failed:", error);

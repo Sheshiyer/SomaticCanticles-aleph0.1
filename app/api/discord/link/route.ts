@@ -11,9 +11,9 @@ const linkSchema = z.object({
 export async function POST(req: NextRequest) {
     try {
         const supabaseUser = await createClient(); // User client for session check
-        const { data: { session }, error: sessionError } = await supabaseUser.auth.getSession();
+        const { data: { user }, error: sessionError } = await supabaseUser.auth.getUser();
 
-        if (sessionError || !session) {
+        if (sessionError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
                 discord_id: otpRecord.discord_id,
                 updated_at: new Date().toISOString()
             })
-            .eq('id', session.user.id);
+            .eq('id', user.id);
 
         if (updateError) {
             // Handle unique constraint violation (if another user already linked this discord ID)
@@ -76,9 +76,9 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     try {
         const supabaseUser = await createClient(); // User verification
-        const { data: { session }, error: sessionError } = await supabaseUser.auth.getSession();
+        const { data: { user }, error: sessionError } = await supabaseUser.auth.getUser();
 
-        if (sessionError || !session) {
+        if (sessionError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -90,7 +90,7 @@ export async function DELETE(req: NextRequest) {
                 discord_id: null,
                 updated_at: new Date().toISOString()
             })
-            .eq('id', session.user.id);
+            .eq('id', user.id);
 
         if (updateError) throw updateError;
 

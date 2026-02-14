@@ -62,12 +62,20 @@ type MinimalSession = {
 export async function getSessionAndClient() {
   const supabase = await createClient();
   const {
-    data: { session },
+    data: { user },
     error,
-  } = await supabase.auth.getSession();
+  } = await supabase.auth.getUser();
 
-  if (!error && session) {
-    return { supabase, session: session as MinimalSession };
+  if (!error && user) {
+    return {
+      supabase,
+      session: {
+        user: {
+          id: user.id,
+          email: user.email,
+        },
+      } as MinimalSession,
+    };
   }
 
   // Fallback for token-based calls where cookie session is missing.

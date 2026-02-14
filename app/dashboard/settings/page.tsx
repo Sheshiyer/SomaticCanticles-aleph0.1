@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { 
-  Loader2, User, Lock, Trash2, Eye, EyeOff, Mail, Calendar, Shield, Globe, KeyRound 
+import {
+  Loader2, User, Lock, Trash2, Eye, EyeOff, Mail, Calendar, Shield, Globe, KeyRound
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ interface UserData {
   createdAt?: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 const timezones = [
   "UTC", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
@@ -93,7 +93,7 @@ export default function SettingsPage() {
     const fetchProfile = async () => {
       const tokens = typeof window !== "undefined" ? localStorage.getItem("auth_tokens") : null;
       if (!tokens) { setIsLoadingUser(false); return; }
-      
+
       try {
         const { accessToken } = JSON.parse(tokens);
         setIsLoadingUser(true);
@@ -123,7 +123,7 @@ export default function SettingsPage() {
   const onProfileSubmit = async (data: ProfileFormData) => {
     const tokens = typeof window !== "undefined" ? localStorage.getItem("auth_tokens") : null;
     if (!tokens) return;
-    
+
     setIsLoadingProfile(true);
     try {
       const { accessToken } = JSON.parse(tokens);
@@ -151,7 +151,7 @@ export default function SettingsPage() {
   const onPasswordSubmit = async (data: PasswordFormData) => {
     const tokens = typeof window !== "undefined" ? localStorage.getItem("auth_tokens") : null;
     if (!tokens) return;
-    
+
     setIsLoadingPassword(true);
     try {
       const { accessToken } = JSON.parse(tokens);
@@ -178,7 +178,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     const tokens = typeof window !== "undefined" ? localStorage.getItem("auth_tokens") : null;
     if (!tokens) return;
-    
+
     try {
       const { accessToken } = JSON.parse(tokens);
       const response = await fetch(`${API_BASE_URL}/user/account`, {
@@ -296,9 +296,9 @@ export default function SettingsPage() {
                     <Label htmlFor="birthdate">Birthdate</Label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input 
-                        id="birthdate" 
-                        type="date" 
+                      <Input
+                        id="birthdate"
+                        type="date"
                         className="pl-10"
                         {...profileForm.register("birthdate")}
                         error={profileForm.formState.errors.birthdate?.message}
@@ -310,8 +310,8 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-2.5">
                     <Label htmlFor="timezone">Timezone</Label>
-                    <Select 
-                      value={profileForm.watch("timezone")} 
+                    <Select
+                      value={profileForm.watch("timezone")}
                       onValueChange={(v) => profileForm.setValue("timezone", v)}
                     >
                       <SelectTrigger className="pl-10">
@@ -331,8 +331,8 @@ export default function SettingsPage() {
                 </div>
                 <Separator className="bg-metal-700/50" />
                 <div className="flex justify-end">
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={isLoadingProfile || !profileForm.formState.isDirty}
                     shine
                   >
@@ -364,8 +364,8 @@ export default function SettingsPage() {
                   <Label htmlFor="currentPassword">Current Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input 
-                      id="currentPassword" 
+                    <Input
+                      id="currentPassword"
                       type={showCurrentPassword ? "text" : "password"}
                       className="pl-10 pr-10"
                       placeholder="Enter current password"
@@ -395,8 +395,8 @@ export default function SettingsPage() {
                   <Label htmlFor="newPassword">New Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input 
-                      id="newPassword" 
+                    <Input
+                      id="newPassword"
                       type={showNewPassword ? "text" : "password"}
                       className="pl-10 pr-10"
                       placeholder="Create new password"
@@ -427,8 +427,8 @@ export default function SettingsPage() {
                   <Label htmlFor="confirmPassword">Confirm New Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input 
-                      id="confirmPassword" 
+                    <Input
+                      id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       className="pl-10 pr-10"
                       placeholder="Confirm new password"
@@ -454,8 +454,8 @@ export default function SettingsPage() {
                 <Separator className="bg-metal-700/50" />
 
                 <div className="flex justify-end">
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={isLoadingPassword || !passwordForm.formState.isDirty}
                     shine
                   >

@@ -40,7 +40,9 @@ export async function GET(
     }
 
     const { chapters, progressByChapterId } = await getUserChapterContext(session.user.id);
-    const chapter = chapters.find((item) => item.id === chapterId);
+    const chapter =
+      chapters.find((item) => item.id === chapterId) ??
+      chapters.find((item) => item.order === chapterId);
 
     if (!chapter) {
       return NextResponse.json(

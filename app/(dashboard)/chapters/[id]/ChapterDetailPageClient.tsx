@@ -84,10 +84,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
   const fetchChapter = useCallback(async () => {
     try {
       setLoading(true);
-      const [detailResponse, listResponse] = await Promise.all([
-        getChapterDetail(chapterId),
-        getChaptersList(),
-      ]);
+      const detailResponse = await getChapterDetail(chapterId);
 
       if (detailResponse.success && detailResponse.data) {
         setChapter(detailResponse.data);
@@ -99,8 +96,13 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
         toast.error(detailResponse.error?.message || "Failed to load chapter");
       }
 
-      if (listResponse.success && listResponse.data) {
-        setAllChapters(listResponse.data.chapters);
+      try {
+        const listResponse = await getChaptersList();
+        if (listResponse.success && listResponse.data) {
+          setAllChapters(listResponse.data.chapters);
+        }
+      } catch (listError) {
+        console.error("Failed to load chapter list:", listError);
       }
     } catch (error) {
       toast.error("Failed to load chapter");

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LightPillar } from "@/components/effects/LightPillar";
+import { getURL } from "@/lib/utils/url";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -80,7 +81,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${callbackUrl}`,
+          redirectTo: `${getURL()}auth/callback?next=${callbackUrl}`,
         },
       });
 
@@ -98,7 +99,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'discord',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${callbackUrl}`,
+          redirectTo: `${getURL()}auth/callback?next=${callbackUrl}`,
         },
       });
 

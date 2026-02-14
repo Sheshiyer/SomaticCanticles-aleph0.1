@@ -15,7 +15,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LightPillar } from "@/components/effects/LightPillar";
+import { getURL } from "@/lib/utils/url";
 
 const registerSchema = z
   .object({
@@ -129,7 +131,7 @@ export default function RegisterPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'discord',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          redirectTo: `${getURL()}auth/callback?next=/dashboard`,
         },
       });
 

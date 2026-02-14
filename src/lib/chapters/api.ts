@@ -1,10 +1,9 @@
 /**
  * Chapter API client functions
- * 
- * Handles all API communication for chapters
+ * Chapter API - Client-side chapter operations
  */
 
-import { getSession } from "next-auth/react";
+import { createClient } from '@/lib/supabase/client';
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
@@ -381,12 +380,13 @@ class ChapterApiError extends Error {
   }
 }
 
-async function fetchWithAuth(
+async function apiRequest(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const session = await getSession();
-  const token = session?.accessToken;
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -455,7 +455,7 @@ export async function getChaptersList(): Promise<ChaptersListResponse> {
 
   try {
     const fn = async () => {
-      const response = await fetchWithAuth("/chapters/list");
+      const response = await apiRequest("/chapters/list");
       const data = await response.json();
       return data as ChaptersListResponse;
     };
@@ -537,7 +537,7 @@ export async function getChapterDetail(
 
   try {
     const fn = async () => {
-      const response = await fetchWithAuth(`/chapters/${chapterId}`);
+      const response = await apiRequest(`/chapters/${chapterId}`);
       const data = await response.json();
       return data as ChapterDetailResponse;
     };
@@ -583,7 +583,7 @@ export async function getChapterProgress(): Promise<ProgressResponse> {
 
   try {
     const fn = async () => {
-      const response = await fetchWithAuth("/chapters/progress");
+      const response = await apiRequest("/chapters/progress");
       const data = await response.json();
       return data as ProgressResponse;
     };
@@ -610,7 +610,7 @@ export async function updateChapterProgress(
   }
 ): Promise<UpdateProgressResponse> {
   try {
-    const response = await fetchWithAuth("/chapters/progress", {
+    const response = await apiRequest("/chapters/progress", {
       method: "POST",
       body: JSON.stringify({
         chapter_id: chapterId,
@@ -646,7 +646,7 @@ export async function checkChapterUnlocks(): Promise<CheckUnlockResponse> {
   }
 
   try {
-    const response = await fetchWithAuth("/chapters/check-unlock", {
+    const response = await apiRequest("/chapters/check-unlock", {
       method: "POST",
     });
     const data = await response.json();
@@ -716,7 +716,7 @@ export async function saveHighlight(
 
   try {
     const fn = async () => {
-      const response = await fetchWithAuth("/highlights", {
+      const response = await apiRequest("/highlights", {
         method: "POST",
         body: JSON.stringify({
           chapter_id: chapterId,
@@ -758,7 +758,7 @@ export async function getChapterHighlights(
 
   try {
     const fn = async () => {
-      const response = await fetchWithAuth(`/highlights/chapter/${chapterId}`);
+      const response = await apiRequest(`/highlights/chapter/${chapterId}`);
       const data = await response.json();
       return data as HighlightsResponse;
     };
@@ -788,7 +788,7 @@ export async function deleteHighlight(
   highlightId: string
 ): Promise<{ success: boolean; error?: any }> {
   try {
-    const response = await fetchWithAuth(`/highlights/${highlightId}`, {
+    const response = await apiRequest(`/highlights/${highlightId}`, {
       method: "DELETE",
     });
     const data = await response.json();
@@ -808,7 +808,7 @@ export async function saveBookmark(
 ): Promise<{ success: boolean; data?: Bookmark; error?: any }> {
   try {
     const fn = async () => {
-      const response = await fetchWithAuth("/bookmarks", {
+      const response = await apiRequest("/bookmarks", {
         method: "POST",
         body: JSON.stringify({
           chapter_id: chapterId,
@@ -843,7 +843,7 @@ export async function getChapterBookmarks(
 ): Promise<{ success: boolean; data: Bookmark[]; error?: any }> {
   try {
     const fn = async () => {
-      const response = await fetchWithAuth(`/bookmarks/chapter/${chapterId}`);
+      const response = await apiRequest(`/bookmarks/chapter/${chapterId}`);
       const data = await response.json();
       return data;
     };
@@ -871,7 +871,7 @@ export async function deleteBookmark(
   bookmarkId: string
 ): Promise<{ success: boolean; error?: any }> {
   try {
-    const response = await fetchWithAuth(`/bookmarks/${bookmarkId}`, {
+    const response = await apiRequest(`/bookmarks/${bookmarkId}`, {
       method: "DELETE",
     });
     const data = await response.json();

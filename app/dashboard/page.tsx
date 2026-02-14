@@ -25,6 +25,8 @@ import {
   isPeak,
   getCycleStatus,
 } from "@/lib/biorhythm";
+import { createClient } from "@/lib/supabase/client";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 
 // Animation variants
 const containerVariants = {
@@ -49,81 +51,79 @@ const itemVariants = {
   },
 };
 
-// Get user from localStorage
-function getUser() {
-  if (typeof window === "undefined") return null;
-  const user = localStorage.getItem("user");
-  if (user) {
-    try {
-      return JSON.parse(user);
-    } catch {
-      return null;
-    }
-  }
-  return null;
-}
-
 export default function DashboardPage() {
-  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+  const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
   const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [birthdate, setBirthdate] = useState<string | null>(null);
 
+  // Check authentication and get user data
   useEffect(() => {
-    setUser(getUser());
-  }, []);
+    const checkAuth = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
 
-  // Get user's birthdate from localStorage or use a default for demo
-  const getBirthdate = useCallback(() => {
-    if (typeof window === "undefined") return "1990-01-01";
-    
-    const user = localStorage.getItem("user");
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        if (parsed.birthdate) return parsed.birthdate;
-      } catch {
-        // Fall through to default
+      if (error || !user) {
+        // Not authenticated, will be handled by middleware
+        return;
       }
-    }
-    return "1990-01-01"; // Default birthdate for demo
-  }, []);
 
-  // Fetch biorhythm data
+      setUser(user);
+
+      // Check if user has birthdate in metadata
+      const userBirthdate = user.user_metadata?.birthdate;
+
+      if (userBirthdate) {
+        setBirthdate(userBirthdate);
+      } else {
+        // Show onboarding modal if no birthdate
+        setShowOnboarding(true);
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [supabase]);
+
+  // Fetch biorhythm data when birthdate is available
   const fetchData = useCallback(async (showToast = false) => {
+    if (!birthdate) return;
+
     try {
       setRefreshing(true);
-      
-      const birthdate = getBirthdate();
+
       const today = format(new Date(), "yyyy-MM-dd");
-      
+
       // Fetch current biorhythm and 30-day prediction in parallel
       const [biorhythm, prediction] = await Promise.all([
         calculateBiorhythm(birthdate, today),
         getBiorhythmPrediction(today, 30),
       ]);
-      
+
       setBiorhythmData(biorhythm);
       setPredictionData(prediction);
-      
+
       if (showToast) {
         toast.success("Biorhythm data refreshed");
       }
     } catch (error) {
-      const message = getBiorhythmErrorMessage(error);
-      toast.error(message);
       console.error("Biorhythm fetch error:", error);
+      // Silently fail - onboarding modal will show if needed
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [getBirthdate]);
+  }, [birthdate]);
 
-  // Initial fetch
+  // Initial fetch when birthdate is available
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (birthdate) {
+      fetchData();
+    }
+  }, [birthdate, fetchData]);
 
   // Auto-refresh at midnight
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function DashboardPage() {
       const dailyInterval = setInterval(() => {
         fetchData(true);
       }, 24 * 60 * 60 * 1000);
-      
+
       return () => clearInterval(dailyInterval);
     }, msUntilMidnight);
 
@@ -164,6 +164,21 @@ export default function DashboardPage() {
   };
 
   const summary = getTodaySummary();
+
+  const handleOnboardingComplete = (newBirthdate: string) => {
+    setBirthdate(newBirthdate);
+    setShowOnboarding(false);
+  };
+
+  // Show onboarding modal if needed
+  if (showOnboarding) {
+    return (
+      <OnboardingModal
+        open={showOnboarding}
+        onComplete={handleOnboardingComplete}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -192,10 +207,10 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">
-                    Welcome back, {user.email.split("@")[0]}
+                    Welcome back, {user?.email?.split("@")[0] || user?.user_metadata?.full_name || 'there'}
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    {user.role === "admin" ? "Administrator" : "Member"} • Ready to continue your journey?
+                    Ready to continue your journey?
                   </p>
                 </div>
               </div>
@@ -317,9 +332,9 @@ export default function DashboardPage() {
                     ...predictionData.peaks.intellectual.map((d: string) => ({ date: d, cycle: "intellectual" })),
                     ...predictionData.peaks.spiritual.map((d: string) => ({ date: d, cycle: "spiritual" })),
                   ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                  
+
                   const nextPeak = allPeaks[0];
-                  
+
                   return (
                     <>
                       <div className="text-2xl font-bold">
@@ -449,10 +464,10 @@ export default function DashboardPage() {
           <div>
             <h3 className="font-semibold">About Biorhythms</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Biorhythms are biological cycles that influence your physical, emotional, 
+              Biorhythms are biological cycles that influence your physical, emotional,
               intellectual, and spiritual well-being. Each cycle has a different length:
-              Physical (23 days), Emotional (28 days), Intellectual (33 days), and 
-              Spiritual (38 days). High points indicate optimal performance, while 
+              Physical (23 days), Emotional (28 days), Intellectual (33 days), and
+              Spiritual (38 days). High points indicate optimal performance, while
               critical days (near zero) suggest caution.
             </p>
           </div>

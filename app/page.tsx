@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BookOpen,
   Activity,
@@ -41,7 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSession } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import {
   TechFrame,
   HudPanel,
@@ -49,6 +49,30 @@ import {
   CornerOrnament,
   SectionDivider,
 } from "@/components/ui/frame";
+
+// Custom hook for Supabase session
+function useSupabaseSession() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  return { isAuthenticated, isLoading };
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -192,8 +216,7 @@ function AuthModal({
 
 // Navigation Header Component
 function NavigationHeader() {
-  const { status } = useSession();
-  const isAuthenticated = status === "authenticated";
+  const { isLoading, isAuthenticated } = useSupabaseSession();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -554,8 +577,7 @@ function ExpectedTimeline() {
 }
 
 export default function HomePage() {
-  const { status } = useSession();
-  const isAuthenticated = status === "authenticated";
+  const { isLoading, isAuthenticated } = useSupabaseSession();
 
   return (
     <TooltipProvider>

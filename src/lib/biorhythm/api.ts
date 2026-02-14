@@ -14,7 +14,7 @@ import type {
 // Re-export types for convenience
 export * from './types';
 
-import { getSession } from "next-auth/react";
+import { createClient } from '@/lib/supabase/client';
 
 // ... imports ...
 
@@ -31,8 +31,9 @@ async function apiRequest<T>(
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  const session = await getSession();
-  const token = session?.accessToken;
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
 
   const response = await fetch(url, {
     ...options,

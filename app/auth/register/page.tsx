@@ -9,7 +9,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, Calendar, Globe } from "lucide-react";
 
-import { register as registerUser, signIn } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardCorners } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LightPillar } from "@/components/effects/LightPillar";
 
-// Password requirements matching backend
 const registerSchema = z
   .object({
     email: z.string().email("Please enter a valid email address"),
@@ -50,213 +49,271 @@ const timezoneOptions = [
   { value: "Asia/Tokyo", label: "Tokyo (JST)" },
   { value: "Asia/Shanghai", label: "Shanghai (CST)" },
   { value: "Australia/Sydney", label: "Sydney (AEST)" },
+  { value: "Asia/Kolkata", label: "India (IST)" },
 ];
 
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     setValue,
-    watch,
+    formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      birthdate: "",
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
     },
   });
-
-  const timezone = watch("timezone");
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
 
     try {
-      await registerUser({
+      // Sign up with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-        birthdate: data.birthdate,
-        timezone: data.timezone,
+        options: {
+          data: {
+            birthdate: data.birthdate || null,
+            timezone: data.timezone,
+          },
+        },
       });
 
-      // Sign in the user immediately after registration
-      const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        throw new Error("Account created but failed to sign in automatically. Please sign in.");
+      if (authError) {
+        toast.error(authError.message || "Registration failed");
+        return;
       }
 
-      toast.success("Account created successfully!");
-      router.refresh(); // Update client-side session state
-      router.push("/");
+      if (authData.user) {
+        // Insert user profile data
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            email: data.email,
+            birthdate: data.birthdate || null,
+            timezone: data.timezone,
+            role: 'user',
+            email_verified: false,
+          });
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          // Don't fail the registration, profile can be created later
+        }
+
+        toast.success("Account created successfully!");
+        router.push("/dashboard");
+        router.refresh();
+      }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Registration failed. Please try again.";
-      toast.error(message);
+      toast.error("An unexpected error occurred");
+      console.error("Registration error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDiscordRegister = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message || "Failed to sign up with Discord");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+      console.error("Discord registration error:", error);
+    }
+  };
+
   return (
-    <Card
-      variant="glass"
-      className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300"
-    >
-      <CardCorners color="primary" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background py-12">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+      <LightPillar />
 
-      {/* Top tech accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-32 bg-gradient-to-r from-transparent via-primary to-transparent" />
+      {/* Register Card */}
+      <Card className="relative z-10 w-full max-w-md">
+        <CardCorners />
+        <CardHeader>
+          <CardTitle>Create Account</CardTitle>
+          <CardDescription>Join Somatic Canticles to begin your journey</CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="space-y-4">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className="pl-10"
+                  {...register("email")}
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email.message}</p>
+              )}
+            </div>
 
-      <CardHeader className="space-y-4 pb-6 pt-8">
-        {/* Light pillar accent */}
-        <div className="flex justify-center mb-2">
-          <LightPillar color="solar" height={32} width={2} intensity="low" />
-        </div>
-
-        <CardTitle className="text-2xl font-bold text-center bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
-          Create Your Account
-        </CardTitle>
-        <CardDescription className="text-center text-muted-foreground leading-relaxed">
-          Enter your details to begin your journey
-        </CardDescription>
-      </CardHeader>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-5">
-          {/* Email Field */}
-          <div className="space-y-2.5">
-            <Label htmlFor="email" className="text-foreground">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              leftIcon={<Mail className="h-4 w-4" />}
-              {...register("email")}
-              disabled={isLoading}
-              error={errors.email?.message}
-            />
-            {errors.email && (
-              <p className="text-xs text-rose-500 flex items-center gap-1">
-                <span>•</span>
-                {errors.email.message}
+            {/* Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••••••"
+                  className="pl-10"
+                  {...register("password")}
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Min 12 characters, uppercase, lowercase, number, and special character
               </p>
-            )}
-          </div>
+            </div>
 
-          {/* Password Field */}
-          <div className="space-y-2.5">
-            <Label htmlFor="password" className="text-foreground">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Create a password"
-              leftIcon={<Lock className="h-4 w-4" />}
-              {...register("password")}
-              disabled={isLoading}
-              error={errors.password?.message}
-            />
-            {errors.password && (
-              <p className="text-xs text-rose-500 flex items-center gap-1">
-                <span>•</span>
-                {errors.password.message}
+            {/* Confirm Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••••••"
+                  className="pl-10"
+                  {...register("confirmPassword")}
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              )}
+            </div>
+
+            {/* Birthdate Field (Optional) */}
+            <div className="space-y-2">
+              <Label htmlFor="birthdate">
+                Birthdate <span className="text-muted-foreground">(Optional)</span>
+              </Label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="birthdate"
+                  type="date"
+                  className="pl-10"
+                  {...register("birthdate")}
+                  disabled={isLoading}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Used for personalized biorhythm calculations
               </p>
-            )}
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Must be at least 12 characters with uppercase, lowercase, number, and special character.
-            </p>
-          </div>
+            </div>
 
-          {/* Confirm Password Field */}
-          <div className="space-y-2.5">
-            <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              leftIcon={<Lock className="h-4 w-4" />}
-              {...register("confirmPassword")}
-              disabled={isLoading}
-              error={errors.confirmPassword?.message}
-            />
-            {errors.confirmPassword && (
-              <p className="text-xs text-rose-500 flex items-center gap-1">
-                <span>•</span>
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+            {/* Timezone Field */}
+            <div className="space-y-2">
+              <Label htmlFor="timezone">Timezone</Label>
+              <Select
+                defaultValue={Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"}
+                onValueChange={(value) => setValue("timezone", value)}
+                disabled={isLoading}
+              >
+                <SelectTrigger className="w-full">
+                  <Globe className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Select your timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timezoneOptions.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.timezone && (
+                <p className="text-sm text-destructive">{errors.timezone.message}</p>
+              )}
+            </div>
+          </CardContent>
 
-          {/* Birthdate Field */}
-          <div className="space-y-2.5">
-            <Label htmlFor="birthdate" className="text-foreground">Birthdate <span className="text-muted-foreground font-normal">(Optional)</span></Label>
-            <Input
-              id="birthdate"
-              type="date"
-              leftIcon={<Calendar className="h-4 w-4" />}
-              {...register("birthdate")}
-              disabled={isLoading}
-            />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Used for personalized biorhythm calculations and chapter unlocks.
-            </p>
-          </div>
-
-          {/* Timezone Field */}
-          <div className="space-y-2.5">
-            <Label htmlFor="timezone" className="text-foreground">Timezone</Label>
-            <Select
-              value={timezone}
-              onValueChange={(value) => setValue("timezone", value)}
+          <CardFooter className="flex flex-col space-y-4">
+            {/* Discord Register - Primary */}
+            <Button
+              type="button"
+              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white"
+              onClick={handleDiscordRegister}
               disabled={isLoading}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                {timezoneOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+              </svg>
+              Sign up with Discord
+            </Button>
 
-        <CardFooter className="flex flex-col gap-4 pt-2">
-          <Button
-            type="submit"
-            className="w-full h-11"
-            disabled={isLoading}
-            shine
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating account...
-              </>
-            ) : (
-              "Create account"
-            )}
-          </Button>
-          <div className="text-sm text-center text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="text-primary font-medium hover:text-amber-400 transition-colors hover:underline"
-            >
-              Sign in
-            </Link>
-          </div>
-        </CardFooter>
-      </form>
-    </Card>
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or create account with email
+                </span>
+              </div>
+            </div>
+
+            {/* Email Register Button */}
+            <Button type="submit" variant="outline" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Create Account with Email
+                </>
+              )}
+            </Button>
+
+            {/* Sign In Link */}
+            <p className="text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="text-primary hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 }

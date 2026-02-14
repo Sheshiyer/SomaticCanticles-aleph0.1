@@ -16,7 +16,7 @@ import {
     type Bookmark
 } from "@/lib/chapters/api";
 import { calculateBiorhythm, type BiorhythmData } from "@/lib/biorhythm/api";
-import { useSession } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import TerminalOverlay from "../terminal/TerminalOverlay";
 import ChapterCelebration from "./ChapterCelebration";
 import { toast } from "sonner";
@@ -78,6 +78,8 @@ const cycleColors = {
 
 export function ChapterReader({ chapterId, title, content, cycle }: ChapterReaderProps) {
     const router = useRouter();
+    const supabase = createClient();
+    const [user, setUser] = useState<any>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [isLogOpen, setIsLogOpen] = useState(false);
@@ -104,8 +106,6 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
     const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
     const [chapterBookmarks, setChapterBookmarks] = useState<Bookmark[]>([]);
     const [biorhythm, setBiorhythm] = useState<BiorhythmData | null>(null);
-    const { data: session } = useSession();
-    const user = session?.user;
     const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
 

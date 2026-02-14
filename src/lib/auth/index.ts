@@ -1,7 +1,7 @@
 // Authentication library exports for Somatic-Canticles Frontend
 
-// Re-export NextAuth hooks
-export { signIn, signOut, useSession, getSession } from 'next-auth/react';
+// Supabase is now the primary auth provider
+// Use @/lib/supabase/client for authentication
 
 // Types
 export type {

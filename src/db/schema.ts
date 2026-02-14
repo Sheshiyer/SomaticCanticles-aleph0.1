@@ -23,6 +23,13 @@ export const users = sqliteTable('users', {
   lastOracleDispatch: integer('last_oracle_dispatch', { mode: 'timestamp' }),
 });
 
+export const discordOtps = sqliteTable('discord_otps', {
+  code: text('code').primaryKey(), // The OTP (e.g. X7-K9-P2)
+  discordId: text('discord_id').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(now),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+});
+
 // Chapters table
 export const chapters = sqliteTable('chapters', {
   id: integer('id').primaryKey(),

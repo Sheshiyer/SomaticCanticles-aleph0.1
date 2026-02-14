@@ -9,6 +9,7 @@ import {
   Loader2, User, Lock, Trash2, Eye, EyeOff, Mail, Calendar, Shield, Globe, KeyRound
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { RadioTower, Link as LinkIcon, Unlink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +53,8 @@ interface UserData {
   birthdate?: string;
   timezone?: string;
   createdAt?: string;
+  discordId?: string | null;
+  discordListening?: boolean;
 }
 
 const timezones = [
@@ -73,6 +76,8 @@ export default function SettingsPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
+  const [discordCode, setDiscordCode] = useState("");
+  const [isLinking, setIsLinking] = useState(false);
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -101,7 +106,7 @@ export default function SettingsPage() {
       try {
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('role, birthdate, timezone, created_at')
+          .select('role, birthdate, timezone, created_at, discord_id, discord_listening')
           .eq('id', user.id)
           .single();
 
@@ -117,6 +122,8 @@ export default function SettingsPage() {
           birthdate: userData?.birthdate || user.user_metadata?.birthdate,
           timezone: userData?.timezone || "UTC",
           createdAt: userData?.created_at || user.created_at,
+          discordId: userData?.discord_id,
+          discordListening: userData?.discord_listening,
         };
 
         setUser(fullUserData);
@@ -187,6 +194,40 @@ export default function SettingsPage() {
     }
   };
 
+  const onLinkDiscord = async () => {
+    if (!discordCode || discordCode.length < 8) return;
+    setIsLinking(true);
+    try {
+      const res = await fetch('/api/discord/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: discordCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to link');
+
+      toast.success("Signal Transduction Established.");
+      router.refresh(); // Refresh to get updated user data
+      setDiscordCode("");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setIsLinking(false);
+    }
+  };
+
+  const onUnlinkDiscord = async () => {
+    if (!confirm("Are you sure you want to sever the connection?")) return;
+    try {
+      const res = await fetch('/api/discord/link', { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to unlink');
+      toast.success("Connection severed.");
+      router.refresh();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     // Note: Client-side deletion is usually restricted. 
     // This typically requires a backend call or an Edge Function depending on RLS.
@@ -226,257 +267,349 @@ export default function SettingsPage() {
               <Trash2 className="h-4 w-4" />
               <span className="hidden sm:inline">Danger</span>
             </TabsTrigger>
+            <TabsTrigger value="anamnesis" className="gap-2 data-[state=active]:bg-metal-700">
+              <RadioTower className="h-4 w-4" />
+              <span className="hidden sm:inline">Anamnesis</span>
+            </TabsTrigger>
           </TabsList>
         </TechFrame>
 
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           {/* Account Info Card */}
-          <HudPanel 
-            title="Account Information" 
-            icon={<Mail className="h-5 w-5" />} 
-            variant="default" 
+          <HudPanel
+            title="Account Information"
+            icon={<Mail className="h-5 w-5" />}
+            variant="default"
             className="scan-lines"
           >
             <p className="text-sm text-muted-foreground mb-4">Your account details and membership information.</p>
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <DataDisplay 
-                  label="Email Address" 
-                  value={user?.email || "Not available"} 
-                  icon={<Mail className="h-4 w-4" />} 
-                  variant="default" 
+                <DataDisplay
+                  label="Email Address"
+                  value={user?.email || "Not available"}
+                  icon={<Mail className="h-4 w-4" />}
+                  variant="default"
                 />
-                <DataDisplay 
-                  label="Account Type" 
-                  value={(user?.role || "User").charAt(0).toUpperCase() + (user?.role || "User").slice(1)} 
-                  icon={<Shield className="h-4 w-4" />} 
-                  variant={user?.role === 'admin' ? "warning" : "default"} 
+                <DataDisplay
+                  label="Account Type"
+                  value={(user?.role || "User").charAt(0).toUpperCase() + (user?.role || "User").slice(1)}
+                  icon={<Shield className="h-4 w-4" />}
+                  variant={user?.role === 'admin' ? "warning" : "default"}
                 />
               </div>
               {user?.createdAt && (
-                <DataDisplay 
-                  label="Member Since" 
+                <DataDisplay
+                  label="Member Since"
                   value={new Date(user.createdAt).toLocaleDateString(undefined, {
                     year: "numeric", month: "long", day: "numeric",
-                  })} 
-                  icon={<Calendar className="h-4 w-4" />} 
-                  variant="default" 
+                  })}
+                  icon={<Calendar className="h-4 w-4" />}
+                  variant="default"
                 />
               )}
             </div>
           </HudPanel>
 
           {/* Profile Edit Card */}
-          <HudPanel 
-            title="Profile Information" 
-            icon={<User className="h-5 w-5" />} 
-            variant="default" 
+          <HudPanel
+            title="Profile Information"
+            icon={<User className="h-5 w-5" />}
+            variant="default"
             className="scan-lines"
           >
             <p className="text-sm text-muted-foreground mb-4">
               Update your profile information for personalized biorhythm calculations.
             </p>
-              <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div className="space-y-2.5">
-                    <Label htmlFor="birthdate">Birthdate</Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        id="birthdate"
-                        type="date"
-                        className="pl-10"
-                        {...profileForm.register("birthdate")}
-                      // error={profileForm.formState.errors.birthdate?.message}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Used for personalized biorhythm calculations and chapter unlocks.
-                    </p>
+            <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-2.5">
+                  <Label htmlFor="birthdate">Birthdate</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="birthdate"
+                      type="date"
+                      className="pl-10"
+                      {...profileForm.register("birthdate")}
+                    // error={profileForm.formState.errors.birthdate?.message}
+                    />
                   </div>
-                  <div className="space-y-2.5">
-                    <Label htmlFor="timezone">Timezone</Label>
-                    <Select
-                      value={profileForm.watch("timezone")}
-                      onValueChange={(v) => profileForm.setValue("timezone", v)}
-                    >
-                      <SelectTrigger className="pl-10">
-                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <SelectValue placeholder="Select timezone" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-80">
-                        {timezones.map((tz) => (
-                          <SelectItem key={tz} value={tz}>{tz}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Used for accurate daily biorhythm snapshots and sunrise calculations.
-                    </p>
-                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Used for personalized biorhythm calculations and chapter unlocks.
+                  </p>
                 </div>
-                <Separator className="bg-metal-700/50" />
-                <div className="flex justify-end">
-                  <Button
-                    type="submit"
-                    disabled={isLoadingProfile || !profileForm.formState.isDirty}
-                    shine
+                <div className="space-y-2.5">
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select
+                    value={profileForm.watch("timezone")}
+                    onValueChange={(v) => profileForm.setValue("timezone", v)}
                   >
-                    {isLoadingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Changes
-                  </Button>
+                    <SelectTrigger className="pl-10">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {timezones.map((tz) => (
+                        <SelectItem key={tz} value={tz}>{tz}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Used for accurate daily biorhythm snapshots and sunrise calculations.
+                  </p>
                 </div>
-              </form>
+              </div>
+              <Separator className="bg-metal-700/50" />
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isLoadingProfile || !profileForm.formState.isDirty}
+                  shine
+                >
+                  {isLoadingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Save Changes
+                </Button>
+              </div>
+            </form>
           </HudPanel>
         </TabsContent>
 
         {/* Password Tab */}
         <TabsContent value="password" className="space-y-6">
-          <HudPanel 
-            title="Change Password" 
-            icon={<KeyRound className="h-5 w-5" />} 
-            variant="default" 
+          <HudPanel
+            title="Change Password"
+            icon={<KeyRound className="h-5 w-5" />}
+            variant="default"
             className="scan-lines"
           >
             <p className="text-sm text-muted-foreground mb-4">
               Update your password. You may need to log in again after this change.
             </p>
-              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-5">
-                {/* New Password */}
-                <div className="space-y-2.5">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                      id="newPassword"
-                      type={showNewPassword ? "text" : "password"}
-                      className="pl-10 pr-10"
-                      placeholder="Create new password"
-                      {...passwordForm.register("newPassword")}
-                    // error={passwordForm.formState.errors.newPassword?.message}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Confirm Password */}
-                <div className="space-y-2.5">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      className="pl-10 pr-10"
-                      placeholder="Confirm new password"
-                      {...passwordForm.register("confirmPassword")}
-                    // error={passwordForm.formState.errors.confirmPassword?.message}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator className="bg-metal-700/50" />
-
-                <div className="flex justify-end">
+            <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-5">
+              {/* New Password */}
+              <div className="space-y-2.5">
+                <Label htmlFor="newPassword">New Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="newPassword"
+                    type={showNewPassword ? "text" : "password"}
+                    className="pl-10 pr-10"
+                    placeholder="Create new password"
+                    {...passwordForm.register("newPassword")}
+                  // error={passwordForm.formState.errors.newPassword?.message}
+                  />
                   <Button
-                    type="submit"
-                    disabled={isLoadingPassword || !passwordForm.formState.isDirty}
-                    shine
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
                   >
-                    {isLoadingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Update Password
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </Button>
                 </div>
-              </form>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2.5">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="pl-10 pr-10"
+                    placeholder="Confirm new password"
+                    {...passwordForm.register("confirmPassword")}
+                  // error={passwordForm.formState.errors.confirmPassword?.message}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <Separator className="bg-metal-700/50" />
+
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isLoadingPassword || !passwordForm.formState.isDirty}
+                  shine
+                >
+                  {isLoadingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Update Password
+                </Button>
+              </div>
+            </form>
           </HudPanel>
         </TabsContent>
 
         {/* Danger Zone Tab */}
         <TabsContent value="danger" className="space-y-6">
           <TechFrame variant="alert" size="default">
-            <HudPanel 
-              title="Danger Zone" 
-              icon={<Trash2 className="h-5 w-5" />} 
-              variant="alert" 
+            <HudPanel
+              title="Danger Zone"
+              icon={<Trash2 className="h-5 w-5" />}
+              variant="alert"
               className="scan-lines border-0"
             >
               <p className="text-sm text-muted-foreground mb-4">
                 Irreversible and destructive actions. Proceed with caution.
               </p>
               <div className="space-y-4">
-              <div className="rounded-lg border border-rose-500/20 bg-rose-950/20 p-4">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-rose-400">Delete Account</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Permanently delete your account and all associated data:
-                    </p>
-                    <ul className="ml-4 list-disc text-sm text-muted-foreground space-y-0.5">
-                      <li>Your profile and progress</li>
-                      <li>Chapter completion records</li>
-                      <li>Biorhythm history</li>
-                      <li>Achievements and streaks</li>
-                    </ul>
+                <div className="rounded-lg border border-rose-500/20 bg-rose-950/20 p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-rose-400">Delete Account</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Permanently delete your account and all associated data:
+                      </p>
+                      <ul className="ml-4 list-disc text-sm text-muted-foreground space-y-0.5">
+                        <li>Your profile and progress</li>
+                        <li>Chapter completion records</li>
+                        <li>Biorhythm history</li>
+                        <li>Achievements and streaks</li>
+                      </ul>
+                    </div>
+                    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" className="shrink-0 h-11">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete Account
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="border-rose-500/30">
+                        <DialogHeader>
+                          <DialogTitle className="text-rose-400 flex items-center gap-2">
+                            <Trash2 className="h-5 w-5" />
+                            Are you absolutely sure?
+                          </DialogTitle>
+                          <DialogDescription className="space-y-2">
+                            <p>This action cannot be undone. This will permanently delete your account.</p>
+                            <p className="font-medium text-foreground">{user?.email}</p>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button variant="destructive" onClick={handleDeleteAccount}>
+                            Yes, Delete My Account
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
-                  <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="destructive" className="shrink-0 h-11">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Account
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="border-rose-500/30">
-                      <DialogHeader>
-                        <DialogTitle className="text-rose-400 flex items-center gap-2">
-                          <Trash2 className="h-5 w-5" />
-                          Are you absolutely sure?
-                        </DialogTitle>
-                        <DialogDescription className="space-y-2">
-                          <p>This action cannot be undone. This will permanently delete your account.</p>
-                          <p className="font-medium text-foreground">{user?.email}</p>
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button variant="destructive" onClick={handleDeleteAccount}>
-                          Yes, Delete My Account
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
                 </div>
-              </div>
               </div>
             </HudPanel>
           </TechFrame>
+        </TabsContent>
+
+        {/* Anamnesis / Discord Tab */}
+        <TabsContent value="anamnesis" className="space-y-6">
+          <HudPanel
+            title="Anamnesis Interface"
+            icon={<RadioTower className="h-5 w-5" />}
+            variant="tech"
+            className="scan-lines"
+          >
+            <p className="text-sm text-muted-foreground mb-6">
+              Compass Calibration: Synchronize your biological signal with the Somatic Oracle on Discord.
+            </p>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Left: Status / Input */}
+              <div className="space-y-4">
+                <Label>Connection Status</Label>
+                {user?.discordId ? (
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-950/20 p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-medium text-emerald-400">Signal Active</p>
+                        <p className="text-xs text-muted-foreground">Linked to ID: {user.discordId}</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={onUnlinkDiscord} className="text-rose-400 hover:text-rose-300 hover:bg-rose-950/30">
+                      <Unlink className="h-4 w-4 mr-2" />
+                      Sever
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-amber-500/20 bg-amber-950/20 p-4 flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-amber-500" />
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-medium text-amber-400">Signal Lost</p>
+                      <p className="text-xs text-muted-foreground">Calibration required.</p>
+                    </div>
+                  </div>
+                )}
+
+                {!user?.discordId && (
+                  <div className="space-y-3 pt-2">
+                    <Label htmlFor="discord-code">Calibration Key</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="discord-code"
+                        placeholder="X7-K9-P2"
+                        className="font-mono uppercase tracking-widest text-center"
+                        maxLength={8}
+                        value={discordCode}
+                        onChange={(e) => setDiscordCode(e.target.value.toUpperCase())}
+                      />
+                      <Button onClick={onLinkDiscord} disabled={isLinking || discordCode.length < 8} shine>
+                        {isLinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <LinkIcon className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Type <code>/calibrate</code> in the Discord channel to receive your key.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Info */}
+              <div className="rounded-lg bg-metal-900/50 p-4 text-sm space-y-3 border border-border/50">
+                <h4 className="font-semibold text-foreground flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-primary" />
+                  The Oracle's Purpose
+                </h4>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Daily Biorhythm Transmissions ensuring you remain aligned with your cycles.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Instant notification when new Canticles are unlocked via Aletheia.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Access to "The Myocardial Chorus" community channels.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </HudPanel>
         </TabsContent>
       </Tabs>
     </div>

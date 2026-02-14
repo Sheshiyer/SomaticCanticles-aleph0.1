@@ -151,28 +151,18 @@ export default function SettingsPage() {
       const birthdateValue = data.birthdate?.trim() || null;
       const timezoneValue = data.timezone || browserTimezone;
 
-      // Keep auth metadata and profile table in sync.
-      const { error: metadataError } = await supabase.auth.updateUser({
-        data: {
+      const response = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           birthdate: birthdateValue,
           timezone: timezoneValue,
-        },
+        }),
       });
-
-      if (metadataError) throw metadataError;
-
-      const { error } = await supabase
-        .from('users')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          role: user.role || "user",
-          birthdate: birthdateValue,
-          timezone: timezoneValue,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
-
-      if (error) throw error;
+      const result = await response.json();
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error?.message || "Failed to update profile");
+      }
 
       // Also update local state
       setUser({ ...user, birthdate: birthdateValue || undefined, timezone: timezoneValue });

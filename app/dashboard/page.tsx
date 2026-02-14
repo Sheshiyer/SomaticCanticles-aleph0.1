@@ -381,10 +381,10 @@ export default function DashboardPage() {
             (() => {
               // Find next peak date
               const allPeaks = [
-                ...predictionData.peaks.physical.map((d: string) => ({ date: d, cycle: "physical" })),
-                ...predictionData.peaks.emotional.map((d: string) => ({ date: d, cycle: "emotional" })),
-                ...predictionData.peaks.intellectual.map((d: string) => ({ date: d, cycle: "intellectual" })),
-                ...predictionData.peaks.spiritual.map((d: string) => ({ date: d, cycle: "spiritual" })),
+                ...(predictionData.peaks?.physical ?? []).map((d: string) => ({ date: d, cycle: "physical" })),
+                ...(predictionData.peaks?.emotional ?? []).map((d: string) => ({ date: d, cycle: "emotional" })),
+                ...(predictionData.peaks?.intellectual ?? []).map((d: string) => ({ date: d, cycle: "intellectual" })),
+                ...(predictionData.peaks?.spiritual ?? []).map((d: string) => ({ date: d, cycle: "spiritual" })),
               ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
               const nextPeak = allPeaks[0];

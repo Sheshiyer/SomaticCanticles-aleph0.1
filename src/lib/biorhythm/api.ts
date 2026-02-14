@@ -18,8 +18,13 @@ import { createClient } from '@/lib/supabase/client';
 
 // ... imports ...
 
-// API Base URL - configured via environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// Prefer internal Next.js API by default.
+// Legacy worker API is used only for explicit localhost worker development.
+const CONFIGURED_API_BASE = process.env.NEXT_PUBLIC_API_URL?.trim();
+const API_BASE_URL =
+  CONFIGURED_API_BASE && CONFIGURED_API_BASE.includes("localhost:8787")
+    ? CONFIGURED_API_BASE
+    : "/api";
 
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCK_BIORHYTHM === "true";
 

@@ -6,7 +6,9 @@
 import { createClient } from '@/lib/supabase/client';
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const CONFIGURED_API_BASE = process.env.NEXT_PUBLIC_API_URL?.trim();
+const API_BASE_URL = CONFIGURED_API_BASE || "/api";
+const INTERNAL_API_BASE = "/api";
 
 // Cache removed
 
@@ -22,8 +24,8 @@ async function wait(ms: number) {
 // Flag to enable mocking (for development)
 // Force mock mode if API is localhost:8787 (dev server not running)
 const isLocalDev = typeof window !== 'undefined' &&
-  (process.env.NEXT_PUBLIC_API_URL?.includes('localhost:8787') ||
-    process.env.NEXT_PUBLIC_API_URL === 'http://localhost:8787');
+  (CONFIGURED_API_BASE?.includes('localhost:8787') ||
+    CONFIGURED_API_BASE === 'http://localhost:8787');
 // USER: Disable mocks to read from real DB
 const USE_MOCKS = (typeof window !== 'undefined' && (window as any).__FORCE_API_NETWORK__)
   ? false
@@ -382,7 +384,8 @@ class ChapterApiError extends Error {
 
 async function apiRequest(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  forceInternal = false
 ): Promise<Response> {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -397,7 +400,8 @@ async function apiRequest(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const base = forceInternal ? INTERNAL_API_BASE : API_BASE_URL;
+  const response = await fetch(`${base}${endpoint}`, {
     ...options,
     headers,
   });
@@ -455,7 +459,7 @@ export async function getChaptersList(): Promise<ChaptersListResponse> {
 
   try {
     const fn = async () => {
-      const response = await apiRequest("/chapters/list");
+      const response = await apiRequest("/chapters/list", {}, true);
       const data = await response.json();
       return data as ChaptersListResponse;
     };
@@ -537,7 +541,7 @@ export async function getChapterDetail(
 
   try {
     const fn = async () => {
-      const response = await apiRequest(`/chapters/${chapterId}`);
+      const response = await apiRequest(`/chapters/${chapterId}`, {}, true);
       const data = await response.json();
       return data as ChapterDetailResponse;
     };
@@ -583,7 +587,7 @@ export async function getChapterProgress(): Promise<ProgressResponse> {
 
   try {
     const fn = async () => {
-      const response = await apiRequest("/chapters/progress");
+      const response = await apiRequest("/chapters/progress", {}, true);
       const data = await response.json();
       return data as ProgressResponse;
     };
@@ -616,7 +620,7 @@ export async function updateChapterProgress(
         chapter_id: chapterId,
         ...updates,
       }),
-    });
+    }, true);
     const data = await response.json();
     return data as UpdateProgressResponse;
   } catch (error) {
@@ -648,7 +652,7 @@ export async function checkChapterUnlocks(): Promise<CheckUnlockResponse> {
   try {
     const response = await apiRequest("/chapters/check-unlock", {
       method: "POST",
-    });
+    }, true);
     const data = await response.json();
     return data as CheckUnlockResponse;
   } catch (error) {

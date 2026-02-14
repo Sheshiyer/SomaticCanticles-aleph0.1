@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard,
   Users,
@@ -13,6 +14,7 @@ import {
   Settings,
   LogOut,
   Shield,
+  Loader2,
 } from "lucide-react";
 
 interface NavItem {
@@ -70,31 +72,51 @@ export default function AdminLayout({
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const supabase = createClient();
 
   useEffect(() => {
-    // Check if user is admin
-    if (typeof window !== "undefined") {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          const parsed = JSON.parse(userStr);
-          if (parsed.role !== "admin") {
-            // Not an admin, redirect to dashboard
-            router.push("/dashboard");
-            return;
-          }
-          setUser(parsed);
-        } catch {
-          router.push("/auth/login");
-        }
-      } else {
-        router.push("/auth/login");
-      }
-      setIsLoading(false);
-    }
-  }, [router]);
+    const checkAdmin = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-  const handleLogout = () => {
+        if (error || !session) {
+          router.push("/auth/login");
+          return;
+        }
+
+        // Fetch user role from public.users table
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        const role = userData?.role || session.user.user_metadata?.role;
+
+        if (role !== "admin") {
+          // Not an admin, redirect to dashboard
+          router.push("/dashboard");
+          return;
+        }
+
+        setUser({
+          email: session.user.email || "",
+          role: role
+        });
+
+      } catch (error) {
+        console.error("Admin check failed:", error);
+        router.push("/dashboard");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAdmin();
+  }, [router, supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem("auth_tokens");
     localStorage.removeItem("user");
     router.push("/auth/login");
@@ -104,8 +126,8 @@ export default function AdminLayout({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="mt-2 text-sm text-muted-foreground">Verifying admin access...</p>
         </div>
       </div>
     );
@@ -126,7 +148,7 @@ export default function AdminLayout({
               <span className="font-bold text-lg">Admin Panel</span>
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-auto p-4">
             <nav className="space-y-1">
               {adminNavItems.map((item) => (
@@ -138,7 +160,7 @@ export default function AdminLayout({
               ))}
             </nav>
           </div>
-          
+
           <div className="border-t p-4">
             <div className="mb-4 px-3">
               <p className="text-xs text-muted-foreground">Logged in as</p>
@@ -170,7 +192,7 @@ export default function AdminLayout({
             </Link>
           </div>
         </header>
-        
+
         {/* Page Content */}
         <main className="container mx-auto p-6">
           {children}

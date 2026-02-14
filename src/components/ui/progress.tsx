@@ -22,6 +22,10 @@ const progressVariants = {
     track: "bg-metal-800",
     indicator: "bg-gradient-to-r from-amber-500 to-amber-400",
   },
+  amber: {
+    track: "bg-metal-800",
+    indicator: "bg-gradient-to-r from-amber-500 to-amber-400",
+  },
   danger: {
     track: "bg-metal-800",
     indicator: "bg-gradient-to-r from-rose-500 to-rose-400",

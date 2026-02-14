@@ -18,6 +18,16 @@ function isValidTimezone(timezone: string): boolean {
   }
 }
 
+function isConfiguredAdmin(userId: string): boolean {
+  const raw = process.env.ADMIN_USER_IDS || "";
+  if (!raw) return false;
+  const ids = raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return ids.includes(userId);
+}
+
 export async function PATCH(req: NextRequest) {
   const auth = await requireSession();
   if (!auth.ok) {
@@ -85,11 +95,22 @@ export async function PATCH(req: NextRequest) {
       .eq("id", auth.userId)
       .maybeSingle();
 
+    const metadataRole =
+      typeof user.user_metadata?.role === "string"
+        ? user.user_metadata.role
+        : null;
+    const resolvedRole =
+      currentProfile?.role === "admin" ||
+      metadataRole === "admin" ||
+      isConfiguredAdmin(auth.userId)
+        ? "admin"
+        : "user";
+
     const { error: upsertError } = await admin.from("users").upsert(
       {
         id: auth.userId,
         email: auth.email || user.email || "",
-        role: currentProfile?.role || "user",
+        role: resolvedRole,
         birthdate,
         timezone: resolvedTimezone,
         updated_at: new Date().toISOString(),

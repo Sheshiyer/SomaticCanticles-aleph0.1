@@ -17,7 +17,7 @@ const cycleColors = {
     borderHover: "hover:border-amber-500/50",
     text: "text-amber-400",
     icon: "text-amber-500",
-    progress: "warning",
+    progress: "amber",
     glow: "shadow-amber-500/10",
     glowHover: "hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
     corner: "border-amber-500/40",
@@ -219,7 +219,7 @@ export function ChapterCard({
             </div>
             <Progress
               value={progress}
-              variant={colors.progress as "default" | "tech" | "success" | "warning" | "danger"}
+              variant={colors.progress as "default" | "tech" | "success" | "warning" | "amber" | "danger"}
               size="sm"
             />
           </div>

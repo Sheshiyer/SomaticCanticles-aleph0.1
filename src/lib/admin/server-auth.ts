@@ -14,6 +14,16 @@ type AdminAuthSuccess = {
 
 export type AdminAuthResult = AdminAuthFailure | AdminAuthSuccess;
 
+function isConfiguredAdmin(userId: string): boolean {
+  const raw = process.env.ADMIN_USER_IDS || "";
+  if (!raw) return false;
+  const ids = raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return ids.includes(userId);
+}
+
 export async function requireAdminSession(): Promise<AdminAuthResult> {
   try {
     const supabase = await createClient();
@@ -43,7 +53,7 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
     }
 
     const role = userData?.role || user.user_metadata?.role;
-    if (role !== "admin") {
+    if (role !== "admin" && !isConfiguredAdmin(user.id)) {
       return {
         ok: false,
         response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),

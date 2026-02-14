@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TechFrame, HudPanel, DataDisplay } from '@/components/ui/frame';
 import { AchievementCard, AchievementProgressRing, type Achievement } from '@/components/achievements/AchievementCard';
 import { toast } from 'sonner';
 
@@ -94,8 +95,8 @@ export default function AchievementsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card variant="glass" noPadding className="border-metal-700/50">
-          <CardContent className="p-6">
+        <TechFrame variant="default" className="scan-lines">
+          <HudPanel title="Achievement Progress" icon={<Trophy className="h-5 w-5" />} className="scan-lines">
             <div className="flex flex-col md:flex-row items-center gap-8">
               {/* Progress Ring */}
               <AchievementProgressRing unlocked={unlockedCount} total={totalCount} size={140} />
@@ -104,15 +105,12 @@ export default function AchievementsPage() {
               <div className="flex-1 w-full space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {Object.entries(statsByRarity).map(([rarity, stats]) => (
-                    <div 
+                    <DataDisplay
                       key={rarity}
-                      className={`p-3 rounded-lg border text-center ${getRarityStyles(rarity)}`}
-                    >
-                      <div className="capitalize text-xs text-muted-foreground mb-1">{rarity}</div>
-                      <div className="text-xl font-bold font-mono">
-                        {stats.unlocked} <span className="text-muted-foreground text-sm">/ {stats.total}</span>
-                      </div>
-                    </div>
+                      label={rarity.charAt(0).toUpperCase() + rarity.slice(1)}
+                      value={`${stats.unlocked} / ${stats.total}`}
+                      variant={getDataDisplayVariant(rarity)}
+                    />
                   ))}
                 </div>
 
@@ -143,8 +141,8 @@ export default function AchievementsPage() {
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </HudPanel>
+        </TechFrame>
       </motion.div>
 
       {/* Filters */}
@@ -154,7 +152,8 @@ export default function AchievementsPage() {
         transition={{ delay: 0.2 }}
       >
         <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterType)}>
-          <TabsList className="flex-wrap h-auto gap-2 bg-metal-800/50 p-1">
+          <TechFrame variant="tech" size="sm">
+            <TabsList className="flex-wrap h-auto gap-2 bg-transparent p-0 border-0">
             <TabsTrigger value="all" className="data-[state=active]:bg-metal-700">
               All ({achievements.length})
             </TabsTrigger>
@@ -175,6 +174,7 @@ export default function AchievementsPage() {
               Legendary
             </TabsTrigger>
           </TabsList>
+          </TechFrame>
         </Tabs>
       </motion.div>
 
@@ -213,5 +213,15 @@ function getRarityStyles(rarity: string) {
     case 'epic': return 'bg-violet-500/5 border-violet-500/20';
     case 'legendary': return 'bg-amber-500/5 border-amber-500/20';
     default: return 'bg-metal-800/30 border-metal-700';
+  }
+}
+
+function getDataDisplayVariant(rarity: string): "default" | "tech" | "success" | "warning" {
+  switch (rarity) {
+    case 'common': return 'default';
+    case 'rare': return 'tech';
+    case 'epic': return 'success';
+    case 'legendary': return 'warning';
+    default: return 'default';
   }
 }

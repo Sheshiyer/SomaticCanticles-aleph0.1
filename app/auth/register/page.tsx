@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LightPillar } from "@/components/effects/LightPillar";
+import { TechFrame } from "@/components/ui/frame";
 import { getURL } from "@/lib/utils/url";
 
 const registerSchema = z
@@ -148,52 +149,77 @@ export default function RegisterPage() {
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background py-12">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
-      <LightPillar />
+      <div className="fixed inset-0 pointer-events-none">
+        <LightPillar color="solar" height="100%" intensity="low" />
+      </div>
+
+      {/* Scan lines overlay */}
+      <div className="absolute inset-0 pointer-events-none scan-lines opacity-30" />
 
       {/* Register Card */}
-      <Card className="relative z-10 w-full max-w-md">
-        <CardCorners />
-        <CardHeader>
-          <CardTitle>Create Account</CardTitle>
-          <CardDescription>Join Somatic Canticles to begin your journey</CardDescription>
+      <TechFrame variant="default" size="sm" className="relative z-10">
+        <Card 
+          variant="glass" 
+          className="relative z-10 w-full max-w-md border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300 scan-lines"
+        >
+        <CardCorners color="primary" />
+        
+        {/* Top tech accent */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-32 bg-gradient-to-r from-transparent via-primary to-transparent" />
+        
+        <CardHeader className="space-y-4 pb-6 pt-8">
+          {/* Light pillar accent */}
+          <div className="flex justify-center mb-2">
+            <LightPillar color="solar" height={32} width={2} intensity="low" />
+          </div>
+          
+          <CardTitle className="text-2xl font-bold text-center text-metallic bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
+            Create Account
+          </CardTitle>
+          <CardDescription className="text-center text-muted-foreground leading-relaxed">
+            Join Somatic Canticles to begin your journey
+          </CardDescription>
         </CardHeader>
+
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  className="pl-10"
-                  {...register("email")}
-                  disabled={isLoading}
-                />
-              </div>
+            <div className="space-y-2.5">
+              <Label htmlFor="email" className="text-foreground">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                leftIcon={<Mail className="h-4 w-4" />}
+                {...register("email")}
+                disabled={isLoading}
+                error={errors.email?.message}
+              />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-xs text-rose-500 flex items-center gap-1">
+                  <span>•</span>
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••••••"
-                  className="pl-10"
-                  {...register("password")}
-                  disabled={isLoading}
-                />
-              </div>
+            <div className="space-y-2.5">
+              <Label htmlFor="password" className="text-foreground">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••••••"
+                leftIcon={<Lock className="h-4 w-4" />}
+                {...register("password")}
+                disabled={isLoading}
+                error={errors.password?.message}
+              />
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-xs text-rose-500 flex items-center gap-1">
+                  <span>•</span>
+                  {errors.password.message}
+                </p>
               )}
               <p className="text-xs text-muted-foreground">
                 Min 12 characters, uppercase, lowercase, number, and special character
@@ -201,47 +227,45 @@ export default function RegisterPage() {
             </div>
 
             {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••••••"
-                  className="pl-10"
-                  {...register("confirmPassword")}
-                  disabled={isLoading}
-                />
-              </div>
+            <div className="space-y-2.5">
+              <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••••••"
+                leftIcon={<Lock className="h-4 w-4" />}
+                {...register("confirmPassword")}
+                disabled={isLoading}
+                error={errors.confirmPassword?.message}
+              />
               {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                <p className="text-xs text-rose-500 flex items-center gap-1">
+                  <span>•</span>
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
             {/* Birthdate Field (Optional) */}
-            <div className="space-y-2">
-              <Label htmlFor="birthdate">
+            <div className="space-y-2.5">
+              <Label htmlFor="birthdate" className="text-foreground">
                 Birthdate <span className="text-muted-foreground">(Optional)</span>
               </Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="birthdate"
-                  type="date"
-                  className="pl-10"
-                  {...register("birthdate")}
-                  disabled={isLoading}
-                />
-              </div>
+              <Input
+                id="birthdate"
+                type="date"
+                leftIcon={<Calendar className="h-4 w-4" />}
+                {...register("birthdate")}
+                disabled={isLoading}
+              />
               <p className="text-xs text-muted-foreground">
                 Used for personalized biorhythm calculations
               </p>
             </div>
 
             {/* Timezone Field */}
-            <div className="space-y-2">
-              <Label htmlFor="timezone">Timezone</Label>
+            <div className="space-y-2.5">
+              <Label htmlFor="timezone" className="text-foreground">Timezone</Label>
               <Select
                 defaultValue={Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"}
                 onValueChange={(value) => setValue("timezone", value)}
@@ -260,16 +284,19 @@ export default function RegisterPage() {
                 </SelectContent>
               </Select>
               {errors.timezone && (
-                <p className="text-sm text-destructive">{errors.timezone.message}</p>
+                <p className="text-xs text-rose-500 flex items-center gap-1">
+                  <span>•</span>
+                  {errors.timezone.message}
+                </p>
               )}
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 pt-2">
             {/* Discord Register - Primary */}
             <Button
               type="button"
-              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white"
+              className="w-full h-11 bg-[#5865F2] hover:bg-[#4752C4] text-white"
               onClick={handleDiscordRegister}
               disabled={isLoading}
             >
@@ -285,14 +312,14 @@ export default function RegisterPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
+                <span className="bg-background/50 px-2 text-muted-foreground">
                   Or create account with email
                 </span>
               </div>
             </div>
 
             {/* Email Register Button */}
-            <Button type="submit" variant="outline" className="w-full" disabled={isLoading}>
+            <Button type="submit" variant="outline" className="w-full h-11" disabled={isLoading} shine>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -307,15 +334,16 @@ export default function RegisterPage() {
             </Button>
 
             {/* Sign In Link */}
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground pt-2">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-primary hover:underline">
+              <Link href="/auth/login" className="text-primary hover:text-primary/80 transition-colors font-medium">
                 Sign in
               </Link>
             </p>
           </CardFooter>
         </form>
-      </Card>
+        </Card>
+      </TechFrame>
     </div>
   );
 }

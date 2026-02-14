@@ -7,9 +7,9 @@ import { BookOpen, Filter, Sparkles, RefreshCcw } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 
 import { ChapterCard, ChapterCardSkeleton } from "@/components/chapters/ChapterCard";
 import {
@@ -182,12 +182,14 @@ export default function ChaptersPage() {
           className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
           variants={itemVariants}
         >
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">The 12 Somatic Canticles</h1>
-            <p className="text-muted-foreground">
-              {stats.completed}/{stats.total} chapters completed · {stats.unlocked} unlocked
-            </p>
-          </div>
+          <TechFrame variant="default">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-metallic">The 12 Somatic Canticles</h1>
+              <p className="text-muted-foreground">
+                {stats.completed}/{stats.total} chapters completed · {stats.unlocked} unlocked
+              </p>
+            </div>
+          </TechFrame>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -224,31 +226,13 @@ export default function ChaptersPage() {
 
         {/* Progress overview */}
         <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <BookOpen className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Your Journey</span>
-                    <span className="text-sm text-muted-foreground">
-                      {Math.round((stats.completed / stats.total) * 100)}% complete
-                    </span>
-                  </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
-                    <motion.div
-                      className="h-full bg-primary"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(stats.completed / stats.total) * 100}%` }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <HudPanel title="Chapter Statistics" icon={<BookOpen className="h-5 w-5" />} className="scan-lines">
+            <div className="grid grid-cols-3 gap-4">
+              <DataDisplay label="Unlocked" value={stats.unlocked} variant="success" />
+              <DataDisplay label="Completed" value={stats.completed} variant="tech" />
+              <DataDisplay label="Total" value={stats.total} variant="default" />
+            </div>
+          </HudPanel>
         </motion.div>
 
         {/* Filters */}
@@ -261,13 +245,15 @@ export default function ChaptersPage() {
             onValueChange={(v) => setCycleFilter(v as CycleFilter)}
             className="w-full sm:w-auto"
           >
-            <TabsList className="grid w-full grid-cols-5 sm:w-auto">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="physical">Body</TabsTrigger>
-              <TabsTrigger value="emotional">Heart</TabsTrigger>
-              <TabsTrigger value="intellectual">Mind</TabsTrigger>
-              <TabsTrigger value="spiritual">Spirit</TabsTrigger>
-            </TabsList>
+            <TechFrame variant="tech" size="sm">
+              <TabsList className="grid w-full grid-cols-5 sm:w-auto">
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="physical">Body</TabsTrigger>
+                <TabsTrigger value="emotional">Heart</TabsTrigger>
+                <TabsTrigger value="intellectual">Mind</TabsTrigger>
+                <TabsTrigger value="spiritual">Spirit</TabsTrigger>
+              </TabsList>
+            </TechFrame>
           </Tabs>
 
           <div className="flex items-center gap-2">

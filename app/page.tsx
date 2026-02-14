@@ -390,28 +390,30 @@ function BiorhythmsExplainerSection() {
           </div>
 
           {/* Explanation Text */}
-          <div className="grid gap-4 text-center text-sm text-muted-foreground sm:grid-cols-3">
-            <div className="rounded-lg border border-border/50 bg-background/50 p-4">
-              <div className="mb-2 flex justify-center">
-                <Waves className="h-5 w-5 text-ocean-500" />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <HudPanel className="text-center" variant="tech">
+              <div className="mb-3 flex justify-center">
+                <Waves className="h-6 w-6 text-ocean-500" />
               </div>
-              <p className="font-medium text-foreground">Sine Wave Pattern</p>
-              <p className="text-xs">Each cycle follows a natural sine wave with peaks, valleys, and critical days</p>
-            </div>
-            <div className="rounded-lg border border-border/50 bg-background/50 p-4">
-              <div className="mb-2 flex justify-center">
-                <Sparkles className="h-5 w-5 text-solar-500" />
+              <p className="font-medium text-foreground mb-1">Sine Wave Pattern</p>
+              <p className="text-xs text-muted-foreground">Each cycle follows a natural sine wave with peaks, valleys, and critical days</p>
+            </HudPanel>
+
+            <HudPanel className="text-center" variant="tech">
+              <div className="mb-3 flex justify-center">
+                <Sparkles className="h-6 w-6 text-solar-500" />
               </div>
-              <p className="font-medium text-foreground">Peak Performance</p>
-              <p className="text-xs">High points in cycles unlock chapters and optimize your practice</p>
-            </div>
-            <div className="rounded-lg border border-border/50 bg-background/50 p-4">
-              <div className="mb-2 flex justify-center">
-                <Timer className="h-5 w-5 text-ember-500" />
+              <p className="font-medium text-foreground mb-1">Peak Performance</p>
+              <p className="text-xs text-muted-foreground">High points in cycles unlock chapters and optimize your practice</p>
+            </HudPanel>
+
+            <HudPanel className="text-center" variant="tech">
+              <div className="mb-3 flex justify-center">
+                <Timer className="h-6 w-6 text-ember-500" />
               </div>
-              <p className="font-medium text-foreground">Personal Timeline</p>
-              <p className="text-xs">Your birthdate determines your unique cycle patterns</p>
-            </div>
+              <p className="font-medium text-foreground mb-1">Personal Timeline</p>
+              <p className="text-xs text-muted-foreground">Your birthdate determines your unique cycle patterns</p>
+            </HudPanel>
           </div>
         </TechFrame>
       </div>
@@ -444,7 +446,7 @@ function ChapterProgressionSection() {
         </motion.div>
 
         {/* Chapter Tree Placeholder */}
-        <TechFrame variant="default" className="mx-auto max-w-4xl">
+        <TechFrame variant="tech" className="mx-auto max-w-4xl">
           <CornerOrnament position="top-left" />
           <CornerOrnament position="top-right" />
           <CornerOrnament position="bottom-left" />
@@ -454,9 +456,9 @@ function ChapterProgressionSection() {
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TreePine className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium">ChapterTreeNode Component</span>
+              <span className="text-sm font-medium tracking-wider text-muted-foreground uppercase">Progression Tree</span>
             </div>
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary font-mono">
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary font-mono border border-primary/20">
               Interactive
             </span>
           </div>
@@ -467,28 +469,33 @@ function ChapterProgressionSection() {
               <motion.div
                 key={chapter.num}
                 variants={itemVariants}
-                className={`flex items-center gap-3 rounded-lg border p-3 ${chapter.status === "unlocked"
-                  ? "border-primary/30 bg-primary/5"
-                  : "border-border/50 bg-background/50 opacity-60"
+                className={`relative overflow-hidden flex items-center gap-3 rounded-lg border p-3 transition-all duration-300 hover:scale-[1.02] ${chapter.status === "unlocked"
+                  ? "border-primary/40 bg-primary/10 shadow-[0_0_15px_-3px_rgba(var(--primary),0.2)]"
+                  : "border-border/50 bg-metal-900/20 opacity-60 grayscale"
                   }`}
               >
+                {chapter.status === "unlocked" && (
+                  <div className="absolute inset-0 bg-scan-lines opacity-10 pointer-events-none" />
+                )}
+
                 <div
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${chapter.status === "unlocked"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold border ${chapter.status === "unlocked"
+                    ? "bg-primary/20 text-primary border-primary/50"
+                    : "bg-muted/20 text-muted-foreground border-border/50"
                     }`}
                 >
                   {chapter.status === "unlocked" ? (
-                    <Play className="h-3 w-3" />
+                    <Play className="h-3.5 w-3.5" />
                   ) : (
-                    <Lock className="h-3 w-3" />
+                    <Lock className="h-3.5 w-3.5" />
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    Chapter {chapter.num}: {chapter.title}
+                <div className="min-w-0 flex-1 relative z-10">
+                  <p className={`truncate text-sm font-medium ${chapter.status === "unlocked" ? "text-primary-foreground" : "text-muted-foreground"}`}>
+                    <span className="text-[10px] uppercase opacity-70 mr-1.5">CH {chapter.num}</span>
+                    {chapter.title}
                   </p>
-                  <p className="text-xs text-muted-foreground font-mono">
+                  <p className="text-xs text-muted-foreground font-mono mt-0.5">
                     {chapter.delay}
                   </p>
                 </div>
@@ -576,6 +583,87 @@ function ExpectedTimeline() {
   );
 }
 
+// Consciousness Sync Station Section
+function ConsciousnessSyncSection() {
+  return (
+    <section className="relative px-4 py-24 sm:px-6 lg:px-8 bg-metal-900/10">
+      <div className="mx-auto max-w-6xl">
+        <SectionDivider label="Consciousness Sync Station" className="mb-12" />
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Audio Canticle Preview */}
+          <HudPanel
+            title="AUDIO CANTICLES"
+            icon={<Volume2 className="h-4 w-4" />}
+            variant="tech"
+            className="h-full"
+          >
+            <div className="space-y-6">
+              {/* Fake Player */}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 text-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-grid-white/5 opacity-20" />
+
+                <div className="mb-6 flex items-end justify-center gap-1 h-12 text-primary">
+                  <div className="w-1 bg-primary/60 h-[40%] animate-pulse" style={{ animationDelay: "0ms" }} />
+                  <div className="w-1 bg-primary/80 h-[70%] animate-pulse" style={{ animationDelay: "75ms" }} />
+                  <div className="w-1 bg-primary h-[100%] animate-pulse" style={{ animationDelay: "150ms" }} />
+                  <div className="w-1 bg-primary/90 h-[60%] animate-pulse" style={{ animationDelay: "300ms" }} />
+                  <div className="w-1 bg-primary/70 h-[80%] animate-pulse" style={{ animationDelay: "75ms" }} />
+                  <div className="w-1 bg-primary/50 h-[40%] animate-pulse" style={{ animationDelay: "200ms" }} />
+                  <div className="w-1 bg-primary/30 h-[20%] animate-pulse" style={{ animationDelay: "100ms" }} />
+                </div>
+
+                <p className="font-mono text-sm text-primary mb-2 relative z-10">
+                  [▶ PREVIEW] Chapter 1: The Choroid Plexus
+                </p>
+
+                <div className="h-1 w-full bg-primary/20 rounded-full overflow-hidden relative z-10">
+                  <div className="h-full w-1/3 bg-primary" />
+                </div>
+
+                <div className="flex justify-between text-[10px] font-mono text-muted-foreground mt-2 relative z-10">
+                  <span>04:20</span>
+                  <span>16:00</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs text-muted-foreground font-mono">
+                <div className="flex justify-between border-b border-border/50 pb-2">
+                  <span>Total Duration:</span>
+                  <span className="text-foreground">143 minutes</span>
+                </div>
+                <div className="flex justify-between border-b border-border/50 pb-2">
+                  <span>Audio Quality:</span>
+                  <span className="text-foreground">320kbps MP3</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Availability:</span>
+                  <span className="text-foreground">2/12 unlocked</span>
+                </div>
+              </div>
+            </div>
+          </HudPanel>
+
+          {/* Practice Stats */}
+          <HudPanel
+            title="PRACTICE METRICS"
+            icon={<Activity className="h-4 w-4" />}
+            variant="default"
+            className="h-full"
+          >
+            <div className="grid grid-cols-2 gap-4 h-full content-start">
+              <DataDisplay label="Sessions" value="12" trend="up" trendValue="3 this week" />
+              <DataDisplay label="Time" value="4.2" unit="h" trend="neutral" trendValue="Total practice" />
+              <DataDisplay label="Streak" value="7" unit="d" trend="up" trendValue="Current streak" />
+              <DataDisplay label="Next Session" value="19" unit="h" variant="warning" trend="neutral" trendValue="Recommended" />
+            </div>
+          </HudPanel>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { isLoading, isAuthenticated } = useSupabaseSession();
 
@@ -587,7 +675,7 @@ export default function HomePage() {
       {/* Skip Link for Accessibility */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-20 focus:z-50 focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:rounded"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-20 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
       >
         Skip to main content
       </a>
@@ -632,14 +720,21 @@ export default function HomePage() {
                   </span>
                 </motion.h1>
 
-                {/* Subtitle */}
-                <motion.p
+                {/* Mission Brief */}
+                <motion.div
                   variants={itemVariants}
-                  className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+                  className="mx-auto mt-6 max-w-xl rounded-lg border border-border/50 bg-background/50 p-6 text-center backdrop-blur-sm"
                 >
-                  A sacred journey through 12 canticles, unlocked by the rhythms of your
-                  being. Track your cycles. Discover your wisdom.
-                </motion.p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
+                    Mission Brief
+                  </p>
+                  <p className="text-base leading-relaxed text-muted-foreground sm:text-lg mb-2">
+                    Synchronize consciousness through 12 sacred chapters.
+                  </p>
+                  <p className="text-sm opacity-80 text-muted-foreground/80 font-mono">
+                    Unlock protocol tied to 4-cycle biorhythm tracking system.
+                  </p>
+                </motion.div>
 
                 {/* Auth-Aware CTA Buttons */}
                 <motion.div
@@ -733,13 +828,19 @@ export default function HomePage() {
               {cycles.map((cycle) => {
                 const Icon = cycle.icon;
                 return (
-                  <motion.div key={cycle.name} variants={itemVariants}>
+                  <motion.div
+                    key={cycle.name}
+                    variants={itemVariants}
+                    className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg"
+                    tabIndex={0}
+                    role="article"
+                    aria-label={`${cycle.name} cycle: ${cycle.days}-day period governing ${cycle.element.toLowerCase()} and vitality`}
+                  >
                     <HudPanel
                       title={cycle.name}
                       icon={<Icon className={`h-4 w-4 ${cycle.iconColor}`} />}
                       variant={cycle.color === "ember" ? "alert" : cycle.color === "ocean" ? "default" : "tech"}
-                      aria-label={`${cycle.name} cycle: ${cycle.description}`}
-                      className={`h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${cycle.glow}`}
+                      className={`scan-lines h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${cycle.glow}`}
                     >
                       <div className="space-y-4">
                         {/* Element type */}
@@ -770,6 +871,9 @@ export default function HomePage() {
 
         {/* Chapter Progression Section */}
         <ChapterProgressionSection />
+
+        {/* Consciousness Sync Station Section */}
+        <ConsciousnessSyncSection />
 
         {/* Section Divider */}
         <SectionDivider label="System Capabilities" className="mx-auto max-w-6xl px-4" />
@@ -816,7 +920,7 @@ export default function HomePage() {
         {/* CTA Section with System Requirements - Wrapped in TechFrame */}
         <section className="relative px-4 py-24 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl">
-            <TechFrame variant="gold" size="lg">
+            <TechFrame variant="gold" size="lg" className="glass">
               <CornerOrnament position="top-left" />
               <CornerOrnament position="top-right" />
               <CornerOrnament position="bottom-left" />

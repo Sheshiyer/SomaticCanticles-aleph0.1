@@ -11,7 +11,6 @@ import {
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,7 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 import { createClient } from "@/lib/supabase/client";
 
 const profileSchema = z.object({
@@ -180,8 +179,9 @@ export default function SettingsPage() {
       toast.success("Password updated successfully");
       passwordForm.reset();
       setActiveTab("profile");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update password");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update password";
+      toast.error(errorMessage);
     } finally {
       setIsLoadingPassword(false);
     }
@@ -212,87 +212,71 @@ export default function SettingsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto bg-metal-800/50 p-1">
-          <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-metal-700">
-            <User className="h-4 w-4" />
-            <span className="hidden sm:inline">Profile</span>
-          </TabsTrigger>
-          <TabsTrigger value="password" className="gap-2 data-[state=active]:bg-metal-700">
-            <Lock className="h-4 w-4" />
-            <span className="hidden sm:inline">Password</span>
-          </TabsTrigger>
-          <TabsTrigger value="danger" className="gap-2 data-[state=active]:bg-metal-700">
-            <Trash2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Danger</span>
-          </TabsTrigger>
-        </TabsList>
+        <TechFrame variant="tech" size="sm">
+          <TabsList className="grid w-full grid-cols-3 lg:w-auto bg-metal-800/50 p-1">
+            <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-metal-700">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="password" className="gap-2 data-[state=active]:bg-metal-700">
+              <Lock className="h-4 w-4" />
+              <span className="hidden sm:inline">Password</span>
+            </TabsTrigger>
+            <TabsTrigger value="danger" className="gap-2 data-[state=active]:bg-metal-700">
+              <Trash2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Danger</span>
+            </TabsTrigger>
+          </TabsList>
+        </TechFrame>
 
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           {/* Account Info Card */}
-          <Card variant="glass" noPadding className="border-metal-700/50">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-metallic">
-                <Mail className="h-5 w-5 text-primary" />
-                Account Information
-              </CardTitle>
-              <CardDescription>Your account details and membership information.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <HudPanel 
+            title="Account Information" 
+            icon={<Mail className="h-5 w-5" />} 
+            variant="default" 
+            className="scan-lines"
+          >
+            <p className="text-sm text-muted-foreground mb-4">Your account details and membership information.</p>
+            <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2.5">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wider">Email Address</Label>
-                  <div className="flex items-center gap-3 rounded-lg border border-metal-700 bg-metal-800/50 px-4 py-3">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{user?.email || "Not available"}</span>
-                  </div>
-                </div>
-                <div className="space-y-2.5">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wider">Account Type</Label>
-                  <div className="flex items-center gap-3 rounded-lg border border-metal-700 bg-metal-800/50 px-4 py-3">
-                    <Shield className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm capitalize">{user?.role || "User"}</span>
-                    {user?.role === 'admin' && (
-                      <Badge variant="default" className="ml-auto bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border-amber-500/50">
-                        Admin
-                      </Badge>
-                    )}
-                    {user?.role !== 'admin' && (
-                      <Badge variant="outline" className="ml-auto text-xs">
-                        Active
-                      </Badge>
-                    )}
-                  </div>
-                </div>
+                <DataDisplay 
+                  label="Email Address" 
+                  value={user?.email || "Not available"} 
+                  icon={<Mail className="h-4 w-4" />} 
+                  variant="default" 
+                />
+                <DataDisplay 
+                  label="Account Type" 
+                  value={(user?.role || "User").charAt(0).toUpperCase() + (user?.role || "User").slice(1)} 
+                  icon={<Shield className="h-4 w-4" />} 
+                  variant={user?.role === 'admin' ? "warning" : "default"} 
+                />
               </div>
               {user?.createdAt && (
-                <div className="space-y-2.5">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wider">Member Since</Label>
-                  <div className="flex items-center gap-3 rounded-lg border border-metal-700 bg-metal-800/50 px-4 py-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {new Date(user.createdAt).toLocaleDateString(undefined, {
-                        year: "numeric", month: "long", day: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
+                <DataDisplay 
+                  label="Member Since" 
+                  value={new Date(user.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric", month: "long", day: "numeric",
+                  })} 
+                  icon={<Calendar className="h-4 w-4" />} 
+                  variant="default" 
+                />
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </HudPanel>
 
           {/* Profile Edit Card */}
-          <Card variant="glass" noPadding className="border-metal-700/50">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-metallic">
-                <User className="h-5 w-5 text-primary" />
-                Profile Information
-              </CardTitle>
-              <CardDescription>
-                Update your profile information for personalized biorhythm calculations.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          <HudPanel 
+            title="Profile Information" 
+            icon={<User className="h-5 w-5" />} 
+            variant="default" 
+            className="scan-lines"
+          >
+            <p className="text-sm text-muted-foreground mb-4">
+              Update your profile information for personalized biorhythm calculations.
+            </p>
               <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2.5">
@@ -344,23 +328,20 @@ export default function SettingsPage() {
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
+          </HudPanel>
         </TabsContent>
 
         {/* Password Tab */}
         <TabsContent value="password" className="space-y-6">
-          <Card variant="glass" noPadding className="border-metal-700/50">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-metallic">
-                <KeyRound className="h-5 w-5 text-primary" />
-                Change Password
-              </CardTitle>
-              <CardDescription>
-                Update your password. You may need to log in again after this change.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          <HudPanel 
+            title="Change Password" 
+            icon={<KeyRound className="h-5 w-5" />} 
+            variant="default" 
+            className="scan-lines"
+          >
+            <p className="text-sm text-muted-foreground mb-4">
+              Update your password. You may need to log in again after this change.
+            </p>
               <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-5">
                 {/* New Password */}
                 <div className="space-y-2.5">
@@ -433,23 +414,22 @@ export default function SettingsPage() {
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
+          </HudPanel>
         </TabsContent>
 
         {/* Danger Zone Tab */}
         <TabsContent value="danger" className="space-y-6">
-          <Card variant="glass" noPadding className="border-rose-500/30 bg-rose-950/10">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-rose-400">
-                <Trash2 className="h-5 w-5" />
-                Danger Zone
-              </CardTitle>
-              <CardDescription>
+          <TechFrame variant="alert" size="default">
+            <HudPanel 
+              title="Danger Zone" 
+              icon={<Trash2 className="h-5 w-5" />} 
+              variant="alert" 
+              className="scan-lines border-0"
+            >
+              <p className="text-sm text-muted-foreground mb-4">
                 Irreversible and destructive actions. Proceed with caution.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+              <div className="space-y-4">
               <div className="rounded-lg border border-rose-500/20 bg-rose-950/20 p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="space-y-2">
@@ -494,8 +474,9 @@ export default function SettingsPage() {
                   </Dialog>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              </div>
+            </HudPanel>
+          </TechFrame>
         </TabsContent>
       </Tabs>
     </div>

@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LightPillar } from "@/components/effects/LightPillar";
+import { TechFrame } from "@/components/ui/frame";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -52,7 +53,7 @@ export default function ForgotPasswordPage() {
     return (
       <Card 
         variant="success" 
-        className="w-full shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+        className="w-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] scan-lines"
       >
         <CardCorners color="emerald" />
         
@@ -63,7 +64,7 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
             <CheckCircle className="h-8 w-8 text-emerald-500" />
           </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-b from-emerald-200 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+          <CardTitle className="text-2xl font-bold text-metallic bg-gradient-to-b from-emerald-200 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
             Check Your Email
           </CardTitle>
           <CardDescription className="leading-relaxed">
@@ -88,10 +89,21 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card 
-      variant="glass" 
-      className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300"
-    >
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background py-12">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+      <div className="fixed inset-0 pointer-events-none">
+        <LightPillar color="solar" height="100%" intensity="low" />
+      </div>
+
+      {/* Scan lines overlay */}
+      <div className="absolute inset-0 pointer-events-none scan-lines opacity-30" />
+
+      <TechFrame variant="default" size="sm" className="relative z-10">
+        <Card 
+          variant="glass" 
+          className="w-full border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/30 transition-all duration-300 scan-lines"
+        >
       <CardCorners color="primary" />
       
       {/* Top tech accent */}
@@ -103,7 +115,7 @@ export default function ForgotPasswordPage() {
           <LightPillar color="solar" height={32} width={2} intensity="low" />
         </div>
         
-        <CardTitle className="text-2xl font-bold text-center bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
+        <CardTitle className="text-2xl font-bold text-center text-metallic bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
           Forgot Password?
         </CardTitle>
         <CardDescription className="text-center text-muted-foreground leading-relaxed">
@@ -158,6 +170,8 @@ export default function ForgotPasswordPage() {
           </Link>
         </CardFooter>
       </form>
-    </Card>
+        </Card>
+      </TechFrame>
+    </div>
   );
 }

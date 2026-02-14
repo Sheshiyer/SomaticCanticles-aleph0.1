@@ -17,6 +17,10 @@ export const users = sqliteTable('users', {
   emailVerified: integer('email_verified', { mode: 'boolean' }).default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(now),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).default(now),
+  // Discord Integration
+  discordId: text('discord_id').unique(),
+  discordListening: integer('discord_listening', { mode: 'boolean' }).default(true),
+  lastOracleDispatch: integer('last_oracle_dispatch', { mode: 'timestamp' }),
 });
 
 // Chapters table

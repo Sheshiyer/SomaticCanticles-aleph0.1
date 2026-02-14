@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { TechFrame, HudPanel } from "@/components/ui/frame";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
@@ -450,6 +451,8 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                 fontSize === "xl" && "prose-xl",
                 "prose prose-invert prose-headings:text-metallic prose-headings:font-bold prose-p:text-foreground/90 prose-p:leading-relaxed prose-blockquote:border-primary/50 prose-blockquote:bg-metal-900/40 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:shadow-[0_0_20px_rgba(var(--primary-rgb),0.05)] prose-blockquote:not-italic prose-blockquote:font-mono prose-blockquote:text-sm prose-blockquote:text-primary/90"
             )}>
+                {/* TechFrame wrapper for content */}
+                <TechFrame variant="default" size="lg" className="scan-lines mb-8">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentSceneIndex}
@@ -470,7 +473,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                             </div>
                         </div>
 
-                        <div onMouseUp={handleSelection}>
+                        <div onMouseUp={handleSelection} className="relative">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
@@ -523,12 +526,16 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                             const isRevealed = currentVal >= threshold;
 
                                             return (
-                                                <div className={cn(
-                                                    "my-6 p-4 rounded-lg transition-all duration-1000",
-                                                    isRevealed
-                                                        ? "border border-primary/20 bg-primary/5 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
-                                                        : "border border-dashed border-metal-800 bg-metal-950/50 opacity-40 grayscale blur-[2px] pointer-events-none select-none"
-                                                )}>
+                                                <TechFrame 
+                                                    variant={isRevealed ? "tech" : "default"} 
+                                                    size="default"
+                                                    className={cn(
+                                                        "my-6 transition-all duration-1000 scan-lines",
+                                                        isRevealed
+                                                            ? "shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
+                                                            : "opacity-40 grayscale blur-[2px] pointer-events-none select-none"
+                                                    )}
+                                                >
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <Sparkles className={cn("w-3 h-3", isRevealed ? "text-primary animate-pulse" : "text-muted-foreground")} />
                                                         <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">
@@ -544,7 +551,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                                             [ Increase {track} resonance to unlock deep narrative layer ]
                                                         </p>
                                                     )}
-                                                </div>
+                                                </TechFrame>
                                             );
                                         }
 
@@ -585,7 +592,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                             }
 
                                             return (
-                                                <div className="my-8 p-4 rounded-xl border border-metal-800 bg-metal-900/50 hover:bg-metal-900 transition-all group overflow-hidden relative">
+                                                <TechFrame variant="gold" size="default" className="my-8 transition-all group overflow-hidden relative scan-lines">
                                                     <div className="flex items-center justify-between gap-4 relative z-10">
                                                         <div className="flex-1">
                                                             <h3 className="text-sm font-bold text-metallic mb-1">{label}</h3>
@@ -619,7 +626,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                                         </Button>
                                                     </div>
                                                     {isLocked && <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] pointer-events-none" />}
-                                                </div>
+                                                </TechFrame>
                                             );
                                         }
 
@@ -632,9 +639,11 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                         </div>
                     </motion.div>
                 </AnimatePresence>
+                </TechFrame>
 
-                {/* Pagination Navigation */}
-                <div className="mt-20 pt-10 border-t border-metal-800 flex flex-col items-center gap-10">
+                {/* Pagination Navigation - wrapped in HudPanel */}
+                <HudPanel variant="default" className="scan-lines mt-8">
+                <div className="flex flex-col items-center gap-10">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="outline"
@@ -705,6 +714,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                         <p className="text-sm text-muted-foreground italic">You have reached the final segment of this canticle.</p>
                     )}
                 </div>
+                </HudPanel>
             </main>
 
             {/* Text Selection Popover */}
@@ -759,8 +769,9 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 z-[101] h-screen w-80 bg-metal-950 border-l border-metal-800 p-6 shadow-2xl"
+                            className="fixed top-0 right-0 z-[101] h-screen w-80 border-l border-metal-800 shadow-2xl"
                         >
+                            <TechFrame variant="default" size="lg" className="h-full rounded-none border-0 scan-lines">
                             <div className="flex items-center justify-between mb-8">
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-metallic">Resonance Log</h3>
                                 <Button variant="ghost" size="icon" onClick={() => setIsLogOpen(false)}>
@@ -862,6 +873,7 @@ export function ChapterReader({ chapterId, title, content, cycle }: ChapterReade
                                 <Download className="w-3 h-3 group-hover:scale-110 transition-transform" />
                                 Export Manuscript
                             </button>
+                            </TechFrame>
                         </motion.div>
                     </>
                 )}

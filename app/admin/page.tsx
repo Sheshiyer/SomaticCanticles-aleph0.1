@@ -3,9 +3,10 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Users, BookOpen, Activity, TrendingUp, UserCheck } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, BookOpen, Activity, TrendingUp, UserCheck, Shield, Server, GitBranch } from "lucide-react";
+import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -118,147 +119,158 @@ export default function AdminDashboardPage() {
     );
   }
 
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* Page Title */}
-      <motion.div variants={itemVariants}>
-        <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
-        <p className="text-muted-foreground">
-          Welcome to the admin dashboard. Here&apos;s what&apos;s happening with your platform.
-        </p>
-      </motion.div>
+  // Calculate engagement rate
+  const engagementRate = stats?.totalUsers
+    ? Math.round(((stats.activeUsers || 0) / stats.totalUsers) * 100)
+    : 0;
 
-      {/* Stats Grid */}
+  return (
+    <TechFrame variant="alert" className="scan-lines min-h-[calc(100vh-8rem)]">
       <motion.div
         variants={containerVariants}
-        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
       >
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.recentSignups || 0} new this week
-              </p>
-            </CardContent>
-          </Card>
+        {/* Page Title */}
+        <motion.div variants={itemVariants} className="flex items-center gap-3">
+          <Shield className="h-8 w-8 text-rose-500" />
+          <div>
+            <h1 className="text-3xl font-bold text-metallic">Admin Dashboard</h1>
+            <p className="text-muted-foreground text-sm">
+              System monitoring and user management console
+            </p>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+            </span>
+            <span className="text-xs text-emerald-400 font-mono">SYSTEM ONLINE</span>
+          </div>
         </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <UserCheck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.activeUsers || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                In the last 7 days
-              </p>
-            </CardContent>
-          </Card>
+        {/* Stats Grid */}
+        <motion.div
+          variants={containerVariants}
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        >
+          <motion.div variants={itemVariants}>
+            <DataDisplay
+              label="Total Users"
+              value={stats?.totalUsers || 0}
+              trend="up"
+              trendValue={`${stats?.recentSignups || 0} new this week`}
+              icon={<Users className="h-3 w-3" />}
+              variant="tech"
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <DataDisplay
+              label="Active Users"
+              value={stats?.activeUsers || 0}
+              trendValue="In the last 7 days"
+              icon={<UserCheck className="h-3 w-3" />}
+              variant="success"
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <DataDisplay
+              label="Chapters"
+              value={stats?.totalChapters || 0}
+              trendValue={`${stats?.completedChapters || 0} completed`}
+              icon={<BookOpen className="h-3 w-3" />}
+              variant="default"
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <DataDisplay
+              label="Engagement"
+              value={engagementRate}
+              unit="%"
+              trendValue="Active user rate"
+              icon={<TrendingUp className="h-3 w-3" />}
+              variant="warning"
+            />
+          </motion.div>
         </motion.div>
 
+        {/* User Management Section */}
         <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Chapters</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalChapters || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.completedChapters || 0} completed
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Engagement</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats?.totalUsers
-                  ? Math.round(
-                      ((stats.activeUsers || 0) / stats.totalUsers) * 100
-                    )
-                  : 0}
-                %
-              </div>
-              <p className="text-xs text-muted-foreground">Active user rate</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-
-      {/* Recent Users */}
-      <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentUsers.length === 0 ? (
-                <p className="text-muted-foreground">No users yet.</p>
-              ) : (
-                recentUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                        <Activity className="h-5 w-5 text-primary" />
+          <HudPanel 
+            title="User Management" 
+            icon={<Users className="h-4 w-4" />} 
+            variant="alert"
+            className="scan-lines"
+          >
+            <TechFrame variant="tech" size="sm">
+              <div className="space-y-4">
+                {recentUsers.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">No users found in system.</p>
+                ) : (
+                  <div className="divide-y divide-metal-800">
+                    {recentUsers.map((user) => (
+                      <div
+                        key={user.id}
+                        className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-metal-800 border border-metal-700">
+                            <Activity className="h-5 w-5 text-cyan-500" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-metallic">{user.email}</p>
+                            <div className="flex items-center gap-2">
+                              <span className={cn(
+                                "text-xs px-2 py-0.5 rounded-full font-mono",
+                                user.role === "admin" 
+                                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" 
+                                  : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                              )}>
+                                {user.role.toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground font-mono">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-metal-500">
+                            ID: {user.id.slice(0, 8)}...
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{user.email}</p>
-                        <p className="text-sm text-muted-foreground capitalize">
-                          {user.role}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
+                    ))}
                   </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+                )}
+              </div>
+            </TechFrame>
+          </HudPanel>
+        </motion.div>
 
-      {/* Quick Actions */}
-      <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Quick Actions */}
+        <motion.div variants={itemVariants}>
+          <HudPanel 
+            title="System Controls" 
+            icon={<Server className="h-4 w-4" />} 
+            variant="tech"
+            className="scan-lines"
+          >
             <div className="grid gap-4 md:grid-cols-3">
               <a
                 href="https://dash.cloudflare.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border p-4 hover:bg-accent transition-colors"
+                className="group relative rounded-lg border border-metal-700 bg-metal-900/40 p-4 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all"
               >
-                <h3 className="font-semibold">Cloudflare Dashboard</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-2 w-2 rounded-full bg-amber-500" />
+                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">Cloudflare Dashboard</h3>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Manage Workers, D1, and R2
                 </p>
@@ -267,22 +279,30 @@ export default function AdminDashboardPage() {
                 href="https://github.com/Sheshiyer/SomaticCanticles-aleph0.1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border p-4 hover:bg-accent transition-colors"
+                className="group relative rounded-lg border border-metal-700 bg-metal-900/40 p-4 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all"
               >
-                <h3 className="font-semibold">GitHub Repository</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <GitBranch className="h-4 w-4 text-metal-400 group-hover:text-cyan-400 transition-colors" />
+                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">GitHub Repository</h3>
+                </div>
                 <p className="text-sm text-muted-foreground">View source code</p>
               </a>
-              <div className="rounded-lg border p-4">
-                <h3 className="font-semibold">API Status</h3>
+              <div className="rounded-lg border border-metal-700 bg-metal-900/40 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </div>
+                  <h3 className="font-semibold text-metallic">API Status</h3>
+                </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-green-500" />
-                  Operational
+                  <span className="text-emerald-400 font-mono">OPERATIONAL</span>
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </HudPanel>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </TechFrame>
   );
 }

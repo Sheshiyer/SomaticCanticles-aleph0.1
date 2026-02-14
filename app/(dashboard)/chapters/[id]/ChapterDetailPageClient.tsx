@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
@@ -249,25 +250,26 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
 
       {/* Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 bg-metal-800/50 p-1">
-          <TabsTrigger value="intro" className="gap-2 data-[state=active]:bg-metal-700">
-            <Scroll className="h-4 w-4" />
-            Introduction
-          </TabsTrigger>
-          <TabsTrigger value="practice" className="gap-2 data-[state=active]:bg-metal-700">
-            <Activity className="h-4 w-4" />
-            Practice
-          </TabsTrigger>
-          <TabsTrigger value="reflection" className="gap-2 data-[state=active]:bg-metal-700">
-            <Brain className="h-4 w-4" />
-            Reflection
-          </TabsTrigger>
-        </TabsList>
+        <TechFrame variant="tech" size="sm">
+          <TabsList className="grid w-full grid-cols-3 bg-metal-800/50 p-1">
+            <TabsTrigger value="intro" className="gap-2 data-[state=active]:bg-metal-700">
+              <Scroll className="h-4 w-4" />
+              Introduction
+            </TabsTrigger>
+            <TabsTrigger value="practice" className="gap-2 data-[state=active]:bg-metal-700">
+              <Activity className="h-4 w-4" />
+              Practice
+            </TabsTrigger>
+            <TabsTrigger value="reflection" className="gap-2 data-[state=active]:bg-metal-700">
+              <Brain className="h-4 w-4" />
+              Reflection
+            </TabsTrigger>
+          </TabsList>
+        </TechFrame>
 
         {/* Intro Tab */}
         <TabsContent value="intro" className="space-y-6 animate-in fade-in-50 duration-500">
-          <Card variant="glass">
-            <CardContent className="pt-6 space-y-6">
+          <HudPanel title="Chapter Overview" icon={<Scroll className="h-5 w-5" />} className="scan-lines">
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-metallic flex items-center gap-2">
                   <Scroll className="h-5 w-5 text-primary" />
@@ -298,14 +300,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Wisdom Card - only show if lore metadata exists */}
                 {chapter.lore_metadata && (
-                  <Card variant="glass" noPadding className="border-metal-700/50 col-span-1 md:col-span-2">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-2 text-metallic">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        Wisdom
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                  <HudPanel title="Wisdom" icon={<Sparkles className="h-5 w-5" />} variant="tech">
                       {(chapter.lore_metadata as { affirmation?: string }).affirmation && (
                         <blockquote className="text-lg font-medium italic border-l-2 border-primary/50 pl-4">
                           &ldquo;{(chapter.lore_metadata as { affirmation: string }).affirmation}&rdquo;
@@ -319,27 +314,15 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
                           <p><span className="text-foreground">Tarot:</span> {(chapter.lore_metadata as { tarot: string }).tarot}</p>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
+                  </HudPanel>
                 )}
               </div>
-            </CardContent>
-          </Card>
+          </HudPanel>
         </TabsContent>
 
         {/* Practice Tab */}
         <TabsContent value="practice" className="space-y-6">
-          <Card variant="glass" noPadding className={cn("border-2", colors.border)}>
-            <CardHeader className="pb-4">
-              <CardTitle className={cn("flex items-center gap-2", colors.text)}>
-                <Activity className="h-5 w-5" />
-                {chapter.content?.practice?.title || "Somatic Practice"}
-              </CardTitle>
-              {chapter.content?.practice?.focus && (
-                <CardDescription>Focus: {chapter.content.practice.focus}</CardDescription>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <HudPanel title={chapter.content?.practice?.title || "Somatic Practice"} icon={<Activity className="h-5 w-5" />} variant="tech" className="scan-lines">
               {chapter.content?.practice?.instructions ? (
                 <ol className="list-decimal space-y-3 pl-5">
                   {chapter.content.practice.instructions.map((instruction, index) => (
@@ -399,20 +382,12 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+          </HudPanel>
         </TabsContent>
 
         {/* Reflection Tab */}
         <TabsContent value="reflection" className="space-y-6">
-          <Card variant="glass" noPadding className={cn("border-2", colors.border)}>
-            <CardHeader className="pb-4">
-              <CardTitle className={cn("flex items-center gap-2", colors.text)}>
-                <Brain className="h-5 w-5" />
-                {chapter.content?.reflection?.title || "Reflection"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
+          <HudPanel title={chapter.content?.reflection?.title || "Reflection"} icon={<Brain className="h-5 w-5" />} variant="default" className="scan-lines">
               {chapter.content?.reflection?.questions ? (
                 <div className="space-y-4">
                   <p className="text-muted-foreground">Take a moment to reflect on these questions:</p>
@@ -430,16 +405,10 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
               ) : (
                 <p className="text-muted-foreground">Reflection questions coming soon...</p>
               )}
-            </CardContent>
-          </Card>
+          </HudPanel>
 
           {/* Notes Card */}
-          <Card variant="glass" noPadding className="border-metal-700/50">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-metallic">Your Notes</CardTitle>
-              <CardDescription>Record your insights and experiences from this chapter</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <HudPanel title="Your Notes" icon={<BookOpen className="h-5 w-5" />} variant="default" className="scan-lines">
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -451,8 +420,7 @@ export function ChapterDetailPageClient({ chapterId }: ChapterDetailPageClientPr
                   Save Notes
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+          </HudPanel>
         </TabsContent>
       </Tabs >
 

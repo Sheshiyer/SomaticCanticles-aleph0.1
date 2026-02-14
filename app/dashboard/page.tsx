@@ -7,10 +7,10 @@ import { format, addDays } from "date-fns";
 import { Activity, RefreshCw, Calendar, TrendingUp, Sparkles, User, BookOpen } from "lucide-react";
 import Link from "next/link";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { LightPillar } from "@/components/effects/LightPillar";
+import { TechFrame, HudPanel, DataDisplay, SectionDivider } from "@/components/ui/frame";
+import { LightPillarGroup } from "@/components/effects/LightPillar";
 
 import { BiorhythmWheel } from "@/components/biorhythm/BiorhythmWheel";
 import { CycleBars } from "@/components/biorhythm/CycleBars";
@@ -19,7 +19,6 @@ import { ForecastChart } from "@/components/biorhythm/ForecastChart";
 import {
   calculateBiorhythm,
   getBiorhythmPrediction,
-  getBiorhythmErrorMessage,
   type BiorhythmData,
   type PredictionData,
   isPeak,
@@ -222,8 +221,20 @@ export default function DashboardPage() {
       {/* Welcome Banner */}
       {user && (
         <motion.div variants={itemVariants}>
-          <Card className="border-primary/20 bg-gradient-to-br from-background to-primary/5">
-            <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <TechFrame variant="gold" size="lg" className="relative overflow-hidden">
+            {/* Light Pillar Group Background */}
+            <div className="absolute inset-0 opacity-30 pointer-events-none">
+              <LightPillarGroup
+                count={5}
+                spacing={60}
+                colors={["solar", "transform", "architect", "world", "unity"]}
+                intensity="low"
+                height="100%"
+                className="absolute right-8 top-0 h-full"
+              />
+            </div>
+            
+            <div className="relative flex flex-col gap-4 p-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
                 <div className="rounded-full bg-primary/10 p-2">
                   <User className="h-5 w-5 text-primary" />
@@ -254,8 +265,8 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </TechFrame>
         </motion.div>
       )}
 
@@ -265,7 +276,7 @@ export default function DashboardPage() {
         variants={itemVariants}
       >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Today&apos;s Biorhythm</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-metallic">Today&apos;s Biorhythm</h1>
           <p className="text-muted-foreground">
             {format(new Date(), "EEEE, MMMM do, yyyy")}
           </p>
@@ -281,108 +292,70 @@ export default function DashboardPage() {
         </Button>
       </motion.div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - DataDisplay */}
       {summary && (
         <motion.div
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
           variants={itemVariants}
         >
-          {/* Peak Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Peak Cycles</CardTitle>
-              <Sparkles className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {summary.peaks.length}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {summary.peaks.length > 0
-                  ? summary.peaks.map((p) => p.key).join(", ")
-                  : "No peaks today"}
-              </p>
-            </CardContent>
-          </Card>
+          {/* Peak Cycles */}
+          <DataDisplay
+            label="Peak Cycles"
+            value={summary.peaks.length}
+            icon={<Sparkles className="h-4 w-4" />}
+            variant="success"
+            trendValue={summary.peaks.length > 0 ? summary.peaks.map((p) => p.key).join(", ") : "No peaks today"}
+          />
 
-          {/* Critical Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Critical Days</CardTitle>
-              <Activity className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {summary.criticals.length}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {summary.criticals.length > 0
-                  ? "Take it easy today"
-                  : "No critical cycles"}
-              </p>
-            </CardContent>
-          </Card>
+          {/* Critical Days */}
+          <DataDisplay
+            label="Critical Days"
+            value={summary.criticals.length}
+            icon={<Activity className="h-4 w-4" />}
+            variant="warning"
+            trendValue={summary.criticals.length > 0 ? "Take it easy today" : "No critical cycles"}
+          />
 
-          {/* Best Cycle Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Strongest</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              {(() => {
-                const best = summary.cycles.reduce((max, c) =>
-                  c.value > max.value ? c : max
-                );
-                return (
-                  <>
-                    <div className="text-2xl font-bold capitalize">
-                      {best.key}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {Math.round(best.value * 100)}% positive
-                    </p>
-                  </>
-                );
-              })()}
-            </CardContent>
-          </Card>
+          {/* Strongest Cycle */}
+          {(() => {
+            const best = summary.cycles.reduce((max, c) =>
+              c.value > max.value ? c : max
+            );
+            return (
+              <DataDisplay
+                label="Strongest"
+                value={best.key.charAt(0).toUpperCase() + best.key.slice(1)}
+                icon={<TrendingUp className="h-4 w-4" />}
+                variant="tech"
+                trendValue={`${Math.round(best.value * 100)}% positive`}
+              />
+            );
+          })()}
 
-          {/* Forecast Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Next Peak</CardTitle>
-              <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              {predictionData && (
-                (() => {
-                  // Find next peak date
-                  const allPeaks = [
-                    ...predictionData.peaks.physical.map((d: string) => ({ date: d, cycle: "physical" })),
-                    ...predictionData.peaks.emotional.map((d: string) => ({ date: d, cycle: "emotional" })),
-                    ...predictionData.peaks.intellectual.map((d: string) => ({ date: d, cycle: "intellectual" })),
-                    ...predictionData.peaks.spiritual.map((d: string) => ({ date: d, cycle: "spiritual" })),
-                  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          {/* Next Peak */}
+          {predictionData && (
+            (() => {
+              // Find next peak date
+              const allPeaks = [
+                ...predictionData.peaks.physical.map((d: string) => ({ date: d, cycle: "physical" })),
+                ...predictionData.peaks.emotional.map((d: string) => ({ date: d, cycle: "emotional" })),
+                ...predictionData.peaks.intellectual.map((d: string) => ({ date: d, cycle: "intellectual" })),
+                ...predictionData.peaks.spiritual.map((d: string) => ({ date: d, cycle: "spiritual" })),
+              ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-                  const nextPeak = allPeaks[0];
+              const nextPeak = allPeaks[0];
 
-                  return (
-                    <>
-                      <div className="text-2xl font-bold">
-                        {nextPeak
-                          ? format(new Date(nextPeak.date), "MMM d")
-                          : "—"}
-                      </div>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {nextPeak ? `${nextPeak.cycle} cycle` : "No peaks forecasted"}
-                      </p>
-                    </>
-                  );
-                })()
-              )}
-            </CardContent>
-          </Card>
+              return (
+                <DataDisplay
+                  label="Next Peak"
+                  value={nextPeak ? format(new Date(nextPeak.date), "MMM d") : "—"}
+                  icon={<Calendar className="h-4 w-4" />}
+                  variant="default"
+                  trendValue={nextPeak ? `${nextPeak.cycle} cycle` : "No peaks forecasted"}
+                />
+              );
+            })()
+          )}
         </motion.div>
       )}
 
@@ -390,17 +363,12 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Biorhythm Wheel */}
         <motion.div variants={itemVariants}>
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                Cycle Wheel
-              </CardTitle>
-              <CardDescription>
-                Visual representation of your current biorhythm cycles
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center pb-8">
+          <HudPanel
+            title="Cycle Wheel"
+            icon={<Activity className="h-5 w-5 text-primary" />}
+            className="scan-lines h-full"
+          >
+            <div className="flex items-center justify-center py-4">
               {biorhythmData && (
                 <BiorhythmWheel
                   data={biorhythmData}
@@ -408,102 +376,86 @@ export default function DashboardPage() {
                   animated={!refreshing}
                 />
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </HudPanel>
         </motion.div>
 
         {/* Cycle Bars */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Current Levels
-              </CardTitle>
-              <CardDescription>
-                Detailed breakdown of each cycle&apos;s current value
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {biorhythmData && (
-                <CycleBars data={biorhythmData} animated={!refreshing} />
-              )}
-            </CardContent>
-          </Card>
+          <HudPanel
+            title="Current Levels"
+            icon={<TrendingUp className="h-5 w-5 text-primary" />}
+            className="scan-lines h-full"
+          >
+            {biorhythmData && (
+              <CycleBars data={biorhythmData} animated={!refreshing} />
+            )}
+          </HudPanel>
         </motion.div>
       </div>
 
       {/* 7-Day Forecast (Mini) */}
       <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              7-Day Preview
-            </CardTitle>
-            <CardDescription>
-              Upcoming trends for the next week
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {predictionData && (
-              <ForecastChart
-                data={predictionData}
-                days={7}
-                compact
-                height={180}
-                animated={!refreshing}
-              />
-            )}
-          </CardContent>
-        </Card>
+        <HudPanel
+          title="7-Day Preview"
+          icon={<Calendar className="h-5 w-5 text-primary" />}
+          className="scan-lines"
+        >
+          {predictionData && (
+            <ForecastChart
+              data={predictionData}
+              days={7}
+              compact
+              height={180}
+              animated={!refreshing}
+            />
+          )}
+        </HudPanel>
       </motion.div>
 
       {/* Full 30-Day Forecast */}
       <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              30-Day Forecast
-            </CardTitle>
-            <CardDescription>
-              Complete biorhythm forecast with peak and critical day indicators
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {predictionData && (
-              <ForecastChart
-                data={predictionData}
-                days={30}
-                height={350}
-                animated={!refreshing}
-              />
-            )}
-          </CardContent>
-        </Card>
+        <HudPanel
+          title="30-Day Forecast"
+          icon={<Sparkles className="h-5 w-5 text-primary" />}
+          className="scan-lines"
+        >
+          {predictionData && (
+            <ForecastChart
+              data={predictionData}
+              days={30}
+              height={350}
+              animated={!refreshing}
+            />
+          )}
+        </HudPanel>
       </motion.div>
 
       {/* Info Section */}
-      <motion.div
-        variants={itemVariants}
-        className="rounded-lg border bg-muted/50 p-6"
-      >
-        <div className="flex items-start gap-4">
-          <div className="mt-1">
-            <LightPillar color="solar" height={40} width={3} intensity="low" />
+      <motion.div variants={itemVariants}>
+        <TechFrame variant="default" className="relative">
+          <div className="flex items-start gap-4">
+            <div className="mt-1">
+              <LightPillarGroup
+                count={3}
+                spacing={12}
+                colors={["solar", "transform", "architect"]}
+                intensity="low"
+                height={40}
+              />
+            </div>
+            <div>
+              <h3 className="font-semibold">About Biorhythms</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Biorhythms are biological cycles that influence your physical, emotional,
+                intellectual, and spiritual well-being. Each cycle has a different length:
+                Physical (23 days), Emotional (28 days), Intellectual (33 days), and
+                Spiritual (38 days). High points indicate optimal performance, while
+                critical days (near zero) suggest caution.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold">About Biorhythms</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Biorhythms are biological cycles that influence your physical, emotional,
-              intellectual, and spiritual well-being. Each cycle has a different length:
-              Physical (23 days), Emotional (28 days), Intellectual (33 days), and
-              Spiritual (38 days). High points indicate optimal performance, while
-              critical days (near zero) suggest caution.
-            </p>
-          </div>
-        </div>
+        </TechFrame>
       </motion.div>
     </motion.div>
   );

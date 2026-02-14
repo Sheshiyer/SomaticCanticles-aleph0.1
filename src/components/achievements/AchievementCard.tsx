@@ -117,8 +117,8 @@ export function AchievementCard({ achievement, index = 0 }: AchievementCardProps
             <Card
               className={`
                 relative overflow-hidden transition-all duration-300
-                ${isUnlocked 
-                  ? 'border-2' 
+                ${isUnlocked
+                  ? 'border-2'
                   : 'opacity-75 grayscale'
                 }
                 ${isUnlocked && rarity === 'legendary' ? 'border-yellow-400/50 shadow-lg shadow-yellow-400/20' : ''}
@@ -148,7 +148,7 @@ export function AchievementCard({ achievement, index = 0 }: AchievementCardProps
                     `}
                   >
                     <Icon className="w-8 h-8" />
-                    
+
                     {/* Lock overlay for locked achievements */}
                     {!isUnlocked && (
                       <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
@@ -192,8 +192,8 @@ export function AchievementCard({ achievement, index = 0 }: AchievementCardProps
                             {achievement.progress.current} / {achievement.progress.target}
                           </span>
                         </div>
-                        <Progress 
-                          value={achievement.progress.percentage} 
+                        <Progress
+                          value={achievement.progress.percentage}
                           className="h-2"
                         />
                       </div>
@@ -247,12 +247,12 @@ interface AchievementProgressRingProps {
   size?: number;
 }
 
-export function AchievementProgressRing({ 
-  unlocked, 
-  total, 
-  size = 120 
+export function AchievementProgressRing({
+  unlocked,
+  total,
+  size = 120
 }: AchievementProgressRingProps) {
-  const percentage = Math.round((unlocked / total) * 100);
+  const percentage = total > 0 ? Math.round((unlocked / total) * 100) : 0;
   const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;

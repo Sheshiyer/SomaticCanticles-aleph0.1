@@ -335,85 +335,154 @@ function NavigationHeader() {
 
 // What Are Biorhythms Section
 function BiorhythmsExplainerSection() {
+  const orbitNodePositions = [
+    "top-1 left-1/2 -translate-x-1/2",
+    "right-1 top-1/2 -translate-y-1/2",
+    "bottom-1 left-1/2 -translate-x-1/2",
+    "left-1 top-1/2 -translate-y-1/2",
+  ] as const;
+
   return (
     <section className="relative border-t border-border/50 px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <motion.div variants={itemVariants} className="mb-12 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl text-metallic">
-            What Are Biorhythms?
+        <motion.div variants={itemVariants} className="mx-auto mb-12 max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase text-amber-400/90">
+            Arcane Systems Brief
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-metallic text-balance sm:text-3xl">
+            The Runic Rhythm Engine
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
-            Biorhythms are natural cycles that influence your physical, emotional,
-            intellectual, and spiritual states. Discovered in the early 20th century,
-            these rhythms begin at birth and continue throughout your life.
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground text-pretty">
+            Your birth pulse powers four rotating cadence streams. Each stream rises,
+            dips, and peaks on its own interval, shaping when chapters unlock and how
+            each day feels in practice.
           </p>
         </motion.div>
 
-        {/* Visual Diagram */}
-        <TechFrame variant="tech" className="mx-auto max-w-4xl">
-          <CornerOrnament position="top-left" />
-          <CornerOrnament position="top-right" />
-          <CornerOrnament position="bottom-left" />
-          <CornerOrnament position="bottom-right" />
+        <TechFrame variant="tech" className="mx-auto max-w-5xl overflow-hidden p-0">
+          <CornerOrnament position="top-left" className="text-cyan-400/60" />
+          <CornerOrnament position="top-right" className="text-cyan-400/60" />
+          <CornerOrnament position="bottom-left" className="text-cyan-400/60" />
+          <CornerOrnament position="bottom-right" className="text-cyan-400/60" />
 
-          {/* Wave Visualization */}
-          <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            {cycles.map((cycle, index) => {
-              const Icon = cycle.icon;
-              return (
-                <motion.div
-                  key={cycle.name}
-                  variants={itemVariants}
-                  className="flex w-full items-center gap-4 sm:w-auto sm:flex-col"
-                >
-                  <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${cycle.border} ${cycle.bg}`}
-                  >
-                    <Icon className={`h-6 w-6 ${cycle.iconColor}`} />
-                  </div>
-                  <div className="flex flex-col sm:text-center">
-                    <span className={`text-sm font-semibold ${cycle.text}`}>
-                      {cycle.name}
-                    </span>
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {cycle.days} days
-                    </span>
-                  </div>
-                  {index < cycles.length - 1 && (
-                    <div className="hidden text-muted-foreground/30 sm:block">
-                      <ArrowRight className="h-4 w-4 rotate-0 sm:rotate-90" />
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+          <div className="grid gap-2 border-b border-cyan-500/20 bg-metal-900/90 px-4 py-3 text-xs font-mono text-muted-foreground sm:grid-cols-3">
+            <span>CORE STATUS: SYNCHRONIZED</span>
+            <span className="sm:text-center">PROTOCOL: SOMATIC-CANTICLES-IV</span>
+            <span className="sm:text-right">SIGNAL: QUADRANT STABLE</span>
           </div>
 
-          {/* Explanation Text */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <HudPanel className="text-center" variant="tech">
-              <div className="mb-3 flex justify-center">
-                <Waves className="h-6 w-6 text-ocean-500" />
-              </div>
-              <p className="font-medium text-foreground mb-1">Sine Wave Pattern</p>
-              <p className="text-xs text-muted-foreground">Each cycle follows a natural sine wave with peaks, valleys, and critical days</p>
-            </HudPanel>
+          <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="border-b border-cyan-500/20 p-5 sm:p-8 lg:border-r lg:border-b-0">
+              <p className="text-xs font-semibold uppercase text-cyan-300/90">
+                Orbital Cycle Map
+              </p>
+              <div className="relative mx-auto mt-6 size-[18rem] sm:size-[21rem]">
+                <div className="absolute inset-6 rounded-full border border-metal-700/90" />
+                <div className="absolute inset-12 rounded-full border border-cyan-500/30" />
+                <div className="absolute inset-20 rounded-full border border-amber-500/30" />
+                <div className="absolute left-1/2 top-6 h-[calc(100%-3rem)] w-px -translate-x-1/2 bg-metal-700/80" />
+                <div className="absolute top-1/2 left-6 h-px w-[calc(100%-3rem)] -translate-y-1/2 bg-metal-700/80" />
 
-            <HudPanel className="text-center" variant="tech">
-              <div className="mb-3 flex justify-center">
-                <Sparkles className="h-6 w-6 text-solar-500" />
-              </div>
-              <p className="font-medium text-foreground mb-1">Peak Performance</p>
-              <p className="text-xs text-muted-foreground">High points in cycles unlock chapters and optimize your practice</p>
-            </HudPanel>
+                <div className="absolute inset-[37%] flex items-center justify-center rounded-full border border-amber-500/40 bg-metal-900/90 p-2 text-center">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase text-amber-300">Birth Pulse</p>
+                    <p className="mt-1 text-xs font-mono text-metallic">Origin Node</p>
+                  </div>
+                </div>
 
-            <HudPanel className="text-center" variant="tech">
-              <div className="mb-3 flex justify-center">
-                <Timer className="h-6 w-6 text-ember-500" />
+                {cycles.map((cycle, index) => {
+                  const Icon = cycle.icon;
+                  return (
+                    <motion.div
+                      key={cycle.name}
+                      variants={itemVariants}
+                      className={`absolute ${orbitNodePositions[index]} w-28 rounded-md border ${cycle.border} ${cycle.bg} p-2 text-center`}
+                    >
+                      <div className="mx-auto flex size-7 items-center justify-center rounded-md border border-current/20 bg-metal-900/50">
+                        <Icon className={`h-4 w-4 ${cycle.iconColor}`} />
+                      </div>
+                      <p className={`mt-1.5 text-xs font-semibold ${cycle.text}`}>{cycle.name}</p>
+                      <p className="text-[10px] font-mono text-muted-foreground">{cycle.days}d cadence</p>
+                    </motion.div>
+                  );
+                })}
               </div>
-              <p className="font-medium text-foreground mb-1">Personal Timeline</p>
-              <p className="text-xs text-muted-foreground">Your birthdate determines your unique cycle patterns</p>
-            </HudPanel>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-md border border-cyan-500/30 bg-cyan-500/5 p-3">
+                  <p className="text-xs font-semibold text-cyan-300">Wave Rule</p>
+                  <p className="mt-1 text-xs text-muted-foreground text-pretty">
+                    Every stream oscillates through peak, neutral, and critical thresholds.
+                  </p>
+                </div>
+                <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
+                  <p className="text-xs font-semibold text-amber-300">Unlock Rule</p>
+                  <p className="mt-1 text-xs text-muted-foreground text-pretty">
+                    Chapters open when your active stream meets required threshold windows.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-metal-900/70 p-5 sm:p-8">
+              <p className="text-xs font-semibold uppercase text-amber-300/90">
+                Cycle Codex
+              </p>
+              <div className="mt-4 space-y-3">
+                {cycles.map((cycle) => {
+                  const Icon = cycle.icon;
+                  return (
+                    <div
+                      key={`${cycle.name}-codex`}
+                      className={`rounded-md border ${cycle.border} ${cycle.bg} p-3`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-4 w-4 ${cycle.iconColor}`} />
+                        <p className={`text-sm font-semibold ${cycle.text}`}>{cycle.name}</p>
+                        <span className="ml-auto text-xs font-mono text-muted-foreground tabular-nums">
+                          {cycle.days}d
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-xs text-muted-foreground text-pretty">
+                        {cycle.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 border-t border-cyan-500/20 bg-metal-900/50 p-4 sm:grid-cols-3 sm:p-6">
+            <div className="rounded-md border border-cyan-500/30 bg-cyan-500/5 p-3">
+              <div className="mb-1.5 flex items-center gap-2 text-cyan-300">
+                <Waves className="h-4 w-4" />
+                <p className="text-xs font-semibold uppercase">Signal Pattern</p>
+              </div>
+              <p className="text-xs text-muted-foreground text-pretty">
+                A sinusoidal rhythm creates predictable windows for rest, focus, and force.
+              </p>
+            </div>
+
+            <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3">
+              <div className="mb-1.5 flex items-center gap-2 text-amber-300">
+                <Sparkles className="h-4 w-4" />
+                <p className="text-xs font-semibold uppercase">Peak Windows</p>
+              </div>
+              <p className="text-xs text-muted-foreground text-pretty">
+                Favor chapter work when one or more streams enter an upward alignment.
+              </p>
+            </div>
+
+            <div className="rounded-md border border-rose-500/30 bg-rose-500/5 p-3">
+              <div className="mb-1.5 flex items-center gap-2 text-rose-300">
+                <Timer className="h-4 w-4" />
+                <p className="text-xs font-semibold uppercase">Timeline Lock</p>
+              </div>
+              <p className="text-xs text-muted-foreground text-pretty">
+                Birthdate remains the anchor that calibrates every future cycle projection.
+              </p>
+            </div>
           </div>
         </TechFrame>
       </div>

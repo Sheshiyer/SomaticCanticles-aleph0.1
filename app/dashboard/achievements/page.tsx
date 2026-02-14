@@ -115,7 +115,14 @@ export default function AchievementsPage() {
                 </div>
 
                 {/* Next Unlock Hint */}
-                {unlockedCount < totalCount ? (
+                {totalCount === 0 ? (
+                  <div className="p-3 bg-metal-800/20 border border-metal-700/20 rounded-lg flex items-center gap-3">
+                    <Sparkles className="h-5 w-5 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Begin your journey to unlock achievements.
+                    </p>
+                  </div>
+                ) : unlockedCount < totalCount ? (
                   <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg flex items-center gap-3">
                     <Sparkles className="h-5 w-5 text-amber-500" />
                     <p className="text-sm">
@@ -154,26 +161,26 @@ export default function AchievementsPage() {
         <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterType)}>
           <TechFrame variant="tech" size="sm">
             <TabsList className="flex-wrap h-auto gap-2 bg-transparent p-0 border-0">
-            <TabsTrigger value="all" className="data-[state=active]:bg-metal-700">
-              All ({achievements.length})
-            </TabsTrigger>
-            <TabsTrigger value="unlocked" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
-              Unlocked ({unlockedCount})
-            </TabsTrigger>
-            <TabsTrigger value="locked" className="data-[state=active]:bg-metal-700">
-              <Lock className="w-3 h-3 mr-1" />
-              Locked ({totalCount - unlockedCount})
-            </TabsTrigger>
-            <TabsTrigger value="rare" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-              Rare
-            </TabsTrigger>
-            <TabsTrigger value="epic" className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400">
-              Epic
-            </TabsTrigger>
-            <TabsTrigger value="legendary" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-              Legendary
-            </TabsTrigger>
-          </TabsList>
+              <TabsTrigger value="all" className="data-[state=active]:bg-metal-700">
+                All ({achievements.length})
+              </TabsTrigger>
+              <TabsTrigger value="unlocked" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+                Unlocked ({unlockedCount})
+              </TabsTrigger>
+              <TabsTrigger value="locked" className="data-[state=active]:bg-metal-700">
+                <Lock className="w-3 h-3 mr-1" />
+                Locked ({totalCount - unlockedCount})
+              </TabsTrigger>
+              <TabsTrigger value="rare" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+                Rare
+              </TabsTrigger>
+              <TabsTrigger value="epic" className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400">
+                Epic
+              </TabsTrigger>
+              <TabsTrigger value="legendary" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
+                Legendary
+              </TabsTrigger>
+            </TabsList>
           </TechFrame>
         </Tabs>
       </motion.div>

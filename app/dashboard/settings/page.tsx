@@ -68,6 +68,7 @@ const timezones = [
 export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isLoadingPassword, setIsLoadingPassword] = useState(false);
@@ -81,7 +82,7 @@ export default function SettingsPage() {
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { birthdate: "", timezone: "UTC" },
+    defaultValues: { birthdate: "", timezone: browserTimezone },
   });
 
   const passwordForm = useForm<PasswordFormData>({
@@ -120,7 +121,7 @@ export default function SettingsPage() {
           email: user.email || "",
           role: userData?.role || "user", // Default to user if not found/set
           birthdate: userData?.birthdate || user.user_metadata?.birthdate,
-          timezone: userData?.timezone || "UTC",
+          timezone: userData?.timezone || user.user_metadata?.timezone || browserTimezone,
           createdAt: userData?.created_at || user.created_at,
           discordId: userData?.discord_id,
           discordListening: userData?.discord_listening,
@@ -129,7 +130,7 @@ export default function SettingsPage() {
         setUser(fullUserData);
         profileForm.reset({
           birthdate: fullUserData.birthdate || "",
-          timezone: fullUserData.timezone || "UTC",
+          timezone: fullUserData.timezone || browserTimezone,
         });
 
       } catch (error) {
@@ -140,26 +141,41 @@ export default function SettingsPage() {
       }
     };
     fetchProfile();
-  }, [supabase, router, profileForm]);
+  }, [supabase, router, profileForm, browserTimezone]);
 
   const onProfileSubmit = async (data: ProfileFormData) => {
     if (!user) return;
     setIsLoadingProfile(true);
 
     try {
+      const birthdateValue = data.birthdate?.trim() || null;
+      const timezoneValue = data.timezone || browserTimezone;
+
+      // Keep auth metadata and profile table in sync.
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: {
+          birthdate: birthdateValue,
+          timezone: timezoneValue,
+        },
+      });
+
+      if (metadataError) throw metadataError;
+
       const { error } = await supabase
         .from('users')
-        .update({
-          birthdate: data.birthdate,
-          timezone: data.timezone,
+        .upsert({
+          id: user.id,
+          email: user.email,
+          role: user.role || "user",
+          birthdate: birthdateValue,
+          timezone: timezoneValue,
           updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+        }, { onConflict: 'id' });
 
       if (error) throw error;
 
       // Also update local state
-      setUser({ ...user, ...data });
+      setUser({ ...user, birthdate: birthdateValue || undefined, timezone: timezoneValue });
       toast.success("Profile updated successfully");
 
       // Refresh router to propagate changes
@@ -209,8 +225,9 @@ export default function SettingsPage() {
       toast.success("Signal Transduction Established.");
       router.refresh(); // Refresh to get updated user data
       setDiscordCode("");
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to link";
+      toast.error(errorMessage);
     } finally {
       setIsLinking(false);
     }
@@ -223,8 +240,9 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error('Failed to unlink');
       toast.success("Connection severed.");
       router.refresh();
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to unlink";
+      toast.error(errorMessage);
     }
   };
 
@@ -254,7 +272,7 @@ export default function SettingsPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TechFrame variant="tech" size="sm">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto bg-metal-800/50 p-1">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto bg-metal-800/50 p-1">
             <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-metal-700">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">Profile</span>
@@ -344,7 +362,9 @@ export default function SettingsPage() {
                   <Label htmlFor="timezone">Timezone</Label>
                   <Select
                     value={profileForm.watch("timezone")}
-                    onValueChange={(v) => profileForm.setValue("timezone", v)}
+                    onValueChange={(v) =>
+                      profileForm.setValue("timezone", v, { shouldDirty: true, shouldTouch: true })
+                    }
                   >
                     <SelectTrigger className="pl-10">
                       <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -591,7 +611,7 @@ export default function SettingsPage() {
               <div className="rounded-lg bg-metal-900/50 p-4 text-sm space-y-3 border border-border/50">
                 <h4 className="font-semibold text-foreground flex items-center gap-2">
                   <Eye className="h-4 w-4 text-primary" />
-                  The Oracle's Purpose
+                  The Oracle&apos;s Purpose
                 </h4>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex gap-2">
@@ -604,7 +624,7 @@ export default function SettingsPage() {
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary">•</span>
-                    <span>Access to "The Myocardial Chorus" community channels.</span>
+                    <span>Access to &quot;The Myocardial Chorus&quot; community channels.</span>
                   </li>
                 </ul>
               </div>

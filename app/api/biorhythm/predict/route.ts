@@ -32,18 +32,27 @@ async function resolveBirthdate(
         );
         const { data: tokenUser } = await tokenClient.auth.getUser(token);
         const userId = tokenUser.user?.id;
+        const metadataBirthdate =
+          typeof tokenUser.user?.user_metadata?.birthdate === "string"
+            ? tokenUser.user.user_metadata.birthdate
+            : null;
         if (userId) {
           const { data } = await tokenClient
             .from("users")
             .select("birthdate")
             .eq("id", userId)
             .single();
-          return data?.birthdate ?? null;
+          return data?.birthdate ?? metadataBirthdate;
         }
       }
     }
     return null;
   }
+
+  const metadataBirthdate =
+    typeof session.user.user_metadata?.birthdate === "string"
+      ? session.user.user_metadata.birthdate
+      : null;
 
   const { data } = await supabase
     .from("users")
@@ -51,7 +60,7 @@ async function resolveBirthdate(
     .eq("id", session.user.id)
     .single();
 
-  return data?.birthdate ?? null;
+  return data?.birthdate ?? metadataBirthdate;
 }
 
 function buildDateIndex(

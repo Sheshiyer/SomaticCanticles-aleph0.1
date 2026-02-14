@@ -108,15 +108,11 @@ export async function getUserChapterContext(userId: string): Promise<UserChapter
     await Promise.all([
       supabase
         .from("chapters")
-        .select(
-          "id, order, title, subtitle, cycle, duration_minutes, description, icon_url, color_theme, content, audio_url, lore_metadata, unlock_conditions, created_at"
-        )
+        .select("*")
         .order("order", { ascending: true }),
       supabase
         .from("user_progress")
-        .select(
-          "chapter_id, unlocked_at, completed_at, completion_percentage, time_spent_seconds, notes, updated_at"
-        )
+        .select("*")
         .eq("user_id", userId),
     ]);
 

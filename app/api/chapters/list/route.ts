@@ -39,12 +39,14 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Chapters list route failed:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch chapters";
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "FETCH_ERROR",
-          message: "Failed to fetch chapters",
+          message,
         },
       },
       { status: 500 }

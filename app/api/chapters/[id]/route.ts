@@ -82,12 +82,14 @@ export async function GET(
     });
   } catch (error) {
     console.error("Chapter detail route failed:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch chapter details";
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "FETCH_ERROR",
-          message: "Failed to fetch chapter details",
+          message,
         },
       },
       { status: 500 }

@@ -78,6 +78,8 @@ export interface CalculateBiorhythmRequest {
   birthdate: string;
   /** Optional target date (defaults to today) */
   targetDate?: string;
+  /** Optional IANA timezone (defaults to UTC server-side) */
+  timezone?: string;
 }
 
 /**
@@ -88,6 +90,10 @@ export interface GetPredictionRequest {
   startDate?: string;
   /** Number of days to predict (defaults to 30) */
   days?: number;
+  /** Optional IANA timezone (defaults to UTC server-side) */
+  timezone?: string;
+  /** Optional birthdate fallback if profile lookup is unavailable */
+  birthdate?: string;
 }
 
 /**

@@ -37,12 +37,14 @@ export async function POST() {
     });
   } catch (error) {
     console.error("Chapter unlock check failed:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to check chapter unlocks";
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "CHECK_ERROR",
-          message: "Failed to check chapter unlocks",
+          message,
         },
       },
       { status: 500 }

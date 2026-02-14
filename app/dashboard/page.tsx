@@ -53,8 +53,10 @@ const itemVariants = {
 
 export default function DashboardPage() {
   const supabase = createClient();
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   const [user, setUser] = useState<{ email?: string; user_metadata?: Record<string, unknown> } | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [timezone, setTimezone] = useState<string>(browserTimezone);
   const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,12 +80,17 @@ export default function DashboardPage() {
       // Fetch user role from public.users table
       const { data: userData } = await supabase
         .from('users')
-        .select('role, birthdate')
+        .select('role, birthdate, timezone')
         .eq('id', user.id)
         .single();
 
       if (userData) {
         setUserRole(userData.role);
+        const metadataTimezone =
+          typeof user.user_metadata?.timezone === "string"
+            ? user.user_metadata.timezone
+            : undefined;
+        setTimezone(userData.timezone || metadataTimezone || browserTimezone);
         if (userData.birthdate) {
           setBirthdate(userData.birthdate);
         } else {
@@ -100,6 +107,11 @@ export default function DashboardPage() {
       } else {
         // Fallback to user metadata
         const userBirthdate = user.user_metadata?.birthdate;
+        const metadataTimezone =
+          typeof user.user_metadata?.timezone === "string"
+            ? user.user_metadata.timezone
+            : undefined;
+        setTimezone(metadataTimezone || browserTimezone);
         if (userBirthdate) {
           setBirthdate(userBirthdate);
         } else {
@@ -110,7 +122,7 @@ export default function DashboardPage() {
     };
 
     checkAuth();
-  }, [supabase]);
+  }, [supabase, browserTimezone]);
 
   // Fetch biorhythm data when birthdate is available
   const fetchData = useCallback(async (showToast = false) => {
@@ -123,8 +135,8 @@ export default function DashboardPage() {
 
       // Fetch current biorhythm and 30-day prediction in parallel
       const [biorhythm, prediction] = await Promise.all([
-        calculateBiorhythm(birthdate, today),
-        getBiorhythmPrediction(today, 30),
+        calculateBiorhythm(birthdate, today, timezone),
+        getBiorhythmPrediction(today, 30, { birthdate, timezone }),
       ]);
 
       setBiorhythmData(biorhythm);
@@ -144,7 +156,7 @@ export default function DashboardPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [birthdate]);
+  }, [birthdate, timezone]);
 
   // Initial fetch when birthdate is available
   useEffect(() => {

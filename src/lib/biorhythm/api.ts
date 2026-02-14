@@ -174,7 +174,8 @@ function generateMockPredictionData(startDate?: string, days: number = 30): Pred
  */
 export async function calculateBiorhythm(
   birthdate: string,
-  targetDate?: string
+  targetDate?: string,
+  timezone?: string
 ): Promise<BiorhythmData> {
   if (USE_MOCKS) {
     // Simulate network delay
@@ -197,6 +198,7 @@ export async function calculateBiorhythm(
   const body: CalculateBiorhythmRequest = {
     birthdate,
     ...(targetDate && { targetDate }),
+    ...(timezone && { timezone }),
   };
 
   const response = await apiRequest<BiorhythmResponse>('/biorhythm/calculate', {
@@ -217,7 +219,8 @@ export async function calculateBiorhythm(
  */
 export async function getBiorhythmPrediction(
   startDate?: string,
-  days: number = 30
+  days: number = 30,
+  options?: { birthdate?: string; timezone?: string }
 ): Promise<PredictionData> {
   if (USE_MOCKS) {
     // Simulate network delay
@@ -229,6 +232,8 @@ export async function getBiorhythmPrediction(
   const params: GetPredictionRequest = {
     ...(startDate && { startDate }),
     ...(days !== 30 && { days }),
+    ...(options?.birthdate && { birthdate: options.birthdate }),
+    ...(options?.timezone && { timezone: options.timezone }),
   };
 
   const queryString = Object.entries(params)

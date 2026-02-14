@@ -92,12 +92,14 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Chapter progress GET failed:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch progress";
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "FETCH_ERROR",
-          message: "Failed to fetch progress",
+          message,
         },
       },
       { status: 500 }
@@ -189,12 +191,14 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Chapter progress POST failed:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to update progress";
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "UPDATE_ERROR",
-          message: "Failed to update progress",
+          message,
         },
       },
       { status: 500 }

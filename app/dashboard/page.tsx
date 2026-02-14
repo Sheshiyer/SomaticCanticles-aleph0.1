@@ -9,7 +9,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { TechFrame, HudPanel, DataDisplay, SectionDivider } from "@/components/ui/frame";
+import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 import { LightPillarGroup } from "@/components/effects/LightPillar";
 
 import { BiorhythmWheel } from "@/components/biorhythm/BiorhythmWheel";
@@ -19,6 +19,7 @@ import { ForecastChart } from "@/components/biorhythm/ForecastChart";
 import {
   calculateBiorhythm,
   getBiorhythmPrediction,
+  getBiorhythmErrorMessage,
   type BiorhythmData,
   type PredictionData,
   isPeak,
@@ -52,7 +53,7 @@ const itemVariants = {
 
 export default function DashboardPage() {
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ email?: string; user_metadata?: Record<string, unknown> } | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [biorhythmData, setBiorhythmData] = useState<BiorhythmData | null>(null);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
@@ -60,6 +61,7 @@ export default function DashboardPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [birthdate, setBirthdate] = useState<string | null>(null);
+  const [dataError, setDataError] = useState<string | null>(null);
 
   // Check authentication and get user data
   useEffect(() => {
@@ -127,13 +129,17 @@ export default function DashboardPage() {
 
       setBiorhythmData(biorhythm);
       setPredictionData(prediction);
+      setDataError(null);
 
       if (showToast) {
         toast.success("Biorhythm data refreshed");
       }
     } catch (error) {
       console.error("Biorhythm fetch error:", error);
-      // Silently fail - onboarding modal will show if needed
+      setDataError(getBiorhythmErrorMessage(error));
+      if (showToast) {
+        toast.error(getBiorhythmErrorMessage(error));
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -186,6 +192,11 @@ export default function DashboardPage() {
   };
 
   const summary = getTodaySummary();
+  const userDisplayName =
+    user?.email?.split("@")[0] ||
+    (typeof user?.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name
+      : "there");
 
   const handleOnboardingComplete = (newBirthdate: string) => {
     setBirthdate(newBirthdate);
@@ -241,7 +252,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">
-                    Welcome back, {user?.email?.split("@")[0] || user?.user_metadata?.full_name || 'there'}
+                    Welcome back, {userDisplayName}
                   </h2>
                   <p className="text-sm text-muted-foreground">
                     Ready to continue your journey?
@@ -265,6 +276,27 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               </div>
+            </div>
+          </TechFrame>
+        </motion.div>
+      )}
+
+      {dataError && (
+        <motion.div variants={itemVariants}>
+          <TechFrame variant="alert">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-rose-400">Data Sync Issue</p>
+                <p className="text-sm text-muted-foreground">{dataError}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchData(true)}
+                disabled={refreshing}
+              >
+                Retry
+              </Button>
             </div>
           </TechFrame>
         </motion.div>
@@ -369,12 +401,14 @@ export default function DashboardPage() {
             className="scan-lines h-full"
           >
             <div className="flex items-center justify-center py-4">
-              {biorhythmData && (
+              {biorhythmData ? (
                 <BiorhythmWheel
                   data={biorhythmData}
                   size={260}
                   animated={!refreshing}
                 />
+              ) : (
+                <p className="text-sm text-muted-foreground">No cycle data available.</p>
               )}
             </div>
           </HudPanel>
@@ -387,8 +421,10 @@ export default function DashboardPage() {
             icon={<TrendingUp className="h-5 w-5 text-primary" />}
             className="scan-lines h-full"
           >
-            {biorhythmData && (
+            {biorhythmData ? (
               <CycleBars data={biorhythmData} animated={!refreshing} />
+            ) : (
+              <p className="text-sm text-muted-foreground">Current levels unavailable.</p>
             )}
           </HudPanel>
         </motion.div>
@@ -401,7 +437,7 @@ export default function DashboardPage() {
           icon={<Calendar className="h-5 w-5 text-primary" />}
           className="scan-lines"
         >
-          {predictionData && (
+          {predictionData ? (
             <ForecastChart
               data={predictionData}
               days={7}
@@ -409,6 +445,8 @@ export default function DashboardPage() {
               height={180}
               animated={!refreshing}
             />
+          ) : (
+            <p className="text-sm text-muted-foreground">7-day forecast unavailable.</p>
           )}
         </HudPanel>
       </motion.div>
@@ -420,13 +458,15 @@ export default function DashboardPage() {
           icon={<Sparkles className="h-5 w-5 text-primary" />}
           className="scan-lines"
         >
-          {predictionData && (
+          {predictionData ? (
             <ForecastChart
               data={predictionData}
               days={30}
               height={350}
               animated={!refreshing}
             />
+          ) : (
+            <p className="text-sm text-muted-foreground">30-day forecast unavailable.</p>
           )}
         </HudPanel>
       </motion.div>

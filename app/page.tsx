@@ -1003,7 +1003,7 @@ export default function HomePage() {
             </div>
             <SectionDivider label="Somatic Canticles" className="my-6" />
             <p className="text-center text-xs text-muted-foreground/60">
-              © 2026 Somatic Canticles · MIT License · Powered by Cloudflare Workers
+              © 2026 Somatic Canticles · MIT License · Powered by Supabase · Cloudflare DNS
             </p>
           </div>
         </footer>

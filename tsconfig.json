@@ -43,6 +43,8 @@
     "node_modules",
     "e2e",
     "src/server",
-    "src/db/index.ts"
+    "src/db/index.ts",
+    "scripts",
+    "supabase/functions"
   ]
 }

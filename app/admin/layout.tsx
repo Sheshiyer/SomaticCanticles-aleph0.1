@@ -46,7 +46,12 @@ const adminNavItems: NavItem[] = [
   },
 ];
 
-function SidebarNavItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
+function SidebarNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
+  const isActive =
+    item.href === "/admin"
+      ? pathname === "/admin" || pathname === "/admin/"
+      : pathname.startsWith(item.href);
+
   return (
     <Link
       href={item.href}
@@ -73,6 +78,15 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+  const activeNavItem = adminNavItems.find((item) =>
+    item.href === "/admin"
+      ? pathname === "/admin" || pathname === "/admin/"
+      : pathname.startsWith(item.href)
+  );
+  const pageTitle =
+    activeNavItem?.label && activeNavItem.label !== "Overview"
+      ? `Admin ${activeNavItem.label}`
+      : "Admin Dashboard";
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -155,7 +169,7 @@ export default function AdminLayout({
                 <SidebarNavItem
                   key={item.href}
                   item={item}
-                  isActive={pathname === item.href}
+                  pathname={pathname}
                 />
               ))}
             </nav>
@@ -184,7 +198,7 @@ export default function AdminLayout({
         {/* Header */}
         <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-14 items-center justify-between px-6">
-            <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+            <h1 className="text-lg font-semibold">{pageTitle}</h1>
             <Link href="/">
               <Button variant="ghost" size="sm">
                 Back to Site

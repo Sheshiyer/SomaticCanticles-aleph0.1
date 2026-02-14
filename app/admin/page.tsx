@@ -3,7 +3,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Users, BookOpen, Activity, TrendingUp, UserCheck, Shield, Server, GitBranch } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  Cloud,
+  Database,
+  GitBranch,
+  Shield,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import { TechFrame, HudPanel, DataDisplay } from "@/components/ui/frame";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
@@ -25,7 +35,6 @@ const itemVariants = {
   },
 };
 
-// Types for admin data
 interface AdminStats {
   totalUsers: number;
   activeUsers: number;
@@ -41,60 +50,46 @@ interface RecentUser {
   createdAt: string;
 }
 
-export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
-  const [loading, setLoading] = useState(true);
+interface InfrastructureLink {
+  label: string;
+  href: string;
+  description: string;
+}
 
-  useEffect(() => {
-    fetchAdminData();
-  }, []);
-
-  const fetchAdminData = async () => {
-    try {
-      // Get token from localStorage
-      const tokens = localStorage.getItem("auth_tokens");
-      const token = tokens ? JSON.parse(tokens).accessToken : null;
-
-      // Fetch stats from API
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/stats`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        // If admin endpoint doesn't exist yet, use mock data
-        setMockData();
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setStats(data.data.stats);
-        setRecentUsers(data.data.recentUsers);
-      }
-    } catch (error) {
-      console.error("Failed to fetch admin data:", error);
-      setMockData();
-    } finally {
-      setLoading(false);
-    }
+interface AdminOverviewPayload {
+  stats: AdminStats;
+  recentUsers: RecentUser[];
+  infrastructure: {
+    supabase: InfrastructureLink;
+    cloudflare: InfrastructureLink;
+    github: InfrastructureLink;
   };
+}
 
-  const setMockData = () => {
-    // Mock data for MVP (until API endpoint is built)
-    setStats({
+function getSupabaseDashboardUrl() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    return "https://supabase.com/dashboard";
+  }
+
+  const match = supabaseUrl.match(/^https:\/\/([^.]+)\.supabase\.co/i);
+  if (!match?.[1]) {
+    return "https://supabase.com/dashboard";
+  }
+
+  return `https://supabase.com/dashboard/project/${match[1]}`;
+}
+
+function getFallbackData(): AdminOverviewPayload {
+  return {
+    stats: {
       totalUsers: 2,
       activeUsers: 1,
       totalChapters: 12,
       completedChapters: 0,
       recentSignups: 2,
-    });
-    setRecentUsers([
+    },
+    recentUsers: [
       {
         id: "admin-001",
         email: "admin@somatic-canticles.local",
@@ -107,7 +102,62 @@ export default function AdminDashboardPage() {
         role: "user",
         createdAt: new Date().toISOString(),
       },
-    ]);
+    ],
+    infrastructure: {
+      supabase: {
+        label: "Supabase Platform",
+        href: getSupabaseDashboardUrl(),
+        description: "Auth, Postgres, Storage, and Edge Functions",
+      },
+      cloudflare: {
+        label: "Cloudflare DNS",
+        href: "https://dash.cloudflare.com/?to=/:account/domains",
+        description: "DNS and domain routing only (no Workers/D1/R2)",
+      },
+      github: {
+        label: "GitHub Repository",
+        href: "https://github.com/Sheshiyer/SomaticCanticles-aleph0.1",
+        description: "Source code and deployment history",
+      },
+    },
+  };
+}
+
+export default function AdminDashboardPage() {
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
+  const [infra, setInfra] = useState<AdminOverviewPayload["infrastructure"] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAdminData();
+  }, []);
+
+  const fetchAdminData = async () => {
+    try {
+      const response = await fetch("/api/admin/overview");
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        const fallback = getFallbackData();
+        setStats(fallback.stats);
+        setRecentUsers(fallback.recentUsers);
+        setInfra(fallback.infrastructure);
+        return;
+      }
+
+      setStats(data.data.stats);
+      setRecentUsers(data.data.recentUsers);
+      setInfra(data.data.infrastructure);
+    } catch (error) {
+      console.error("Failed to fetch admin data:", error);
+      const fallback = getFallbackData();
+      setStats(fallback.stats);
+      setRecentUsers(fallback.recentUsers);
+      setInfra(fallback.infrastructure);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -119,7 +169,6 @@ export default function AdminDashboardPage() {
     );
   }
 
-  // Calculate engagement rate
   const engagementRate = stats?.totalUsers
     ? Math.round(((stats.activeUsers || 0) / stats.totalUsers) * 100)
     : 0;
@@ -132,7 +181,6 @@ export default function AdminDashboardPage() {
         animate="visible"
         className="space-y-6"
       >
-        {/* Page Title */}
         <motion.div variants={itemVariants} className="flex items-center gap-3">
           <Shield className="h-8 w-8 text-rose-500" />
           <div>
@@ -150,7 +198,6 @@ export default function AdminDashboardPage() {
           </div>
         </motion.div>
 
-        {/* Stats Grid */}
         <motion.div
           variants={containerVariants}
           className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
@@ -180,7 +227,7 @@ export default function AdminDashboardPage() {
             <DataDisplay
               label="Chapters"
               value={stats?.totalChapters || 0}
-              trendValue={`${stats?.completedChapters || 0} completed`}
+              trendValue={`${stats?.completedChapters || 0} completions logged`}
               icon={<BookOpen className="h-3 w-3" />}
               variant="default"
             />
@@ -198,11 +245,10 @@ export default function AdminDashboardPage() {
           </motion.div>
         </motion.div>
 
-        {/* User Management Section */}
         <motion.div variants={itemVariants}>
-          <HudPanel 
-            title="User Management" 
-            icon={<Users className="h-4 w-4" />} 
+          <HudPanel
+            title="User Management"
+            icon={<Users className="h-4 w-4" />}
             variant="alert"
             className="scan-lines"
           >
@@ -224,12 +270,14 @@ export default function AdminDashboardPage() {
                           <div>
                             <p className="font-medium text-metallic">{user.email}</p>
                             <div className="flex items-center gap-2">
-                              <span className={cn(
-                                "text-xs px-2 py-0.5 rounded-full font-mono",
-                                user.role === "admin" 
-                                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" 
-                                  : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
-                              )}>
+                              <span
+                                className={cn(
+                                  "text-xs px-2 py-0.5 rounded-full font-mono",
+                                  user.role === "admin"
+                                    ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                                    : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                                )}
+                              >
                                 {user.role.toUpperCase()}
                               </span>
                             </div>
@@ -239,9 +287,7 @@ export default function AdminDashboardPage() {
                           <p className="text-sm text-muted-foreground font-mono">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </p>
-                          <p className="text-xs text-metal-500">
-                            ID: {user.id.slice(0, 8)}...
-                          </p>
+                          <p className="text-xs text-metal-500">ID: {user.id.slice(0, 8)}...</p>
                         </div>
                       </div>
                     ))}
@@ -252,53 +298,64 @@ export default function AdminDashboardPage() {
           </HudPanel>
         </motion.div>
 
-        {/* Quick Actions */}
         <motion.div variants={itemVariants}>
-          <HudPanel 
-            title="System Controls" 
-            icon={<Server className="h-4 w-4" />} 
+          <HudPanel
+            title="Infrastructure Controls"
+            icon={<Database className="h-4 w-4" />}
             variant="tech"
             className="scan-lines"
           >
             <div className="grid gap-4 md:grid-cols-3">
               <a
-                href="https://dash.cloudflare.com"
+                href={infra?.supabase.href || getSupabaseDashboardUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative rounded-lg border border-metal-700 bg-metal-900/40 p-4 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all"
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-2 w-2 rounded-full bg-amber-500" />
-                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">Cloudflare Dashboard</h3>
+                <div className="mb-2 flex items-center gap-2">
+                  <Database className="h-4 w-4 text-cyan-400" />
+                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">
+                    {infra?.supabase.label || "Supabase Platform"}
+                  </h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Manage Workers, D1, and R2
+                  {infra?.supabase.description || "Auth, Postgres, Storage, and Edge Functions"}
                 </p>
               </a>
+
               <a
-                href="https://github.com/Sheshiyer/SomaticCanticles-aleph0.1"
+                href={infra?.cloudflare.href || "https://dash.cloudflare.com/?to=/:account/domains"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative rounded-lg border border-metal-700 bg-metal-900/40 p-4 hover:border-amber-500/50 hover:bg-amber-500/5 transition-all"
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <Cloud className="h-4 w-4 text-amber-400" />
+                  <h3 className="font-semibold text-metallic group-hover:text-amber-400 transition-colors">
+                    {infra?.cloudflare.label || "Cloudflare DNS"}
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {infra?.cloudflare.description || "DNS and domain routing only (no Workers/D1/R2)"}
+                </p>
+              </a>
+
+              <a
+                href={infra?.github.href || "https://github.com/Sheshiyer/SomaticCanticles-aleph0.1"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative rounded-lg border border-metal-700 bg-metal-900/40 p-4 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <GitBranch className="h-4 w-4 text-metal-400 group-hover:text-cyan-400 transition-colors" />
-                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">GitHub Repository</h3>
+                  <h3 className="font-semibold text-metallic group-hover:text-cyan-400 transition-colors">
+                    {infra?.github.label || "GitHub Repository"}
+                  </h3>
                 </div>
-                <p className="text-sm text-muted-foreground">View source code</p>
-              </a>
-              <div className="rounded-lg border border-metal-700 bg-metal-900/40 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </div>
-                  <h3 className="font-semibold text-metallic">API Status</h3>
-                </div>
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <span className="text-emerald-400 font-mono">OPERATIONAL</span>
+                <p className="text-sm text-muted-foreground">
+                  {infra?.github.description || "View source code"}
                 </p>
-              </div>
+              </a>
             </div>
           </HudPanel>
         </motion.div>

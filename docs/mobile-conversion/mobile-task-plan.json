@@ -1,0 +1,1230 @@
+{
+  "metadata": {
+    "project": "Somatic Canticles — Mobile App",
+    "version": "1.0.0",
+    "framework": "React Native (Expo SDK 53)",
+    "platforms": ["iOS", "Android"],
+    "total_sprints": 10,
+    "total_weeks": 20,
+    "generated": "2026-02-25",
+    "assumptions": [
+      "Team of 2 engineers (1 frontend-focused, 1 fullstack)",
+      "Existing Supabase backend and Hono API remain operational",
+      "Apple Developer and Google Play Console accounts are active",
+      "Discord bot is already deployed and accessible",
+      "Audio canticle files are hosted on accessible CDN URLs"
+    ],
+    "risks": [
+      "ChapterReader is 52KB — most complex component to port, may need 2 sprints",
+      "react-native-track-player has platform-specific quirks for background audio",
+      "Text selection for highlights is limited in React Native — may need custom native module",
+      "Expo SDK 53 compatibility with all chosen libraries must be verified",
+      "App Store review may flag meditation content as health claims",
+      "Offline sync conflict edge cases may surface post-launch"
+    ]
+  },
+  "sprints": [
+    {
+      "id": "S1",
+      "name": "Project Setup & Foundation",
+      "focus": "Bootstrap Expo project, configure tooling, establish project structure",
+      "weeks": "1-2"
+    },
+    {
+      "id": "S2",
+      "name": "Authentication & Supabase",
+      "focus": "Supabase client, auth flows, Discord OAuth, session management",
+      "weeks": "3-4"
+    },
+    {
+      "id": "S3",
+      "name": "Local Database & Sync Engine",
+      "focus": "SQLite schema, Drizzle ORM, mutation queue, sync protocol",
+      "weeks": "5-6"
+    },
+    {
+      "id": "S4",
+      "name": "Dashboard & Biorhythm",
+      "focus": "Biorhythm calculations, visualizations, dashboard screens",
+      "weeks": "7-8"
+    },
+    {
+      "id": "S5",
+      "name": "Chapter System & Reader",
+      "focus": "Chapter list, detail, reader with scene navigation and markdown",
+      "weeks": "9-10"
+    },
+    {
+      "id": "S6",
+      "name": "Reading Features",
+      "focus": "Highlights, bookmarks, lore/oracle, reader controls",
+      "weeks": "11-12"
+    },
+    {
+      "id": "S7",
+      "name": "Audio System & Downloads",
+      "focus": "Track player, background audio, download manager, offline playback",
+      "weeks": "13-14"
+    },
+    {
+      "id": "S8",
+      "name": "Achievements, Streaks & Discord",
+      "focus": "Achievement gallery, streak tracking, Discord bot integration, push notifications",
+      "weeks": "15-16"
+    },
+    {
+      "id": "S9",
+      "name": "Testing & QA",
+      "focus": "Unit tests, integration tests, E2E with Maestro, performance audit",
+      "weeks": "17-18"
+    },
+    {
+      "id": "S10",
+      "name": "CI/CD, Deployment & Store Submission",
+      "focus": "EAS Build, GitHub Actions, store submission, OTA updates",
+      "weeks": "19-20"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "S1-01",
+      "title": "Initialize Expo project with TypeScript template",
+      "area": "infra",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": [],
+      "deliverable": "Expo project bootstrapped with SDK 53, TypeScript, ESLint, Prettier configured",
+      "acceptance": "expo start launches successfully on iOS simulator and Android emulator"
+    },
+    {
+      "id": "S1-02",
+      "title": "Configure NativeWind v4 with custom theme",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-01"],
+      "deliverable": "NativeWind v4 integrated with Somatic Canticles color system (octave, transform, architect, solar, metal palette)",
+      "acceptance": "Tailwind classes render correctly on both platforms with custom theme variables"
+    },
+    {
+      "id": "S1-03",
+      "title": "Set up Expo Router v4 with route groups",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-01"],
+      "deliverable": "File-based routing with (auth) and (app) groups, tab navigator, stack navigators within tabs",
+      "acceptance": "Navigation between all placeholder screens works with proper back/forward behavior"
+    },
+    {
+      "id": "S1-04",
+      "title": "Create shared UI component library",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 12,
+      "dependencies": ["S1-02"],
+      "deliverable": "Button, Card, Input, Badge, Progress, Separator, Skeleton, Spinner components ported from shadcn/ui",
+      "acceptance": "All base UI components render correctly with NativeWind styling on both platforms"
+    },
+    {
+      "id": "S1-05",
+      "title": "Install and configure Reanimated 3 and Moti",
+      "area": "infra",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S1-01"],
+      "deliverable": "Reanimated 3 and Moti configured with Expo plugin, babel preset applied",
+      "acceptance": "Sample animation renders at 60fps on both platforms"
+    },
+    {
+      "id": "S1-06",
+      "title": "Configure environment variables and EAS profiles",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 4,
+      "dependencies": ["S1-01"],
+      "deliverable": "app.config.ts with env vars, eas.json with development/preview/production profiles",
+      "acceptance": "Different Supabase URLs load per environment profile"
+    },
+    {
+      "id": "S1-07",
+      "title": "Set up Zustand stores skeleton",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-01"],
+      "deliverable": "authStore, settingsStore, syncStore created with TypeScript types and persist middleware",
+      "acceptance": "Stores persist across app restarts using AsyncStorage"
+    },
+    {
+      "id": "S1-08",
+      "title": "Configure TanStack Query with offline persistence",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-07"],
+      "deliverable": "TanStack Query provider with AsyncStorage persister, stale/cache time configured",
+      "acceptance": "Cached query data survives app restart and serves stale data when offline"
+    },
+    {
+      "id": "S1-09",
+      "title": "Create API client wrapper with auth headers",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-08"],
+      "deliverable": "Typed API client with auto-injected Bearer token, retry logic, 401 refresh flow",
+      "acceptance": "API calls to Hono backend succeed with valid token and auto-refresh on expiry"
+    },
+    {
+      "id": "S1-10",
+      "title": "Set up Sentry React Native SDK",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 4,
+      "dependencies": ["S1-01"],
+      "deliverable": "Sentry configured with source maps, navigation breadcrumbs, performance monitoring",
+      "acceptance": "Test crash appears in Sentry dashboard with correct source map"
+    },
+    {
+      "id": "S1-11",
+      "title": "Create app icon and splash screen assets",
+      "area": "product",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-01"],
+      "deliverable": "1024x1024 adaptive icon, splash screen with Somatic Canticles branding, expo-splash-screen configured",
+      "acceptance": "App icon shows correctly on both platforms, splash screen displays during load"
+    },
+    {
+      "id": "S1-12",
+      "title": "Configure deep linking scheme",
+      "area": "infra",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S1-03"],
+      "deliverable": "somatic-canticles:// URL scheme registered, expo-linking configured for OAuth callbacks and push notification deep links",
+      "acceptance": "Deep links open correct screens from external sources on both platforms"
+    },
+    {
+      "id": "S2-01",
+      "title": "Configure Supabase client for React Native",
+      "area": "frontend",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-06"],
+      "deliverable": "Supabase client with expo-secure-store adapter for token storage, auto-refresh enabled",
+      "acceptance": "Supabase client initializes and persists session across app restarts"
+    },
+    {
+      "id": "S2-02",
+      "title": "Build email/password login screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-04", "S2-01"],
+      "deliverable": "Login screen with email/password form, validation, error handling, loading state",
+      "acceptance": "User can log in with valid credentials and is redirected to dashboard"
+    },
+    {
+      "id": "S2-03",
+      "title": "Build registration screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-04", "S2-01"],
+      "deliverable": "Registration screen with email, password (12+ chars), birthdate picker, timezone auto-detect",
+      "acceptance": "New user can register and is redirected to onboarding flow"
+    },
+    {
+      "id": "S2-04",
+      "title": "Implement Discord OAuth login flow",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 10,
+      "dependencies": ["S2-01", "S1-12"],
+      "deliverable": "Discord OAuth configured in Supabase, deep link callback handler, session creation on success",
+      "acceptance": "User can log in via Discord and receives valid Supabase session"
+    },
+    {
+      "id": "S2-05",
+      "title": "Implement Google OAuth login flow",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S2-01", "S1-12"],
+      "deliverable": "Google OAuth configured in Supabase for mobile, deep link callback, session creation",
+      "acceptance": "User can log in via Google and receives valid Supabase session"
+    },
+    {
+      "id": "S2-06",
+      "title": "Build password reset flow",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S2-01"],
+      "deliverable": "Forgot password screen with email input, Supabase password reset email trigger, deep link to reset form",
+      "acceptance": "User receives reset email, clicks link, opens app to reset password form"
+    },
+    {
+      "id": "S2-07",
+      "title": "Implement auth state listener and route protection",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S2-01", "S1-03"],
+      "deliverable": "Supabase onAuthStateChange listener, automatic redirect to login for unauthenticated routes",
+      "acceptance": "Unauthenticated users cannot access app routes; session expiry triggers redirect"
+    },
+    {
+      "id": "S2-08",
+      "title": "Build onboarding modal for new users",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S2-02", "S1-04"],
+      "deliverable": "Multi-step onboarding: welcome → birthdate input → timezone confirm → tutorial slides",
+      "acceptance": "New user completes onboarding and birthdate is saved to profile"
+    },
+    {
+      "id": "S2-09",
+      "title": "Build settings screen with profile management",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S2-01", "S1-04"],
+      "deliverable": "Settings screen: edit birthdate, timezone, theme toggle, notification preferences, logout, delete account",
+      "acceptance": "All settings persist after save and app restart"
+    },
+    {
+      "id": "S2-10",
+      "title": "Implement biometric authentication option",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S2-01"],
+      "deliverable": "Face ID / Touch ID login using expo-local-authentication as convenience unlock",
+      "acceptance": "User can enable biometric login in settings and use it for subsequent app opens"
+    },
+    {
+      "id": "S2-11",
+      "title": "Implement token refresh and session recovery",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S2-01", "S1-09"],
+      "deliverable": "Automatic token refresh on 401, session recovery on app resume, graceful logout on expired refresh token",
+      "acceptance": "User stays logged in across 24+ hours without manual re-authentication"
+    },
+    {
+      "id": "S2-12",
+      "title": "Add CORS origins for mobile to Hono API",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 4,
+      "dependencies": [],
+      "deliverable": "Hono API CORS config updated to allow somatic-canticles:// and exp:// origins",
+      "acceptance": "Mobile app API requests succeed without CORS errors"
+    },
+    {
+      "id": "S3-01",
+      "title": "Set up expo-sqlite with Drizzle ORM",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-01"],
+      "deliverable": "expo-sqlite database initialized with Drizzle ORM adapter, connection helper created",
+      "acceptance": "Can create/read/update/delete records in SQLite via Drizzle on both platforms"
+    },
+    {
+      "id": "S3-02",
+      "title": "Define local SQLite schema mirroring server",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S3-01"],
+      "deliverable": "All 13 tables from server schema mirrored locally plus downloadedAudio and syncMetadata tables",
+      "acceptance": "Schema creates all tables on first app launch without errors"
+    },
+    {
+      "id": "S3-03",
+      "title": "Build schema migration system for local DB",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S3-02"],
+      "deliverable": "Version-tracked migration runner that applies schema changes on app update",
+      "acceptance": "App update with schema change migrates data without loss"
+    },
+    {
+      "id": "S3-04",
+      "title": "Implement mutation queue table and manager",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 10,
+      "dependencies": ["S3-02"],
+      "deliverable": "mutationQueue SQLite table with FIFO processing, enqueue/dequeue/peek operations",
+      "acceptance": "Mutations are persisted, ordered by creation time, and dequeued correctly"
+    },
+    {
+      "id": "S3-05",
+      "title": "Build sync engine push protocol",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 12,
+      "dependencies": ["S3-04", "S1-09"],
+      "deliverable": "Push phase: batch local mutations to POST /api/mobile/sync, handle success/failure per mutation",
+      "acceptance": "Local mutations are pushed to server and confirmed with applied count"
+    },
+    {
+      "id": "S3-06",
+      "title": "Build sync engine pull protocol",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 12,
+      "dependencies": ["S3-05"],
+      "deliverable": "Pull phase: GET server changes since lastSyncedAt, apply to local DB with conflict resolution",
+      "acceptance": "Server changes are correctly applied to local database without data loss"
+    },
+    {
+      "id": "S3-07",
+      "title": "Implement per-entity conflict resolution",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 10,
+      "dependencies": ["S3-06"],
+      "deliverable": "Conflict resolvers for each entity: chapters (server wins), highlights/bookmarks (client wins), progress (merge max)",
+      "acceptance": "Simultaneous edits on client and server resolve correctly per entity rules"
+    },
+    {
+      "id": "S3-08",
+      "title": "Build POST /api/mobile/sync backend endpoint",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 12,
+      "dependencies": ["S2-12"],
+      "deliverable": "Hono endpoint accepting batch mutations and returning server changes since timestamp",
+      "acceptance": "Endpoint processes 50+ mutations in single request within 2 seconds"
+    },
+    {
+      "id": "S3-09",
+      "title": "Implement network state detection and auto-sync",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S3-06"],
+      "deliverable": "NetInfo listener triggers sync on reconnect, AppState listener triggers on foreground, 15-min periodic sync",
+      "acceptance": "App syncs automatically when regaining network after offline period"
+    },
+    {
+      "id": "S3-10",
+      "title": "Build syncMetadata tracking and status UI",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S3-06", "S1-07"],
+      "deliverable": "Sync status indicator in app header (synced/syncing/pending/offline), syncStore with last sync time",
+      "acceptance": "User can see current sync status and last successful sync timestamp"
+    },
+    {
+      "id": "S3-11",
+      "title": "Implement tombstone-based soft deletes",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S3-07"],
+      "deliverable": "Deleted highlights/bookmarks marked with deletedAt instead of hard delete, propagated during sync",
+      "acceptance": "Deleting a highlight on mobile removes it on server after sync and vice versa"
+    },
+    {
+      "id": "S3-12",
+      "title": "Build conflict log and sync debugging tools",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 4,
+      "dependencies": ["S3-07"],
+      "deliverable": "conflictLog table storing resolution decisions, dev-only sync inspector screen",
+      "acceptance": "Conflicts are logged with entity type, client value, server value, and resolution"
+    },
+    {
+      "id": "S4-01",
+      "title": "Port biorhythm calculation engine",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-01"],
+      "deliverable": "Biorhythm types, CYCLE_CONFIGS, isPeak, isCritical, getCycleStatus ported from web's types.ts",
+      "acceptance": "Calculations produce identical results to web app for same birthdate and date inputs"
+    },
+    {
+      "id": "S4-02",
+      "title": "Build BiorhythmWheel with react-native-skia",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 16,
+      "dependencies": ["S4-01", "S1-05"],
+      "deliverable": "Skia Canvas rendering 4 concentric cycle arcs with gradient fills, peak indicators, center date text",
+      "acceptance": "Wheel renders all 4 cycles with correct colors and values, animates smoothly on data change"
+    },
+    {
+      "id": "S4-03",
+      "title": "Build CycleBars with Victory Native",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S4-01"],
+      "deliverable": "Horizontal bar chart showing 4 cycle values with colors, percentage labels, status indicators",
+      "acceptance": "Bars render with correct cycle colors and animate on value change"
+    },
+    {
+      "id": "S4-04",
+      "title": "Build ForecastChart with Victory Native",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 10,
+      "dependencies": ["S4-01"],
+      "deliverable": "Multi-line chart with 4 cycle lines, touch-to-inspect day details, 7-day and 30-day toggle",
+      "acceptance": "Chart displays forecast data with interactive touch showing exact values per day"
+    },
+    {
+      "id": "S4-05",
+      "title": "Build dashboard summary cards",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S4-01", "S1-04"],
+      "deliverable": "4 summary cards: Peak Cycles count, Critical Days count, Strongest Cycle, Next Peak date",
+      "acceptance": "Cards show correct calculated values from biorhythm data"
+    },
+    {
+      "id": "S4-06",
+      "title": "Build dashboard screen layout",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S4-02", "S4-03", "S4-04", "S4-05"],
+      "deliverable": "Scrollable dashboard with summary cards, cycle wheel, current levels, 7-day preview, 30-day forecast",
+      "acceptance": "Dashboard renders all sections with responsive layout and pull-to-refresh"
+    },
+    {
+      "id": "S4-07",
+      "title": "Implement biorhythm data fetching and caching",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S4-01", "S1-08", "S3-02"],
+      "deliverable": "TanStack Query hooks for biorhythm snapshot and predictions, local cache in SQLite biorhythmSnapshots table",
+      "acceptance": "Biorhythm data loads from cache when offline and refreshes from API when online"
+    },
+    {
+      "id": "S4-08",
+      "title": "Implement midnight auto-refresh for biorhythm",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S4-07"],
+      "deliverable": "Timer that recalculates biorhythm at midnight in user's timezone, updates dashboard",
+      "acceptance": "Dashboard shows new day's values after midnight without manual refresh"
+    },
+    {
+      "id": "S4-09",
+      "title": "Build biorhythm about/info panel",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S1-04"],
+      "deliverable": "Expandable info section explaining biorhythm cycles, their lengths, and meanings",
+      "acceptance": "Panel toggles open/closed with animation, displays all 4 cycle descriptions"
+    },
+    {
+      "id": "S4-10",
+      "title": "Store biorhythm snapshots in local SQLite",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S4-07", "S3-02"],
+      "deliverable": "Daily biorhythm snapshots cached locally with 30-day retention, used for offline forecast",
+      "acceptance": "Forecast chart works offline using locally cached snapshots"
+    },
+    {
+      "id": "S5-01",
+      "title": "Build chapter list screen with FlashList",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-04", "S1-08"],
+      "deliverable": "Scrollable chapter list with FlashList showing all 12 chapters with lock/unlock state",
+      "acceptance": "Chapter list renders all chapters with correct unlock status and cycle color indicators"
+    },
+    {
+      "id": "S5-02",
+      "title": "Build ChapterCard component",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-04", "S1-05"],
+      "deliverable": "Chapter card with title, subtitle, cycle color, lock icon, progress bar, duration indicator",
+      "acceptance": "Card displays all metadata correctly with locked/unlocked visual states"
+    },
+    {
+      "id": "S5-03",
+      "title": "Build chapter detail screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S5-02"],
+      "deliverable": "Full chapter detail with description, unlock conditions, lore metadata, audio preview, start reading button",
+      "acceptance": "Detail screen shows all chapter info and navigates to reader on button press"
+    },
+    {
+      "id": "S5-04",
+      "title": "Port unlock engine logic to mobile",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S4-01", "S3-02"],
+      "deliverable": "Unlock evaluation engine checking biorhythm peaks, user progress, and prerequisites",
+      "acceptance": "Chapters unlock correctly when biorhythm conditions are met, matching web behavior"
+    },
+    {
+      "id": "S5-05",
+      "title": "Build unlock celebration animation",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 12,
+      "dependencies": ["S1-05", "S5-04"],
+      "deliverable": "5-phase Reanimated animation: darkness pulse → light beam → symbol reveal → title → particle disperse (13 seconds)",
+      "acceptance": "Animation plays smoothly at 60fps on both platforms with all 5 phases visible"
+    },
+    {
+      "id": "S5-06",
+      "title": "Build markdown scene parser",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-01"],
+      "deliverable": "Parse chapter markdown content into scenes by splitting on ## headers, extract title and reading time per scene",
+      "acceptance": "Parser produces identical scene array as web's parseManuscriptIntoScenes for all 12 chapters"
+    },
+    {
+      "id": "S5-07",
+      "title": "Build custom markdown renderer",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 12,
+      "dependencies": ["S5-06"],
+      "deliverable": "react-native-markdown-display with custom rules for lore term detection, choice blocks, styled headings",
+      "acceptance": "Markdown renders with correct styling, lore terms are tappable, choice blocks are interactive"
+    },
+    {
+      "id": "S5-08",
+      "title": "Build chapter reader screen with scene navigation",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 16,
+      "dependencies": ["S5-07", "S5-06"],
+      "deliverable": "Full reader with ScrollView scene anchors, prev/next navigation, scene index dots, progress tracking",
+      "acceptance": "User can navigate between scenes, scroll position persists, reading progress updates in real-time"
+    },
+    {
+      "id": "S5-09",
+      "title": "Implement reading time tracking",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08", "S3-02"],
+      "deliverable": "Timer tracking active reading time per chapter, saved to local userProgress table",
+      "acceptance": "Time spent reading is accurately tracked and visible in progress stats"
+    },
+    {
+      "id": "S5-10",
+      "title": "Build reader controls bar",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08"],
+      "deliverable": "Bottom bar with font size controls (4 levels), focus mode toggle, theme toggle, bookmark button",
+      "acceptance": "All reader controls function correctly and preferences persist across sessions"
+    },
+    {
+      "id": "S5-11",
+      "title": "Implement focus mode for reader",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08"],
+      "deliverable": "Focus mode hides status bar, navigation, and controls via Reanimated slide animation",
+      "acceptance": "Focus mode toggles smoothly, tap-to-reveal controls, respects safe areas"
+    },
+    {
+      "id": "S5-12",
+      "title": "Cache chapter content locally for offline reading",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S3-06", "S5-06"],
+      "deliverable": "All unlocked chapter content synced to local SQLite chapters table for offline access",
+      "acceptance": "User can read unlocked chapters without internet connection"
+    },
+    {
+      "id": "S5-13",
+      "title": "Build chapter completion flow",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08", "S5-09"],
+      "deliverable": "Completion detection when user reads final scene, celebration modal, progress update to 100%",
+      "acceptance": "Completing a chapter shows celebration and updates progress locally and on server"
+    },
+    {
+      "id": "S5-14",
+      "title": "Implement chapter progress resume",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08", "S3-02"],
+      "deliverable": "Reader opens to last-read scene, scroll position approximately restored, resume prompt shown",
+      "acceptance": "Re-opening a partially read chapter resumes from last scene with prompt to continue"
+    },
+    {
+      "id": "S6-01",
+      "title": "Build text selection handler for highlights",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 12,
+      "dependencies": ["S5-08"],
+      "deliverable": "Long press triggers text selection with start/end capture, floating color picker appears",
+      "acceptance": "User can select text in reader and see color picker with 4 highlight options"
+    },
+    {
+      "id": "S6-02",
+      "title": "Implement highlight persistence and rendering",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 10,
+      "dependencies": ["S6-01", "S3-02"],
+      "deliverable": "Highlights saved to local SQLite with sceneIndex, text, color; rendered as colored background in markdown",
+      "acceptance": "Created highlights persist across app restarts and render visually in the reader"
+    },
+    {
+      "id": "S6-03",
+      "title": "Build highlight management screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S6-02"],
+      "deliverable": "Screen showing all highlights grouped by chapter, with color filter, delete option, tap-to-navigate",
+      "acceptance": "User can view, filter, delete highlights and navigate to their location in reader"
+    },
+    {
+      "id": "S6-04",
+      "title": "Implement bookmark toggle per scene",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-08", "S3-02"],
+      "deliverable": "Bookmark icon in scene header, toggles on tap, saves to local SQLite bookmarks table",
+      "acceptance": "Bookmarks persist across sessions and sync to server"
+    },
+    {
+      "id": "S6-05",
+      "title": "Build bookmark navigation and management",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S6-04"],
+      "deliverable": "Bookmark list grouped by chapter, tap-to-jump-to-scene, swipe-to-delete",
+      "acceptance": "User can navigate to any bookmarked scene and manage bookmarks from list"
+    },
+    {
+      "id": "S6-06",
+      "title": "Build lore bottom sheet component",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-04"],
+      "deliverable": "@gorhom/bottom-sheet with lore search bar, 7 category filter chips, scrollable definition list",
+      "acceptance": "Bottom sheet opens smoothly, search filters in real-time, categories toggle correctly"
+    },
+    {
+      "id": "S6-07",
+      "title": "Implement inline lore detection in reader",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 10,
+      "dependencies": ["S6-06", "S5-07"],
+      "deliverable": "Custom markdown rule that regex-matches lore terms, renders as tappable styled text opening lore sheet",
+      "acceptance": "Known lore terms in chapter text are visually distinct and tap opens their definition"
+    },
+    {
+      "id": "S6-08",
+      "title": "Port LORE_DEFINITIONS data to mobile",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S1-01"],
+      "deliverable": "All 15+ lore terms with categories, definitions, and related terms ported from web's src/lib/lore/",
+      "acceptance": "Lore data matches web app exactly, all 7 categories represented"
+    },
+    {
+      "id": "S6-09",
+      "title": "Build related lore sidebar in reader",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S6-06", "S5-08"],
+      "deliverable": "Collapsible side panel showing lore terms related to current chapter, accessible via edge swipe",
+      "acceptance": "Related lore panel shows context-appropriate terms for each chapter"
+    },
+    {
+      "id": "S6-10",
+      "title": "Implement choice blocks in reader",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S5-07"],
+      "deliverable": "Custom markdown rule rendering ```choice``` blocks as interactive button groups in reader",
+      "acceptance": "Choice blocks render as tappable options that affect narrative flow"
+    },
+    {
+      "id": "S6-11",
+      "title": "Sync highlights and bookmarks with server",
+      "area": "data",
+      "owner_role": "Backend Eng",
+      "est_hours": 8,
+      "dependencies": ["S6-02", "S6-04", "S3-06"],
+      "deliverable": "Bidirectional sync for highlights and bookmarks using client-wins conflict resolution",
+      "acceptance": "Highlights/bookmarks created offline appear on server after sync, and vice versa"
+    },
+    {
+      "id": "S6-12",
+      "title": "Build reading statistics for progress screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S5-09", "S6-02", "S6-04"],
+      "deliverable": "Progress screen showing: chapters completed, total reading time, highlights count, bookmarks count, activity timeline",
+      "acceptance": "All statistics are accurate and update in real-time as user reads"
+    },
+    {
+      "id": "S7-01",
+      "title": "Set up react-native-track-player",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-01"],
+      "deliverable": "Track player configured with background playback service, Expo plugin registered",
+      "acceptance": "Audio plays in foreground and continues when app is backgrounded"
+    },
+    {
+      "id": "S7-02",
+      "title": "Build audio player component",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 10,
+      "dependencies": ["S7-01"],
+      "deliverable": "Player UI with play/pause, progress bar, time display, speed controls (0.5x-2x), sleep timer",
+      "acceptance": "All player controls function correctly, speed changes apply, sleep timer stops playback"
+    },
+    {
+      "id": "S7-03",
+      "title": "Implement lock screen and notification controls",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S7-01"],
+      "deliverable": "Lock screen media controls (iOS Control Center, Android notification) with play/pause/seek/track info/artwork",
+      "acceptance": "Media controls appear on lock screen with correct chapter title, artwork, and playback controls"
+    },
+    {
+      "id": "S7-04",
+      "title": "Build audio download manager",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 12,
+      "dependencies": ["S7-01", "S3-02"],
+      "deliverable": "Download queue using expo-file-system, progress tracking, downloadedAudio table, background download support",
+      "acceptance": "User can download all 13 canticles with progress bars, downloads survive app backgrounding"
+    },
+    {
+      "id": "S7-05",
+      "title": "Build GET /api/mobile/audio-manifest endpoint",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 6,
+      "dependencies": ["S2-12"],
+      "deliverable": "Hono endpoint returning signed download URLs and file sizes for all 13 canticle audio files",
+      "acceptance": "Endpoint returns valid download URLs with correct file sizes for all tracks"
+    },
+    {
+      "id": "S7-06",
+      "title": "Build storage management screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S7-04"],
+      "deliverable": "Screen showing total downloaded audio size, per-track size, delete individual/all option",
+      "acceptance": "User can see storage usage and delete individual or all downloaded tracks"
+    },
+    {
+      "id": "S7-07",
+      "title": "Implement offline audio playback",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S7-04"],
+      "deliverable": "Track player loads from local file path when downloaded, falls back to streaming when not downloaded",
+      "acceptance": "Downloaded tracks play without internet, non-downloaded tracks stream when online"
+    },
+    {
+      "id": "S7-08",
+      "title": "Integrate audio player into chapter reader",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S7-02", "S5-08"],
+      "deliverable": "Mini player at bottom of reader, auto-play option, chapter audio linked to correct track",
+      "acceptance": "Entering chapter reader shows mini player for associated canticle, auto-play optional"
+    },
+    {
+      "id": "S7-09",
+      "title": "Build audio preview player for chapter detail",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S7-02", "S5-03"],
+      "deliverable": "Compact audio preview on chapter detail screen with 30-second preview, download button",
+      "acceptance": "Preview plays first 30 seconds of chapter canticle with option to download full track"
+    },
+    {
+      "id": "S7-10",
+      "title": "Implement audio track metadata and artwork",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S7-01"],
+      "deliverable": "Track metadata (title, artist, artwork) set from chapter data for now-playing display",
+      "acceptance": "Now-playing shows correct chapter name, 'Somatic Canticles' as artist, and chapter icon as artwork"
+    },
+    {
+      "id": "S8-01",
+      "title": "Build AchievementCard component",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-04", "S1-05"],
+      "deliverable": "Achievement card with icon, rarity border (gray/blue/purple/gold), progress bar, unlock animation",
+      "acceptance": "Cards display all 4 rarity tiers with correct styling and animate on unlock"
+    },
+    {
+      "id": "S8-02",
+      "title": "Build achievements gallery screen",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S8-01"],
+      "deliverable": "FlashList achievement gallery grouped by rarity, filter tabs, locked/unlocked sections",
+      "acceptance": "All 8 achievement types displayed with correct progress and rarity grouping"
+    },
+    {
+      "id": "S8-03",
+      "title": "Build streak display component",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S1-04"],
+      "deliverable": "Streak card with fire icon, current count, longest record, freeze count, use-freeze button",
+      "acceptance": "Streak data displays accurately with freeze mechanic functional"
+    },
+    {
+      "id": "S8-04",
+      "title": "Implement streak check-in and freeze logic",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S8-03", "S3-02"],
+      "deliverable": "Daily check-in detection, streak increment/reset, freeze usage tracked in local streaks table",
+      "acceptance": "Streak increments on daily visit, resets after missed day (unless freeze used)"
+    },
+    {
+      "id": "S8-05",
+      "title": "Build progress screen with stats dashboard",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S6-12", "S8-03"],
+      "deliverable": "Progress screen with chapter completion %, reading time, streak, highlights count, activity timeline",
+      "acceptance": "All statistics accurate and update after reading/highlighting activity"
+    },
+    {
+      "id": "S8-06",
+      "title": "Implement Discord OTP linking in settings",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S2-09"],
+      "deliverable": "OTP input field in settings, validation against discordOtps table via API, discord_id linking",
+      "acceptance": "User enters valid 6-digit OTP and Discord account is linked to their profile"
+    },
+    {
+      "id": "S8-07",
+      "title": "Build Discord bot DM notification handler",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 10,
+      "dependencies": ["S8-06"],
+      "deliverable": "Supabase Edge Function triggered on chapter unlock and daily biorhythm, sends DM via discord.js",
+      "acceptance": "User receives Discord DM when chapter unlocks and daily biorhythm summary"
+    },
+    {
+      "id": "S8-08",
+      "title": "Implement Discord listening toggle",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S8-06"],
+      "deliverable": "Toggle in settings to enable/disable Discord DM notifications, updates discordListening field",
+      "acceptance": "Toggling off stops Discord DMs, toggling on resumes them"
+    },
+    {
+      "id": "S8-09",
+      "title": "Set up expo-notifications for push",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S1-01"],
+      "deliverable": "expo-notifications configured for iOS (APNs) and Android (FCM), permission handling, token registration",
+      "acceptance": "Push notification permission granted on both platforms, token stored on server"
+    },
+    {
+      "id": "S8-10",
+      "title": "Build POST /api/mobile/register-push-token endpoint",
+      "area": "backend",
+      "owner_role": "Backend Eng",
+      "est_hours": 4,
+      "dependencies": ["S2-12"],
+      "deliverable": "Hono endpoint storing expo push token associated with user ID for remote notifications",
+      "acceptance": "Push token is saved and retrievable for sending targeted notifications"
+    },
+    {
+      "id": "S8-11",
+      "title": "Implement local push notifications",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S8-09", "S4-01"],
+      "deliverable": "Local notifications for biorhythm peaks, streak reminders, chapter unlock triggers",
+      "acceptance": "Notifications fire at correct times with deep links to relevant screens"
+    },
+    {
+      "id": "S8-12",
+      "title": "Implement notification categories and actions",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 4,
+      "dependencies": ["S8-11"],
+      "deliverable": "Notification actions: 'Read Now' → reader, 'View Dashboard' → dashboard, category-specific icons",
+      "acceptance": "Tapping notification action navigates to correct screen via deep link"
+    },
+    {
+      "id": "S9-01",
+      "title": "Write unit tests for biorhythm calculations",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 6,
+      "dependencies": ["S4-01"],
+      "deliverable": "Jest tests for isPeak, isCritical, getCycleStatus, cycle calculations with known date/birthdate pairs",
+      "acceptance": "All biorhythm calculation tests pass with 100% branch coverage"
+    },
+    {
+      "id": "S9-02",
+      "title": "Write unit tests for sync engine",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 8,
+      "dependencies": ["S3-07"],
+      "deliverable": "Jest tests for mutation queue, push/pull protocol, conflict resolution for all entity types",
+      "acceptance": "Sync engine tests cover all conflict scenarios with 90%+ coverage"
+    },
+    {
+      "id": "S9-03",
+      "title": "Write component tests for core UI",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 8,
+      "dependencies": ["S5-02", "S8-01", "S4-03"],
+      "deliverable": "@testing-library/react-native tests for ChapterCard, AchievementCard, CycleBars with mock data",
+      "acceptance": "Component tests verify rendering, interactions, and accessibility properties"
+    },
+    {
+      "id": "S9-04",
+      "title": "Write integration tests with MSW",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 10,
+      "dependencies": ["S2-07", "S3-06"],
+      "deliverable": "MSW mock server for auth flow, chapter fetching, sync protocol; integration tests for full flows",
+      "acceptance": "Integration tests pass for login→fetch→display and offline→online→sync flows"
+    },
+    {
+      "id": "S9-05",
+      "title": "Write Maestro E2E test for login flow",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 6,
+      "dependencies": ["S2-02"],
+      "deliverable": "Maestro YAML flow: open app → enter email/password → tap login → verify dashboard appears",
+      "acceptance": "Maestro flow completes successfully on both iOS and Android"
+    },
+    {
+      "id": "S9-06",
+      "title": "Write Maestro E2E test for reading flow",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 8,
+      "dependencies": ["S5-08"],
+      "deliverable": "Maestro YAML: browse chapters → open chapter → navigate scenes → create highlight → bookmark",
+      "acceptance": "Full reading flow completes with highlight and bookmark created successfully"
+    },
+    {
+      "id": "S9-07",
+      "title": "Write Maestro E2E test for audio download",
+      "area": "qa",
+      "owner_role": "QA",
+      "est_hours": 6,
+      "dependencies": ["S7-04"],
+      "deliverable": "Maestro YAML: navigate to chapter → download audio → play → verify background playback",
+      "acceptance": "Audio downloads, plays, and continues in background on both platforms"
+    },
+    {
+      "id": "S9-08",
+      "title": "Perform performance audit",
+      "area": "qa",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S5-08", "S4-06"],
+      "deliverable": "Profile startup time, screen transitions, list scrolling, memory usage on mid-range devices",
+      "acceptance": "Cold start <2s, screen transitions <300ms, lists scroll at 60fps, no memory leaks"
+    },
+    {
+      "id": "S9-09",
+      "title": "Build test seed script for local database",
+      "area": "qa",
+      "owner_role": "Backend Eng",
+      "est_hours": 4,
+      "dependencies": ["S3-02"],
+      "deliverable": "Script populating local SQLite with sample chapters, progress, achievements, highlights for testing",
+      "acceptance": "Seed script creates consistent test data matching production schema"
+    },
+    {
+      "id": "S9-10",
+      "title": "Accessibility audit and fixes",
+      "area": "qa",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S5-08", "S4-06", "S8-02"],
+      "deliverable": "VoiceOver/TalkBack audit of all screens, proper accessibilityLabel/Role on interactive elements",
+      "acceptance": "App is navigable via screen reader on both platforms with meaningful labels"
+    },
+    {
+      "id": "S10-01",
+      "title": "Configure EAS Build profiles",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 6,
+      "dependencies": ["S1-06"],
+      "deliverable": "eas.json with development (simulator), preview (internal dist), production (store-ready) profiles",
+      "acceptance": "All 3 build profiles produce working builds on both platforms"
+    },
+    {
+      "id": "S10-02",
+      "title": "Set up GitHub Actions CI pipeline",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 10,
+      "dependencies": ["S10-01"],
+      "deliverable": "Workflow: lint → typecheck → unit test → EAS build (preview) → Maestro E2E → coverage report",
+      "acceptance": "Pipeline runs on PR and merge, blocks on failure, posts coverage to PR"
+    },
+    {
+      "id": "S10-03",
+      "title": "Configure EAS Submit for App Store",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 8,
+      "dependencies": ["S10-01"],
+      "deliverable": "EAS Submit configured for Apple App Store Connect with auto-generated certificates",
+      "acceptance": "Production build uploads to TestFlight via eas submit --platform ios"
+    },
+    {
+      "id": "S10-04",
+      "title": "Configure EAS Submit for Play Store",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 6,
+      "dependencies": ["S10-01"],
+      "deliverable": "EAS Submit configured for Google Play Console internal testing track with AAB format",
+      "acceptance": "Production build uploads to Play Console internal track via eas submit --platform android"
+    },
+    {
+      "id": "S10-05",
+      "title": "Create App Store listing and metadata",
+      "area": "product",
+      "owner_role": "Frontend Eng",
+      "est_hours": 8,
+      "dependencies": ["S10-03"],
+      "deliverable": "App name, description, keywords, category, screenshots (6.7\" and 6.5\" iPhone), privacy policy URL",
+      "acceptance": "App Store listing is complete and passes Apple review pre-check"
+    },
+    {
+      "id": "S10-06",
+      "title": "Create Play Store listing and metadata",
+      "area": "product",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S10-04"],
+      "deliverable": "Play Store title, descriptions, screenshots (phone + 7\" tablet), feature graphic, data safety section",
+      "acceptance": "Play Store listing is complete with all required assets and declarations"
+    },
+    {
+      "id": "S10-07",
+      "title": "Configure EAS Update for OTA",
+      "area": "infra",
+      "owner_role": "DevOps",
+      "est_hours": 6,
+      "dependencies": ["S10-01"],
+      "deliverable": "EAS Update channels (production/preview/development), update policies (force/optional/silent)",
+      "acceptance": "JS-only update publishes and applies on next app launch without store submission"
+    },
+    {
+      "id": "S10-08",
+      "title": "Implement OTA update check and apply UI",
+      "area": "frontend",
+      "owner_role": "Frontend Eng",
+      "est_hours": 6,
+      "dependencies": ["S10-07"],
+      "deliverable": "Update available banner, force-update modal for critical updates, silent update for minor fixes",
+      "acceptance": "Users see appropriate update UI based on update criticality level"
+    },
+    {
+      "id": "S10-09",
+      "title": "Submit to TestFlight and internal testing",
+      "area": "product",
+      "owner_role": "DevOps",
+      "est_hours": 6,
+      "dependencies": ["S10-05", "S10-06"],
+      "deliverable": "App submitted to TestFlight (iOS) and internal testing track (Android) for beta testing",
+      "acceptance": "Beta testers can install and use the app on both platforms"
+    },
+    {
+      "id": "S10-10",
+      "title": "Submit production release to both stores",
+      "area": "product",
+      "owner_role": "DevOps",
+      "est_hours": 8,
+      "dependencies": ["S10-09"],
+      "deliverable": "Production build submitted to App Store and Play Store for review and public release",
+      "acceptance": "App passes store review and is publicly available for download"
+    }
+  ]
+}

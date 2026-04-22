@@ -19,6 +19,9 @@ Logs of automated and manual quality checks.
 ### Interactive & Experimental
 *   **[INTERACTIVE_EXPERIENCE_DESIGN.md](./INTERACTIVE_EXPERIENCE_DESIGN.md)**: Design doc for the "Living Book" / Bandersnatch concepts.
 *   **[EASTER_EGGS_PLAN.md](./EASTER_EGGS_PLAN.md)**: Catalog of hidden narrative layers.
+*   **[NOESIS_CONTEXT_BRIDGE_SYSTEM.md](./NOESIS_CONTEXT_BRIDGE_SYSTEM.md)**: Canonical policy for Noesis vocabulary integration, contextual lore bridges, and fiction-safe use of `synchronocities-blog`.
+*   **[CLEAN_CANONICAL_NOESIS_AUDIT.md](./CLEAN_CANONICAL_NOESIS_AUDIT.md)**: Chapter-by-chapter control document for the `/CLEAN` prose, vocab, philosophy, and context-bridge pass.
+*   **[CLEAN_REWRITE_TRACKER.md](./CLEAN_REWRITE_TRACKER.md)**: Live status tracker for the canonical `/CLEAN` rewrite waves.
 
 ### Task Management
 *   **Tasks JSONs**: Machine-readable task lists for automated agents (`book1_anamnesis_engine_tasks.json`, etc.).

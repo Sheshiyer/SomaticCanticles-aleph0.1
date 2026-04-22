@@ -1,0 +1,258 @@
+version: 0.1
+updated: 2026-04-18
+purpose: >
+  Canonical registry for vocabulary integration, contextual lore bridges,
+  and layered Easter eggs across the Somatic Canticles manuscript,
+  Serpentine app surfaces, and synchronocities-blog.
+
+principles:
+  - narrative_sovereignty
+  - context_not_marketing
+  - optional_depth_not_forced_diversion
+  - uplift_through_authorship_not_consolation
+  - explicit_links_live_outside_core_narrative
+
+surfaces:
+  manuscript_body:
+    allow:
+      - vocabulary_signal
+      - symbolic_echo
+      - structural_easter_egg
+      - lore_foreshadow
+    avoid:
+      - direct_url
+      - article_title_drop
+      - promotional_language
+  chapter_title_or_epigraph:
+    allow:
+      - acrostic
+      - symbolic_recurrence
+      - discoverable_phrase
+    avoid:
+      - obvious_linking_language
+  backmatter_or_glossary:
+    allow:
+      - explicit_post_reference
+      - direct_url
+      - decoder_note
+      - companion_reading
+    avoid:
+      - link_dump
+  webapp_context_surface:
+    allow:
+      - explicit_post_reference
+      - direct_url
+      - lore_panel
+      - decoder_module
+      - companion_reading
+    avoid:
+      - forced_redirect
+      - interruptive_modal
+  mobile_context_surface:
+    allow:
+      - explicit_post_reference
+      - direct_url
+      - decoder_tab
+      - lore_drawer
+    avoid:
+      - interruptive_prompt
+
+entries:
+  - id: vine-of-determinism
+    trilogy_terms:
+      - Vine of Determinism
+      - inherited pattern
+      - narrowing pathway
+      - maintenance cycle
+    blog_sources:
+      - slug: the-downstream-mind
+        role: upstream_vs_downstream framing and deterministic narrowing
+      - slug: repetition-is-architecture
+        role: repetition as structure rather than accident
+      - slug: consciousness-legacy-code
+        role: inherited runtime and legacy patterning
+    layers:
+      - visible
+      - discoverable
+      - decoder
+    preferred_surfaces:
+      - manuscript_body
+      - backmatter_or_glossary
+      - webapp_context_surface
+      - mobile_context_surface
+    chapter_candidates:
+      - Chapter-04-The-Emperors-Genome
+      - Chapter-17-The-Gardener
+      - Chapter-22-The-Perfect-World
+      - Chapter-25-The-Void-of-Pure-Potential
+      - Chapter-26-The-Architecture-of-New-Reality
+
+  - id: kha-ba-la-orientation
+    trilogy_terms:
+      - witness
+      - observer
+      - embodiment
+      - inertia
+      - stuckness
+      - action
+    blog_sources:
+      - slug: kha-ba-la-operational-compass
+        role: observer-body-inertia diagnostic
+      - slug: awareness-isnt-access
+        role: witness clarity without operative capacity
+    layers:
+      - visible
+      - discoverable
+    preferred_surfaces:
+      - manuscript_body
+      - backmatter_or_glossary
+      - webapp_context_surface
+    chapter_candidates:
+      - Chapter-08-The-Compass-Calibration
+      - Chapter-15-The-Witness-Integration
+      - Chapter-18-The-Synthesis-Protocol
+
+  - id: consciousness-architecture
+    trilogy_terms:
+      - engine
+      - architecture
+      - protocol
+      - witness vessel
+      - systems topology
+    blog_sources:
+      - slug: consciousness-architecture-hub
+        role: orientation hub for the larger research lattice
+      - slug: sixteen-engines-one-purpose
+        role: engine architecture and purpose alignment
+      - slug: consciousness-runtime-diagrams
+        role: structural system rendering
+    layers:
+      - discoverable
+      - decoder
+    preferred_surfaces:
+      - manuscript_body
+      - webapp_context_surface
+      - mobile_context_surface
+    chapter_candidates:
+      - Chapter-01-The-Choroid-Plexus
+      - Chapter-12-The-Anamnesis-Engine
+      - Chapter-26-The-Architecture-of-New-Reality
+
+  - id: debug-protocol-runtime
+    trilogy_terms:
+      - debug
+      - protocol
+      - runtime
+      - state trace
+      - intervention
+    blog_sources:
+      - slug: signal-state-story-debug-edition
+        role: temporal debugging stack
+      - slug: ancient-debugging-protocols
+        role: debugging as ancient operational craft
+      - slug: sacred-runtime-ancient-debugging
+        role: runtime framing
+    layers:
+      - visible
+      - discoverable
+    preferred_surfaces:
+      - manuscript_body
+      - webapp_context_surface
+    chapter_candidates:
+      - Chapter-10-The-Debug-Protocol
+      - Chapter-18-The-Synthesis-Protocol
+      - Chapter-24-The-Final-Procedure
+
+  - id: pattern-cross-reference
+    trilogy_terms:
+      - pattern
+      - cross-reference
+      - recurrence
+      - same structure different instrument
+    blog_sources:
+      - slug: pattern-cross-reference-system
+        role: cross-domain pattern logic
+      - slug: pattern-recognition-is-a-method
+        role: method framing
+      - slug: historical-knowledge-patterns
+        role: transhistorical recurrence
+    layers:
+      - discoverable
+      - decoder
+    preferred_surfaces:
+      - backmatter_or_glossary
+      - webapp_context_surface
+      - mobile_context_surface
+    chapter_candidates:
+      - Chapter-14-The-Three-Body-Coordination
+      - Chapter-18-The-Synthesis-Protocol
+      - Chapter-19-The-Three-Point-Problem
+
+  - id: authorship-source-responsibility
+    trilogy_terms:
+      - authorship
+      - source code
+      - responsibility
+      - inheritance
+      - creation
+    blog_sources:
+      - slug: the-source-code-has-authors
+        role: authorship and source-level responsibility
+      - slug: why-insight-isnt-change
+        role: insight without authorship is insufficient
+    layers:
+      - discoverable
+      - decoder
+    preferred_surfaces:
+      - manuscript_body
+      - backmatter_or_glossary
+      - webapp_context_surface
+    chapter_candidates:
+      - Chapter-16-The-Wilt
+      - Chapter-23-The-Flaw-in-the-Code
+      - Chapter-26-The-Architecture-of-New-Reality
+      - Chapter-27-The-New-Beginning
+
+  - id: pain-as-information
+    trilogy_terms:
+      - pain signal
+      - somatic data
+      - suffering as information
+      - embodied stakes
+    blog_sources:
+      - slug: pain-information-architecture
+        role: pain as interpretable system data
+      - slug: compassion-runtime
+        role: compassion as operational response
+    layers:
+      - visible
+      - discoverable
+    preferred_surfaces:
+      - manuscript_body
+      - webapp_context_surface
+    chapter_candidates:
+      - Chapter-03-The-Blood-Brain-Barrier
+      - Chapter-13-The-Myocardial-Chorus
+      - Chapter-16-The-Wilt
+
+  - id: plumber-archetype-upstream-signal
+    trilogy_terms:
+      - plumber archetype
+      - hidden infrastructure
+      - what leaks beneath the surface
+      - findable signal
+    blog_sources:
+      - slug: the-downstream-mind
+        role: upstream signal logic and plumber archetype context
+    layers:
+      - discoverable
+      - decoder
+    preferred_surfaces:
+      - backmatter_or_glossary
+      - webapp_context_surface
+      - mobile_context_surface
+    chapter_candidates:
+      - Chapter-01-The-Choroid-Plexus
+      - Chapter-06-The-Synaptic-Crossroads
+      - Chapter-12-The-Anamnesis-Engine
+      - Chapter-24-The-Final-Procedure
